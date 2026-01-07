@@ -262,5 +262,132 @@ const AppSchemas = {
         ],
         config: {},
         handlers: {}
+    },
+
+    // --- PHASE 2: MARKETING ---
+    campaigns: {
+        id: 'campaigns',
+        title: 'إدارة الحملات التسويقية Marketing Campaigns',
+        desc: 'تخطيط وتتبع الحملات الإعلانية وميزانياتها',
+        fields: [
+            { id: 'campId', label: 'رقم الحملة', type: 'text', readonly: true },
+            { id: 'campName', label: 'اسم الحملة', type: 'text', required: true },
+            { id: 'platform', label: 'المنصة', type: 'select', options: ['Facebook', 'Instagram', 'Google Ads', 'LinkedIn', 'TikTok', 'Email', 'TV', 'Radio'] },
+            { id: 'objective', label: 'الهدف', type: 'select', options: ['Brand Awareness', 'Lead Gen', 'Sales', 'Traffic', 'App Installs'] },
+            { id: 'startDate', label: 'تاريخ البدء', type: 'date', required: true },
+            { id: 'endDate', label: 'تاريخ الانتهاء', type: 'date' },
+            { id: 'budget', label: 'الميزانية (EGP)', type: 'number', required: true, onChange: 'calcRoi' },
+            { id: 'spend', label: 'الإنفاق الفعلي', type: 'number', required: true, onChange: 'calcRoi' },
+            { id: 'revenue', label: 'العائد المحقق', type: 'number', required: true, onChange: 'calcRoi' },
+            { id: 'roi', label: 'العائد على الاستثمار ROI %', type: 'percent', readonly: true },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Planned', 'Active', 'Paused', 'Completed'] }
+        ],
+        config: {},
+        handlers: {
+            calcRoi: (val, form) => {
+                const rev = parseFloat(form['revenue'].value) || 0;
+                const spend = parseFloat(form['spend'].value) || 0;
+                if (spend > 0) {
+                    const roi = ((rev - spend) / spend) * 100;
+                    form['roi'].value = roi.toFixed(2);
+                } else {
+                    form['roi'].value = 0;
+                }
+            }
+        }
+    },
+
+    ads: {
+        id: 'ads',
+        title: 'أداء الإعلانات Ads Performance',
+        desc: 'تتبع مقاييس الإعلانات التفصيلية',
+        fields: [
+            { id: 'adId', label: 'رقم الإعلان', type: 'text', readonly: true },
+            { id: 'campId', label: 'رقم الحملة', type: 'text' },
+            { id: 'adName', label: 'عنوان الإعلان', type: 'text' },
+            { id: 'type', label: 'نوع الإعلان', type: 'select', options: ['Image', 'Video', 'Carousel', 'Story', 'Text'] },
+            { id: 'impressions', label: 'الظهور (Impressions)', type: 'number', onChange: 'calcCtr' },
+            { id: 'clicks', label: 'النقرات (Clicks)', type: 'number', onChange: 'calcCtr' },
+            { id: 'ctr', label: 'نسبة النقر CTR %', type: 'percent', readonly: true },
+            { id: 'conversions', label: 'التحويلات (Sales/Leads)', type: 'number', onChange: 'calcCpa' },
+            { id: 'cost', label: 'التكلفة', type: 'number', onChange: 'calcCpa' },
+            { id: 'cpa', label: 'تكلفة التحويل CPA', type: 'money', readonly: true },
+            { id: 'qualityScore', label: 'نقاط الجودة (1-10)', type: 'select', options: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+        ],
+        config: {},
+        handlers: {
+            calcCtr: (val, form) => {
+                const imps = parseFloat(form['impressions'].value) || 0;
+                const clicks = parseFloat(form['clicks'].value) || 0;
+                const ctr = imps > 0 ? (clicks / imps) * 100 : 0;
+                form['ctr'].value = ctr.toFixed(2);
+            },
+            calcCpa: (val, form) => {
+                const cost = parseFloat(form['cost'].value) || 0;
+                const conv = parseFloat(form['conversions'].value) || 0;
+                const cpa = conv > 0 ? cost / conv : 0;
+                form['cpa'].value = cpa.toFixed(2);
+            }
+        }
+    },
+
+    leads: {
+        id: 'leads',
+        title: 'إدارة العملاء المحتملين Leads',
+        desc: 'تتبع العملاء المحتملين ومراحل البيع',
+        fields: [
+            { id: 'leadId', label: 'رقم العميل المحتمل', type: 'text', readonly: true },
+            { id: 'leadName', label: 'الاسم', type: 'text', required: true },
+            { id: 'source', label: 'المصدر', type: 'select', options: ['Website', 'Facebook', 'Referral', 'Cold Call', 'Event'] },
+            { id: 'phone', label: 'الهاتف', type: 'text' },
+            { id: 'interest', label: 'الاهتمام', type: 'select', options: ['Product A', 'Product B', 'Service X', 'Consultation'] },
+            { id: 'score', label: 'درجة الأهمية (Lead Score)', type: 'number' },
+            { id: 'assignedTo', label: 'المسؤول', type: 'text' },
+            { id: 'lastContact', label: 'آخر تواصل', type: 'date' },
+            { id: 'status', label: 'المرحلة', type: 'select', options: ['New', 'Contacted', 'Qualified', 'Proposal Sent', 'Negotiation', 'Won', 'Lost'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    social_media: {
+        id: 'social_media',
+        title: 'جدول المحتوى Social Content',
+        desc: 'تخطيط ونشر محتوى التواصل الاجتماعي',
+        fields: [
+            { id: 'postId', label: 'رقم المنشور', type: 'text', readonly: true },
+            { id: 'platform', label: 'المنصة', type: 'select', options: ['Facebook', 'Instagram', 'Twitter', 'LinkedIn', 'YouTube'] },
+            { id: 'contentType', label: 'نوع المحتوى', type: 'select', options: ['Image Post', 'Video', 'Reel', 'Story', 'Article', 'Poll'] },
+            { id: 'topic', label: 'الموضوع', type: 'text' },
+            { id: 'publishDate', label: 'موعد النشر', type: 'date' },
+            { id: 'publishTime', label: 'وقت النشر', type: 'time' },
+            { id: 'author', label: 'كاتب المحتوى', type: 'text' },
+            { id: 'designer', label: 'المصمم', type: 'text' },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Idea', 'Drafting', 'Design', 'Approved', 'Scheduled', 'Published'] },
+            { id: 'likes', label: 'الإعجابات (بعد النشر)', type: 'number' },
+            { id: 'comments', label: 'التعليقات', type: 'number' },
+            { id: 'shares', label: 'المشاركات', type: 'number' }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    analytics: {
+        id: 'analytics',
+        title: 'تحليل الموقع Website Analytics',
+        desc: 'إحصائيات الزيارات والأداء للموقع',
+        fields: [
+            { id: 'reportId', label: 'رقم التقرير', type: 'text', readonly: true },
+            { id: 'pageUrl', label: 'رابط الصفحة', type: 'text' },
+            { id: 'date', label: 'التاريخ', type: 'date' },
+            { id: 'visitors', label: 'الزوار الجدد', type: 'number' },
+            { id: 'pageViews', label: 'عدد المشاهدات', type: 'number' },
+            { id: 'avgTime', label: 'متوسط الوقت (دقيقة)', type: 'number' },
+            { id: 'bounceRate', label: 'معدل الارتداد %', type: 'percent' },
+            { id: 'trafficSource', label: 'أعلى مصدر زيارات', type: 'select', options: ['Organic Search', 'Direct', 'Social', 'Referral', 'Email'] },
+            { id: 'deviceByUser', label: 'أعلى جهاز', type: 'select', options: ['Mobile', 'Desktop', 'Tablet'] }
+        ],
+        config: {},
+        handlers: {}
     }
 };

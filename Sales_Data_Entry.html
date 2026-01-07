@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدخال بيانات المبيعات العالمية</title>
+    <title>نظام البيانات العالمي - Universal Data Engine</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -53,15 +53,9 @@
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        /* Stats Cards */
+        /* Stats */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -75,17 +69,6 @@
             padding: 20px;
             text-align: center;
             border: 1px solid var(--border);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-card .icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
         }
 
         .stat-card .value {
@@ -99,21 +82,13 @@
             font-size: 0.9rem;
         }
 
-        /* Form Section */
+        /* Form */
         .form-section {
             background: var(--bg-card);
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
             border: 1px solid var(--border);
-        }
-
-        .form-section h2 {
-            margin-bottom: 25px;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .form-grid {
@@ -141,42 +116,22 @@
             background: var(--bg-input);
             color: var(--text);
             font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-group input:read-only {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .form-group input.auto-filled {
             background: rgba(16, 185, 129, 0.1);
             border-color: var(--secondary);
-        }
-
-        .btn-magic {
-            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #06b6d4 100%);
-            color: white;
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-            }
-
-            50% {
-                box-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
-            }
-        }
-
-        .btn-magic:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 5px 25px rgba(139, 92, 246, 0.5);
         }
 
         /* Buttons */
@@ -194,53 +149,38 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+        .btn-magic {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
         }
 
         .btn-warning {
             background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
-            color: white;
         }
 
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.4);
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
         }
 
-        /* Bulk Generation Section */
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        /* Bulk Section */
         .bulk-section {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             border-radius: 15px;
@@ -248,11 +188,6 @@
             margin-bottom: 30px;
             border: 2px dashed var(--primary);
             text-align: center;
-        }
-
-        .bulk-section h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
         }
 
         .bulk-buttons {
@@ -268,15 +203,13 @@
             padding: 10px 20px;
             border: none;
             border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: 600;
+            transition: transform 0.2s;
         }
 
         .btn-bulk:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 5px 20px rgba(6, 182, 212, 0.4);
+            transform: translateY(-2px);
         }
 
         .progress-bar {
@@ -291,12 +224,12 @@
 
         .progress-bar .progress {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 4px;
+            background: var(--secondary);
+            width: 0%;
             transition: width 0.1s;
         }
 
-        /* Table Section */
+        /* Table */
         .table-section {
             background: var(--bg-card);
             border-radius: 20px;
@@ -310,35 +243,10 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .table-header h2 {
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .table-controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            padding: 10px 15px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: var(--bg-input);
-            color: var(--text);
-            width: 250px;
         }
 
         .table-container {
             overflow-x: auto;
-            border-radius: 10px;
         }
 
         table {
@@ -358,13 +266,8 @@
         th {
             background: var(--bg-input);
             color: var(--primary);
-            font-weight: 600;
             position: sticky;
             top: 0;
-        }
-
-        tr:hover {
-            background: rgba(99, 102, 241, 0.1);
         }
 
         .actions {
@@ -372,52 +275,12 @@
             gap: 5px;
         }
 
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            border-radius: 6px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 50px;
-            color: var(--text-muted);
-        }
-
-        .empty-state .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: var(--secondary);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            transform: translateX(-150%);
-            transition: transform 0.3s;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
         /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 8px;
             margin-top: 20px;
-            flex-wrap: wrap;
         }
 
         .pagination button {
@@ -427,13 +290,6 @@
             color: var(--text);
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .pagination button:hover:not(:disabled) {
-            border-color: var(--primary);
-            background: var(--primary);
         }
 
         .pagination button.active {
@@ -444,970 +300,483 @@
 
         .pagination button:disabled {
             opacity: 0.5;
-            cursor: not-allowed;
         }
 
-        .pagination-info {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin: 0 15px;
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--secondary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            transform: translateX(-150%);
+            transition: transform 0.3s;
+            z-index: 1000;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
+        .toast.show {
+            transform: translateX(0);
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>📊 نظام إدخال بيانات المبيعات العالمية</h1>
-            <p>أدخل بيانات المبيعات وصدّرها إلى ملف Excel بصيغة احترافية</p>
+            <h1 id="appTitle">📊 نظام البيانات العالمي</h1>
+            <p id="appDesc">منصة إدارة بيانات متعددة الأغراض</p>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="icon">📦</div>
-                <div class="value" id="totalOrders">0</div>
-                <div class="label">إجمالي الطلبات</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">💰</div>
-                <div class="value" id="totalSales">$0</div>
-                <div class="label">إجمالي المبيعات</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">📈</div>
-                <div class="value" id="totalProfit">$0</div>
-                <div class="label">إجمالي الأرباح</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon">🌍</div>
-                <div class="value" id="totalCountries">0</div>
-                <div class="label">عدد الدول</div>
-            </div>
-        </div>
+        <!-- Stats -->
+        <div class="stats-container" id="statsContainer"></div>
 
-        <!-- Data Entry Form -->
+        <!-- Dynamic Form -->
         <div class="form-section">
             <h2>📝 إدخال بيانات جديدة</h2>
-            <form id="salesForm">
-                <div class="form-grid">
-                    <!-- Order Info -->
-                    <div class="form-group">
-                        <label>رقم الطلب (تلقائي)</label>
-                        <input type="text" id="orderId" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>تاريخ الطلب *</label>
-                        <input type="date" id="orderDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>تاريخ الشحن</label>
-                        <input type="date" id="shipDate">
-                    </div>
-                    <div class="form-group">
-                        <label>تاريخ التسليم</label>
-                        <input type="date" id="deliveryDate">
-                    </div>
-                    <div class="form-group">
-                        <label>حالة الطلب *</label>
-                        <select id="orderStatus" required>
-                            <option value="">اختر...</option>
-                            <option value="Completed">Completed - مكتمل</option>
-                            <option value="Pending">Pending - قيد الانتظار</option>
-                            <option value="Shipped">Shipped - تم الشحن</option>
-                            <option value="Cancelled">Cancelled - ملغي</option>
-                            <option value="Returned">Returned - مرتجع</option>
-                        </select>
-                    </div>
-
-                    <!-- Customer Info -->
-                    <div class="form-group">
-                        <label>رقم العميل (تلقائي)</label>
-                        <input type="text" id="customerId" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>شريحة العميل *</label>
-                        <select id="customerSegment" required>
-                            <option value="">اختر...</option>
-                            <option value="Enterprise">Enterprise - شركات كبرى</option>
-                            <option value="SMB">SMB - شركات صغيرة ومتوسطة</option>
-                            <option value="Individual">Individual - أفراد</option>
-                            <option value="Government">Government - حكومي</option>
-                            <option value="Education">Education - تعليمي</option>
-                        </select>
-                    </div>
-
-                    <!-- Geographic Info -->
-                    <div class="form-group">
-                        <label>المنطقة *</label>
-                        <select id="region" required onchange="updateCountries()">
-                            <option value="">اختر...</option>
-                            <option value="North America">North America - أمريكا الشمالية</option>
-                            <option value="Europe">Europe - أوروبا</option>
-                            <option value="Asia Pacific">Asia Pacific - آسيا والمحيط الهادئ</option>
-                            <option value="Latin America">Latin America - أمريكا اللاتينية</option>
-                            <option value="Middle East & Africa">Middle East & Africa - الشرق الأوسط وأفريقيا</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>الدولة *</label>
-                        <select id="country" required>
-                            <option value="">اختر المنطقة أولاً...</option>
-                        </select>
-                    </div>
-
-                    <!-- Product Info -->
-                    <div class="form-group">
-                        <label>فئة المنتج *</label>
-                        <select id="productCategory" required onchange="updateProducts()">
-                            <option value="">اختر...</option>
-                            <option value="Electronics">Electronics - إلكترونيات</option>
-                            <option value="Furniture">Furniture - أثاث</option>
-                            <option value="Office Supplies">Office Supplies - مستلزمات مكتبية</option>
-                            <option value="Clothing">Clothing - ملابس</option>
-                            <option value="Food & Beverages">Food & Beverages - أطعمة ومشروبات</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>اسم المنتج *</label>
-                        <select id="productName" required>
-                            <option value="">اختر الفئة أولاً...</option>
-                        </select>
-                    </div>
-
-                    <!-- Financial Info -->
-                    <div class="form-group">
-                        <label>الكمية *</label>
-                        <input type="number" id="quantity" min="1" required onchange="calculateTotals()">
-                    </div>
-                    <div class="form-group">
-                        <label>سعر الوحدة ($) *</label>
-                        <input type="number" id="unitPrice" step="0.01" min="0" required onchange="calculateTotals()">
-                    </div>
-                    <div class="form-group">
-                        <label>إجمالي المبيعات (تلقائي)</label>
-                        <input type="text" id="grossSales" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>نسبة الخصم %</label>
-                        <select id="discountPercent" onchange="calculateTotals()">
-                            <option value="0">0%</option>
-                            <option value="5">5%</option>
-                            <option value="10">10%</option>
-                            <option value="15">15%</option>
-                            <option value="20">20%</option>
-                            <option value="25">25%</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>مبلغ الخصم (تلقائي)</label>
-                        <input type="text" id="discountAmount" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>صافي المبيعات (تلقائي)</label>
-                        <input type="text" id="netSales" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>تكلفة البضاعة ($) *</label>
-                        <input type="number" id="costOfGoods" step="0.01" min="0" required onchange="calculateTotals()">
-                    </div>
-                    <div class="form-group">
-                        <label>الربح (تلقائي)</label>
-                        <input type="text" id="profit" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>هامش الربح % (تلقائي)</label>
-                        <input type="text" id="profitMargin" readonly>
-                    </div>
-
-                    <!-- Sales Info -->
-                    <div class="form-group">
-                        <label>قناة البيع *</label>
-                        <select id="salesChannel" required>
-                            <option value="">اختر...</option>
-                            <option value="Direct Sales">Direct Sales - مبيعات مباشرة</option>
-                            <option value="Online">Online - عبر الإنترنت</option>
-                            <option value="Retail">Retail - تجزئة</option>
-                            <option value="Partner">Partner - شريك</option>
-                            <option value="Distributor">Distributor - موزع</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>طريقة الدفع *</label>
-                        <select id="paymentMethod" required>
-                            <option value="">اختر...</option>
-                            <option value="Credit Card">Credit Card - بطاقة ائتمان</option>
-                            <option value="Bank Transfer">Bank Transfer - تحويل بنكي</option>
-                            <option value="PayPal">PayPal</option>
-                            <option value="Check">Check - شيك</option>
-                            <option value="Cash">Cash - نقدي</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>مندوب المبيعات *</label>
-                        <select id="salesRep" required>
-                            <option value="">اختر...</option>
-                        </select>
-                    </div>
+            <form id="dynamicForm">
+                <div class="form-grid" id="formContainer">
+                    <!-- Fields will be injected here -->
                 </div>
 
                 <div class="btn-group">
-                    <button type="button" class="btn btn-magic" onclick="autoFillForm()">
-                        🎲 ملء تلقائي عشوائي
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        ➕ إضافة سجل جديد
-                    </button>
-                    <button type="button" class="btn btn-warning" onclick="resetForm()">
-                        🔄 مسح النموذج
-                    </button>
+                    <button type="button" class="btn btn-magic" onclick="engine.autoFill()">🎲 ملء تلقائي
+                        عشوائي</button>
+                    <button type="submit" class="btn btn-primary">➕ إضافة سجل جديد</button>
+                    <button type="button" class="btn btn-warning" onclick="engine.resetForm()">🔄 مسح النموذج</button>
                 </div>
             </form>
         </div>
 
-        <!-- Bulk Generation Section -->
+        <!-- Bulk Section -->
         <div class="bulk-section">
-            <h3>⚡ توليد سجلات متعددة دفعة واحدة</h3>
+            <h3>⚡ توليد سجلات متعددة</h3>
             <div class="bulk-buttons">
-                <button class="btn-bulk" onclick="generateBulkRecords(100)">📦 100 سجل</button>
-                <button class="btn-bulk" onclick="generateBulkRecords(500)">📦 500 سجل</button>
-                <button class="btn-bulk" onclick="generateBulkRecords(1000)">📦 1,000 سجل</button>
-                <button class="btn-bulk" onclick="generateBulkRecords(5000)">📦 5,000 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(100)">📦 100 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(500)">📦 500 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(1000)">📦 1,000 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(5000)">📦 5,000 سجل</button>
             </div>
             <div class="progress-bar" id="progressBar">
                 <div class="progress" id="progress"></div>
             </div>
-            <p id="progressText" style="margin-top: 10px; color: var(--text-muted); display: none;"></p>
+            <p id="progressText" style="margin-top: 10px; display: none;"></p>
         </div>
 
-        <!-- Data Table -->
+        <!-- Table -->
         <div class="table-section">
             <div class="table-header">
-                <h2>📋 سجلات المبيعات</h2>
+                <h2>📋 السجلات</h2>
                 <div class="table-controls">
-                    <input type="text" class="search-box" placeholder="🔍 بحث..." onkeyup="searchTable(this.value)">
-                    <button class="btn btn-success" onclick="exportToExcel()">
-                        📥 تصدير Excel
-                    </button>
-                    <button class="btn btn-danger" onclick="clearAllData()">
-                        🗑️ حذف الكل
-                    </button>
+                    <input type="text" class="search-box" placeholder="🔍 بحث..."
+                        onkeyup="engine.searchTable(this.value)"
+                        style="padding: 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-input); color: white;">
+                    <button class="btn btn-success" onclick="engine.exportExcel()">📥 تصدير Excel</button>
+                    <button class="btn btn-danger" onclick="engine.clearAll()">🗑️ حذف الكل</button>
                 </div>
             </div>
             <div class="table-container">
                 <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>الإجراءات</th>
-                            <th>Order ID</th>
-                            <th>Order Date</th>
-                            <th>Status</th>
-                            <th>Customer ID</th>
-                            <th>Segment</th>
-                            <th>Region</th>
-                            <th>Country</th>
-                            <th>Category</th>
-                            <th>Product</th>
-                            <th>Qty</th>
-                            <th>Unit Price</th>
-                            <th>Gross Sales</th>
-                            <th>Discount %</th>
-                            <th>Net Sales</th>
-                            <th>Profit</th>
-                            <th>Profit %</th>
-                            <th>Channel</th>
-                            <th>Payment</th>
-                            <th>Sales Rep</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                    </tbody>
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody"></tbody>
                 </table>
-            </div>
-            <div id="emptyState" class="empty-state">
-                <div class="icon">📭</div>
-                <h3>لا توجد بيانات بعد</h3>
-                <p>ابدأ بإضافة سجلات مبيعات جديدة</p>
             </div>
             <div id="paginationContainer" class="pagination"></div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
     <script>
-        // Data Maps
-        const countriesByRegion = {
-            'North America': ['USA', 'Canada', 'Mexico'],
-            'Europe': ['Germany', 'UK', 'France', 'Italy', 'Spain', 'Netherlands'],
-            'Asia Pacific': ['China', 'Japan', 'India', 'Australia', 'Singapore', 'South Korea'],
-            'Latin America': ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru'],
-            'Middle East & Africa': ['UAE', 'Saudi Arabia', 'South Africa', 'Egypt', 'Nigeria']
-        };
+        // --- 1. SCHEMAS DEFINITION ---
+        const AppSchemas = {
+            sales: {
+                id: 'sales',
+                title: 'نظام إدارة المبيعات',
+                desc: 'إدارة الطلبات، العملاء، والعمليات المالية',
+                fields: [
+                    { id: 'orderId', label: 'رقم الطلب', type: 'text', readonly: true, width: '150px' },
+                    { id: 'orderDate', label: 'تاريخ الطلب', type: 'date', required: true },
+                    { id: 'shipDate', label: 'تاريخ الشحن', type: 'date' },
+                    { id: 'deliveryDate', label: 'تاريخ التسليم', type: 'date' },
+                    { id: 'orderStatus', label: 'حالة الطلب', type: 'select', options: ['Completed', 'Pending', 'Shipped', 'Cancelled', 'Returned'] },
+                    { id: 'customerId', label: 'رقم العميل', type: 'text', readonly: true },
+                    { id: 'customerSegment', label: 'شريحة العميل', type: 'select', options: ['Enterprise', 'SMB', 'Individual', 'Government', 'Education'] },
+                    { id: 'region', label: 'المنطقة', type: 'select', options: ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East & Africa'], onChange: 'updateCountries' },
+                    { id: 'country', label: 'الدولة', type: 'select', options: [] }, // Populated dynamically
+                    { id: 'productCategory', label: 'فئة المنتج', type: 'select', options: ['Electronics', 'Furniture', 'Office Supplies', 'Clothing', 'Food & Beverages'], onChange: 'updateProducts' },
+                    { id: 'productName', label: 'اسم المنتج', type: 'select', options: [] }, // Populated dynamically
+                    { id: 'quantity', label: 'الكمية', type: 'number', required: true, onChange: 'calculateTotals' },
+                    { id: 'unitPrice', label: 'سعر الوحدة', type: 'number', required: true, onChange: 'calculateTotals' },
+                    { id: 'grossSales', label: 'إجمالي المبيعات', type: 'money', readonly: true },
+                    { id: 'discountPercent', label: 'نسبة الخصم %', type: 'select', options: [0, 5, 10, 15, 20, 25], onChange: 'calculateTotals' },
+                    { id: 'discountAmount', label: 'قيمة الخصم', type: 'money', readonly: true },
+                    { id: 'netSales', label: 'صافي المبيعات', type: 'money', readonly: true },
+                    { id: 'costOfGoods', label: 'تكلفة البضاعة', type: 'number', onChange: 'calculateTotals' },
+                    { id: 'profit', label: 'الربح', type: 'money', readonly: true },
+                    { id: 'profitMargin', label: 'هامش الربح %', type: 'percent', readonly: true },
+                    { id: 'salesChannel', label: 'قناة البيع', type: 'select', options: ['Direct Sales', 'Online', 'Retail', 'Partner', 'Distributor'] },
+                    { id: 'paymentMethod', label: 'طريقة الدفع', type: 'select', options: ['Credit Card', 'Bank Transfer', 'PayPal', 'Check', 'Cash'] },
+                    { id: 'salesRepName', label: 'مندوب المبيعات', type: 'select', options: [] } // Populated from config
+                ],
+                config: {
+                    countriesByRegion: {
+                        'North America': ['USA', 'Canada', 'Mexico'],
+                        'Europe': ['Germany', 'UK', 'France', 'Italy', 'Spain', 'Netherlands'],
+                        'Asia Pacific': ['China', 'Japan', 'India', 'Australia', 'Singapore', 'South Korea'],
+                        'Latin America': ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru'],
+                        'Middle East & Africa': ['UAE', 'Saudi Arabia', 'South Africa', 'Egypt', 'Nigeria']
+                    },
+                    productsByCategory: {
+                        'Electronics': ['Laptop', 'Desktop Computer', 'Tablet', 'Smartphone', 'Monitor'],
+                        'Furniture': ['Office Chair', 'Desk', 'Filing Cabinet', 'Sofa'],
+                        'Office Supplies': ['Paper', 'Pens', 'Notebooks', 'Binders'],
+                        'Clothing': ['Suit', 'Shirt', 'Pants', 'Shoes'],
+                        'Food & Beverages': ['Coffee', 'Tea', 'Snacks', 'Water']
+                    },
+                    salesReps: ['John Smith', 'Sarah Johnson', 'Michael Brown', 'Emily Davis', 'Jennifer Lee']
+                },
+                handlers: {
+                    updateCountries: (val, form) => {
+                        const countries = AppSchemas.sales.config.countriesByRegion[val] || [];
+                        engine.populateSelect('country', countries);
+                    },
+                    updateProducts: (val, form) => {
+                        const products = AppSchemas.sales.config.productsByCategory[val] || [];
+                        engine.populateSelect('productName', products);
+                    },
+                    calculateTotals: (form) => {
+                        const qty = parseFloat(form['quantity'].value) || 0;
+                        const price = parseFloat(form['unitPrice'].value) || 0;
+                        const discPct = parseFloat(form['discountPercent'].value) || 0;
+                        const cost = parseFloat(form['costOfGoods'].value) || 0;
 
-        const productsByCategory = {
-            'Electronics': ['Laptop', 'Desktop Computer', 'Tablet', 'Smartphone', 'Monitor', 'Printer', 'Camera', 'Headphones'],
-            'Furniture': ['Office Chair', 'Desk', 'Filing Cabinet', 'Conference Table', 'Bookshelf', 'Sofa', 'Lamp'],
-            'Office Supplies': ['Paper', 'Pens', 'Notebooks', 'Folders', 'Staplers', 'Ink Cartridges', 'Binders'],
-            'Clothing': ['Business Suit', 'Shirt', 'Pants', 'Dress', 'Shoes', 'Jacket', 'Tie'],
-            'Food & Beverages': ['Coffee', 'Tea', 'Snacks', 'Water', 'Soft Drinks', 'Energy Bars']
-        };
+                        const gross = qty * price;
+                        const discAmt = gross * (discPct / 100);
+                        const net = gross - discAmt;
+                        const profit = net - cost;
+                        const margin = net > 0 ? (profit / net) * 100 : 0;
 
-        const salesReps = [
-            { id: 'Rep_001', name: 'John Smith' },
-            { id: 'Rep_002', name: 'Sarah Johnson' },
-            { id: 'Rep_003', name: 'Michael Brown' },
-            { id: 'Rep_004', name: 'Emily Davis' },
-            { id: 'Rep_005', name: 'David Wilson' },
-            { id: 'Rep_006', name: 'Jessica Martinez' },
-            { id: 'Rep_007', name: 'Robert Taylor' },
-            { id: 'Rep_008', name: 'Lisa Anderson' },
-            { id: 'Rep_009', name: 'James Thomas' },
-            { id: 'Rep_010', name: 'Maria Garcia' },
-            { id: 'Rep_011', name: 'William Rodriguez' },
-            { id: 'Rep_012', name: 'Jennifer Lee' },
-            { id: 'Rep_013', name: 'Richard White' },
-            { id: 'Rep_014', name: 'Laura Harris' },
-            { id: 'Rep_015', name: 'Charles Clark' },
-            { id: 'Rep_016', name: 'Patricia Lewis' },
-            { id: 'Rep_017', name: 'Daniel Walker' },
-            { id: 'Rep_018', name: 'Nancy Hall' },
-            { id: 'Rep_019', name: 'Matthew Allen' },
-            { id: 'Rep_020', name: 'Karen Young' }
-        ];
-
-        // Storage
-        let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
-        let orderCounter = parseInt(localStorage.getItem('orderCounter')) || 1;
-        let editingIndex = -1;
-
-        // Pagination
-        const ITEMS_PER_PAGE = 25;
-        let currentPage = 1;
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function () {
-            initSalesReps();
-            generateOrderId();
-            generateCustomerId();
-            setDefaultDate();
-            renderTable();
-            updateStats();
-        });
-
-        function initSalesReps() {
-            const select = document.getElementById('salesRep');
-            salesReps.forEach(rep => {
-                const option = document.createElement('option');
-                option.value = JSON.stringify(rep);
-                option.textContent = `${rep.id} - ${rep.name}`;
-                select.appendChild(option);
-            });
-        }
-
-        function generateOrderId() {
-            const year = new Date().getFullYear();
-            document.getElementById('orderId').value = `ORD-${year}-${String(orderCounter).padStart(5, '0')}`;
-        }
-
-        function generateCustomerId() {
-            const randomId = Math.floor(Math.random() * 9000) + 1000;
-            document.getElementById('customerId').value = `CUST-${randomId}`;
-        }
-
-        function setDefaultDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('orderDate').value = today;
-        }
-
-        // Auto-fill form with random data
-        function autoFillForm() {
-            // Random date in the last 2 years
-            const startDate = new Date(2023, 0, 1);
-            const endDate = new Date();
-            const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
-            const dateStr = randomDate.toISOString().split('T')[0];
-
-            // Ship and delivery dates
-            const shipDate = new Date(randomDate.getTime() + (Math.random() * 7 + 1) * 24 * 60 * 60 * 1000);
-            const deliveryDate = new Date(shipDate.getTime() + (Math.random() * 14 + 3) * 24 * 60 * 60 * 1000);
-
-            document.getElementById('orderDate').value = dateStr;
-            document.getElementById('shipDate').value = shipDate.toISOString().split('T')[0];
-            document.getElementById('deliveryDate').value = deliveryDate.toISOString().split('T')[0];
-
-            // Order Status
-            const statuses = ['Completed', 'Pending', 'Shipped', 'Cancelled', 'Returned'];
-            document.getElementById('orderStatus').value = statuses[Math.floor(Math.random() * statuses.length)];
-
-            // Customer Segment
-            const segments = ['Enterprise', 'SMB', 'Individual', 'Government', 'Education'];
-            document.getElementById('customerSegment').value = segments[Math.floor(Math.random() * segments.length)];
-
-            // Region and Country
-            const regions = Object.keys(countriesByRegion);
-            const region = regions[Math.floor(Math.random() * regions.length)];
-            document.getElementById('region').value = region;
-            updateCountries();
-            const countries = countriesByRegion[region];
-            document.getElementById('country').value = countries[Math.floor(Math.random() * countries.length)];
-
-            // Product Category and Product
-            const categories = Object.keys(productsByCategory);
-            const category = categories[Math.floor(Math.random() * categories.length)];
-            document.getElementById('productCategory').value = category;
-            updateProducts();
-            const products = productsByCategory[category];
-            document.getElementById('productName').value = products[Math.floor(Math.random() * products.length)];
-
-            // Financial data
-            const quantity = Math.floor(Math.random() * 100) + 1;
-            const unitPrice = Math.round((Math.random() * 4990 + 10) * 100) / 100;
-            document.getElementById('quantity').value = quantity;
-            document.getElementById('unitPrice').value = unitPrice;
-
-            // Discount
-            const discounts = [0, 5, 10, 15, 20, 25];
-            document.getElementById('discountPercent').value = discounts[Math.floor(Math.random() * discounts.length)];
-
-            // Cost of goods (40-70% of gross)
-            const grossSales = quantity * unitPrice;
-            const costPercent = 0.4 + Math.random() * 0.3;
-            const costOfGoods = Math.round(grossSales * costPercent * 100) / 100;
-            document.getElementById('costOfGoods').value = costOfGoods;
-
-            // Sales Channel
-            const channels = ['Direct Sales', 'Online', 'Retail', 'Partner', 'Distributor'];
-            document.getElementById('salesChannel').value = channels[Math.floor(Math.random() * channels.length)];
-
-            // Payment Method
-            const payments = ['Credit Card', 'Bank Transfer', 'PayPal', 'Check', 'Cash'];
-            document.getElementById('paymentMethod').value = payments[Math.floor(Math.random() * payments.length)];
-
-            // Sales Rep
-            const repIndex = Math.floor(Math.random() * salesReps.length);
-            document.getElementById('salesRep').selectedIndex = repIndex + 1; // +1 for "اختر..." option
-
-            // Calculate totals
-            calculateTotals();
-
-            // Add visual feedback
-            document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
-                el.classList.add('auto-filled');
-                setTimeout(() => el.classList.remove('auto-filled'), 1000);
-            });
-
-            showToast('🎲 تم ملء البيانات عشوائياً - يمكنك تعديل أي خانة');
-        }
-
-        // Bulk generate records
-        async function generateBulkRecords(count) {
-            const progressBar = document.getElementById('progressBar');
-            const progress = document.getElementById('progress');
-            const progressText = document.getElementById('progressText');
-
-            progressBar.style.display = 'block';
-            progressText.style.display = 'block';
-            progress.style.width = '0%';
-
-            const statuses = ['Completed', 'Pending', 'Shipped', 'Cancelled', 'Returned'];
-            const segments = ['Enterprise', 'SMB', 'Individual', 'Government', 'Education'];
-            const regions = Object.keys(countriesByRegion);
-            const categories = Object.keys(productsByCategory);
-            const channels = ['Direct Sales', 'Online', 'Retail', 'Partner', 'Distributor'];
-            const payments = ['Credit Card', 'Bank Transfer', 'PayPal', 'Check', 'Cash'];
-            const discounts = [0, 5, 10, 15, 20, 25];
-
-            const batchSize = 100;
-            let added = 0;
-
-            for (let i = 0; i < count; i++) {
-                // Random date
-                const startDate = new Date(2023, 0, 1);
-                const endDate = new Date();
-                const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
-                const shipDate = new Date(randomDate.getTime() + (Math.random() * 7 + 1) * 24 * 60 * 60 * 1000);
-                const deliveryDate = new Date(shipDate.getTime() + (Math.random() * 14 + 3) * 24 * 60 * 60 * 1000);
-
-                // Random selections
-                const region = regions[Math.floor(Math.random() * regions.length)];
-                const country = countriesByRegion[region][Math.floor(Math.random() * countriesByRegion[region].length)];
-                const category = categories[Math.floor(Math.random() * categories.length)];
-                const product = productsByCategory[category][Math.floor(Math.random() * productsByCategory[category].length)];
-                const rep = salesReps[Math.floor(Math.random() * salesReps.length)];
-
-                // Financial data
-                const quantity = Math.floor(Math.random() * 100) + 1;
-                const unitPrice = Math.round((Math.random() * 4990 + 10) * 100) / 100;
-                const grossSales = Math.round(quantity * unitPrice * 100) / 100;
-                const discountPercent = discounts[Math.floor(Math.random() * discounts.length)];
-                const discountAmount = Math.round(grossSales * (discountPercent / 100) * 100) / 100;
-                const netSales = Math.round((grossSales - discountAmount) * 100) / 100;
-                const costOfGoods = Math.round(netSales * (0.4 + Math.random() * 0.3) * 100) / 100;
-                const profit = Math.round((netSales - costOfGoods) * 100) / 100;
-                const profitMargin = netSales > 0 ? Math.round((profit / netSales) * 10000) / 100 : 0;
-
-                const year = new Date().getFullYear();
-                const record = {
-                    orderId: `ORD-${year}-${String(orderCounter).padStart(5, '0')}`,
-                    orderDate: randomDate.toISOString().split('T')[0],
-                    shipDate: shipDate.toISOString().split('T')[0],
-                    deliveryDate: deliveryDate.toISOString().split('T')[0],
-                    orderStatus: statuses[Math.floor(Math.random() * statuses.length)],
-                    customerId: `CUST-${Math.floor(Math.random() * 9000) + 1000}`,
-                    customerSegment: segments[Math.floor(Math.random() * segments.length)],
-                    region: region,
-                    country: country,
-                    productCategory: category,
-                    productName: product,
-                    quantity: quantity,
-                    unitPrice: unitPrice,
-                    grossSales: grossSales,
-                    discountPercent: discountPercent,
-                    discountAmount: discountAmount,
-                    netSales: netSales,
-                    costOfGoods: costOfGoods,
-                    profit: profit,
-                    profitMargin: profitMargin,
-                    salesChannel: channels[Math.floor(Math.random() * channels.length)],
-                    paymentMethod: payments[Math.floor(Math.random() * payments.length)],
-                    salesRepId: rep.id,
-                    salesRepName: rep.name
-                };
-
-                salesData.push(record);
-                orderCounter++;
-                added++;
-
-                // Update progress every batch
-                if (added % batchSize === 0 || added === count) {
-                    const percent = Math.round((added / count) * 100);
-                    progress.style.width = percent + '%';
-                    progressText.textContent = `⏳ جاري التوليد... ${added.toLocaleString()} / ${count.toLocaleString()} (${percent}%)`;
-                    await new Promise(r => setTimeout(r, 10)); // Allow UI to update
+                        form['grossSales'].value = gross.toFixed(2);
+                        form['discountAmount'].value = discAmt.toFixed(2);
+                        form['netSales'].value = net.toFixed(2);
+                        form['profit'].value = profit.toFixed(2);
+                        form['profitMargin'].value = margin.toFixed(2);
+                    }
                 }
             }
+        };
 
-            localStorage.setItem('salesData', JSON.stringify(salesData));
-            localStorage.setItem('orderCounter', orderCounter);
+        // --- 2. ENGINE CORE ---
+        const engine = {
+            currentSchema: null,
+            data: [],
+            currentPage: 1,
+            itemsPerPage: 25,
+            editingIndex: -1,
+            orderCounter: 1,
 
-            renderTable();
-            updateStats();
-            generateOrderId();
+            init: function (schemaId) {
+                this.currentSchema = AppSchemas[schemaId];
+                this.loadData();
+                this.renderUI();
 
-            progressBar.style.display = 'none';
-            progressText.style.display = 'none';
+                // Initialize Reps if sales
+                if (schemaId === 'sales') {
+                    this.populateSelect('salesRepName', this.currentSchema.config.salesReps);
+                }
 
-            showToast(`✅ تم إضافة ${count.toLocaleString()} سجل بنجاح!`);
-        }
+                // Submit Handler
+                document.getElementById('dynamicForm').onsubmit = (e) => {
+                    e.preventDefault();
+                    this.saveRecord();
+                };
+            },
 
-        function updateCountries() {
-            const region = document.getElementById('region').value;
-            const countrySelect = document.getElementById('country');
-            countrySelect.innerHTML = '<option value="">اختر...</option>';
+            loadData: function () {
+                const key = `data_${this.currentSchema.id}`;
+                this.data = JSON.parse(localStorage.getItem(key)) || [];
+                this.orderCounter = parseInt(localStorage.getItem(`counter_${this.currentSchema.id}`)) || 1;
+            },
 
-            if (region && countriesByRegion[region]) {
-                countriesByRegion[region].forEach(country => {
-                    const option = document.createElement('option');
-                    option.value = country;
-                    option.textContent = country;
-                    countrySelect.appendChild(option);
-                });
-            }
-        }
+            renderUI: function () {
+                document.getElementById('appTitle').textContent = `📊 ${this.currentSchema.title}`;
+                document.getElementById('appDesc').textContent = this.currentSchema.desc;
 
-        function updateProducts() {
-            const category = document.getElementById('productCategory').value;
-            const productSelect = document.getElementById('productName');
-            productSelect.innerHTML = '<option value="">اختر...</option>';
+                this.renderFormBuilder();
+                this.renderTableHeaders();
+                this.renderTableBody();
+                this.updateStats();
+                this.resetForm(); // Sets defaults
+            },
 
-            if (category && productsByCategory[category]) {
-                productsByCategory[category].forEach(product => {
-                    const option = document.createElement('option');
-                    option.value = product;
-                    option.textContent = product;
-                    productSelect.appendChild(option);
-                });
-            }
-        }
+            renderFormBuilder: function () {
+                const container = document.getElementById('formContainer');
+                container.innerHTML = this.currentSchema.fields.map(field => `
+                    <div class="form-group">
+                        <label>${field.label} ${field.required ? '*' : ''}</label>
+                        ${this.getFieldHTML(field)}
+                    </div>
+                `).join('');
 
-        function calculateTotals() {
-            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
-            const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
-            const discountPercent = parseFloat(document.getElementById('discountPercent').value) || 0;
-            const costOfGoods = parseFloat(document.getElementById('costOfGoods').value) || 0;
-
-            const grossSales = quantity * unitPrice;
-            const discountAmount = grossSales * (discountPercent / 100);
-            const netSales = grossSales - discountAmount;
-            const profit = netSales - costOfGoods;
-            const profitMargin = netSales > 0 ? (profit / netSales) * 100 : 0;
-
-            document.getElementById('grossSales').value = `$${grossSales.toFixed(2)}`;
-            document.getElementById('discountAmount').value = `$${discountAmount.toFixed(2)}`;
-            document.getElementById('netSales').value = `$${netSales.toFixed(2)}`;
-            document.getElementById('profit').value = `$${profit.toFixed(2)}`;
-            document.getElementById('profitMargin').value = `${profitMargin.toFixed(2)}%`;
-        }
-
-        // Form Submission
-        document.getElementById('salesForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const salesRepData = JSON.parse(document.getElementById('salesRep').value);
-
-            const record = {
-                orderId: document.getElementById('orderId').value,
-                orderDate: document.getElementById('orderDate').value,
-                shipDate: document.getElementById('shipDate').value,
-                deliveryDate: document.getElementById('deliveryDate').value,
-                orderStatus: document.getElementById('orderStatus').value,
-                customerId: document.getElementById('customerId').value,
-                customerSegment: document.getElementById('customerSegment').value,
-                region: document.getElementById('region').value,
-                country: document.getElementById('country').value,
-                productCategory: document.getElementById('productCategory').value,
-                productName: document.getElementById('productName').value,
-                quantity: parseInt(document.getElementById('quantity').value),
-                unitPrice: parseFloat(document.getElementById('unitPrice').value),
-                grossSales: parseFloat(document.getElementById('grossSales').value.replace('$', '')),
-                discountPercent: parseInt(document.getElementById('discountPercent').value),
-                discountAmount: parseFloat(document.getElementById('discountAmount').value.replace('$', '')),
-                netSales: parseFloat(document.getElementById('netSales').value.replace('$', '')),
-                costOfGoods: parseFloat(document.getElementById('costOfGoods').value),
-                profit: parseFloat(document.getElementById('profit').value.replace('$', '')),
-                profitMargin: parseFloat(document.getElementById('profitMargin').value.replace('%', '')),
-                salesChannel: document.getElementById('salesChannel').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                salesRepId: salesRepData.id,
-                salesRepName: salesRepData.name
-            };
-
-            if (editingIndex >= 0) {
-                salesData[editingIndex] = record;
-                editingIndex = -1;
-                showToast('✅ تم تحديث السجل بنجاح');
-            } else {
-                salesData.push(record);
-                orderCounter++;
-                localStorage.setItem('orderCounter', orderCounter);
-                showToast('✅ تم إضافة السجل بنجاح');
-            }
-
-            localStorage.setItem('salesData', JSON.stringify(salesData));
-            renderTable();
-            updateStats();
-            resetForm();
-        });
-
-        function resetForm() {
-            document.getElementById('salesForm').reset();
-            generateOrderId();
-            generateCustomerId();
-            setDefaultDate();
-            document.getElementById('country').innerHTML = '<option value="">اختر المنطقة أولاً...</option>';
-            document.getElementById('productName').innerHTML = '<option value="">اختر الفئة أولاً...</option>';
-            ['grossSales', 'discountAmount', 'netSales', 'profit', 'profitMargin'].forEach(id => {
-                document.getElementById(id).value = '';
-            });
-            editingIndex = -1;
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            const emptyState = document.getElementById('emptyState');
-            const paginationContainer = document.getElementById('paginationContainer');
-
-            if (salesData.length === 0) {
-                tbody.innerHTML = '';
-                emptyState.style.display = 'block';
-                paginationContainer.innerHTML = '';
-                return;
-            }
-
-            emptyState.style.display = 'none';
-
-            // Calculate pagination
-            const totalPages = Math.ceil(salesData.length / ITEMS_PER_PAGE);
-            if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
-
-            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, salesData.length);
-            const pageData = salesData.slice(startIndex, endIndex);
-
-            tbody.innerHTML = pageData.map((record, i) => {
-                const actualIndex = startIndex + i;
-                return `
-                <tr>
-                    <td class="actions">
-                        <button class="btn btn-primary btn-sm" onclick="editRecord(${actualIndex})">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRecord(${actualIndex})">🗑️</button>
-                    </td>
-                    <td>${record.orderId}</td>
-                    <td>${record.orderDate}</td>
-                    <td>${record.orderStatus}</td>
-                    <td>${record.customerId}</td>
-                    <td>${record.customerSegment}</td>
-                    <td>${record.region}</td>
-                    <td>${record.country}</td>
-                    <td>${record.productCategory}</td>
-                    <td>${record.productName}</td>
-                    <td>${record.quantity}</td>
-                    <td>$${record.unitPrice.toFixed(2)}</td>
-                    <td>$${record.grossSales.toFixed(2)}</td>
-                    <td>${record.discountPercent}%</td>
-                    <td>$${record.netSales.toFixed(2)}</td>
-                    <td>$${record.profit.toFixed(2)}</td>
-                    <td>${record.profitMargin.toFixed(2)}%</td>
-                    <td>${record.salesChannel}</td>
-                    <td>${record.paymentMethod}</td>
-                    <td>${record.salesRepName}</td>
-                </tr>
-            `}).join('');
-
-            // Render pagination
-            renderPagination(totalPages);
-        }
-
-        function renderPagination(totalPages) {
-            const container = document.getElementById('paginationContainer');
-            if (totalPages <= 1) {
-                container.innerHTML = '';
-                return;
-            }
-
-            let html = '';
-
-            // Previous button
-            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀ السابق</button>`;
-
-            // Page numbers
-            const maxVisible = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-            if (endPage - startPage < maxVisible - 1) {
-                startPage = Math.max(1, endPage - maxVisible + 1);
-            }
-
-            if (startPage > 1) {
-                html += `<button onclick="goToPage(1)">1</button>`;
-                if (startPage > 2) html += `<span class="pagination-info">...</span>`;
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) html += `<span class="pagination-info">...</span>`;
-                html += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
-            }
-
-            // Next button
-            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}">التالي ▶</button>`;
-
-            // Info
-            html += `<span class="pagination-info">صفحة ${currentPage} من ${totalPages} (إجمالي: ${salesData.length.toLocaleString()} سجل)</span>`;
-
-            container.innerHTML = html;
-        }
-
-        function goToPage(page) {
-            currentPage = page;
-            renderTable();
-            // Scroll to table
-            document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function editRecord(index) {
-            const record = salesData[index];
-            editingIndex = index;
-
-            document.getElementById('orderId').value = record.orderId;
-            document.getElementById('orderDate').value = record.orderDate;
-            document.getElementById('shipDate').value = record.shipDate;
-            document.getElementById('deliveryDate').value = record.deliveryDate;
-            document.getElementById('orderStatus').value = record.orderStatus;
-            document.getElementById('customerId').value = record.customerId;
-            document.getElementById('customerSegment').value = record.customerSegment;
-            document.getElementById('region').value = record.region;
-            updateCountries();
-            document.getElementById('country').value = record.country;
-            document.getElementById('productCategory').value = record.productCategory;
-            updateProducts();
-            document.getElementById('productName').value = record.productName;
-            document.getElementById('quantity').value = record.quantity;
-            document.getElementById('unitPrice').value = record.unitPrice;
-            document.getElementById('discountPercent').value = record.discountPercent;
-            document.getElementById('costOfGoods').value = record.costOfGoods;
-            document.getElementById('salesChannel').value = record.salesChannel;
-            document.getElementById('paymentMethod').value = record.paymentMethod;
-
-            // Set sales rep
-            const salesRepSelect = document.getElementById('salesRep');
-            for (let i = 0; i < salesRepSelect.options.length; i++) {
-                try {
-                    const opt = JSON.parse(salesRepSelect.options[i].value);
-                    if (opt.id === record.salesRepId) {
-                        salesRepSelect.selectedIndex = i;
-                        break;
+                // Add Event Listeners
+                this.currentSchema.fields.forEach(field => {
+                    if (field.onChange) {
+                        const el = document.getElementById(field.id);
+                        el.addEventListener('change', (e) => {
+                            this.currentSchema.handlers[field.onChange](e.target.value, document.getElementById('dynamicForm').elements);
+                        });
+                        // Also trigger for input events for live calc
+                        if (field.type === 'number') {
+                            el.addEventListener('input', (e) => {
+                                this.currentSchema.handlers[field.onChange](e.target.value, document.getElementById('dynamicForm').elements);
+                            });
+                        }
                     }
-                } catch (e) { }
+                });
+            },
+
+            getFieldHTML: function (field) {
+                const req = field.required ? 'required' : '';
+                const ro = field.readonly ? 'readonly' : '';
+
+                if (field.type === 'select') {
+                    return `<select id="${field.id}" ${req} ${ro}>
+                        <option value="">اختر...</option>
+                        ${field.options ? field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('') : ''}
+                    </select>`;
+                }
+                return `<input type="${field.type === 'money' || field.type === 'percent' ? 'text' : field.type}" 
+                        id="${field.id}" ${req} ${ro} step="any">`;
+            },
+
+            populateSelect: function (id, options) {
+                const select = document.getElementById(id);
+                if (!select) return;
+                select.innerHTML = '<option value="">اختر...</option>' +
+                    options.map(o => `<option value="${o}">${o}</option>`).join('');
+            },
+
+            // --- DATA OPERATIONS ---
+            saveRecord: function () {
+                const form = document.getElementById('dynamicForm');
+                const record = {};
+
+                this.currentSchema.fields.forEach(f => {
+                    record[f.id] = document.getElementById(f.id).value;
+                });
+
+                if (this.editingIndex >= 0) {
+                    this.data[this.editingIndex] = record;
+                    this.editingIndex = -1;
+                    this.showToast('✅ تم التعديل بنجاح');
+                } else {
+                    this.data.push(record);
+                    this.orderCounter++;
+                    localStorage.setItem(`counter_${this.currentSchema.id}`, this.orderCounter);
+                    this.showToast('✅ تم الإضافة بنجاح');
+                }
+
+                this.saveToStorage();
+                this.renderTableBody();
+                this.updateStats();
+                this.resetForm();
+            },
+
+            saveToStorage: function () {
+                localStorage.setItem(`data_${this.currentSchema.id}`, JSON.stringify(this.data));
+            },
+
+            // --- TABLE & DISPLAY ---
+            renderTableHeaders: function () {
+                const thead = document.getElementById('tableHead');
+                const headers = ['الإجراءات', ...this.currentSchema.fields.map(f => f.label)];
+                thead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+            },
+
+            renderTableBody: function () {
+                const tbody = document.getElementById('tableBody');
+                const container = document.getElementById('paginationContainer');
+
+                if (this.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="100" style="text-align:center; padding: 50px;">📭 لا توجد بيانات</td></tr>';
+                    container.innerHTML = '';
+                    return;
+                }
+
+                const totalPages = Math.ceil(this.data.length / this.itemsPerPage);
+                if (this.currentPage > totalPages) this.currentPage = totalPages;
+
+                const start = (this.currentPage - 1) * this.itemsPerPage;
+                const pageData = this.data.slice(start, start + this.itemsPerPage);
+
+                tbody.innerHTML = pageData.map((row, i) => {
+                    const actualIndex = start + i;
+                    const cells = this.currentSchema.fields.map(f => `<td>${this.formatVal(row[f.id], f.type)}</td>`).join('');
+                    return `<tr>
+                        <td class="actions">
+                            <button class="btn btn-danger btn-sm" onclick="engine.deleteRecord(${actualIndex})">🗑️</button>
+                            <button class="btn btn-primary btn-sm" onclick="engine.editRecord(${actualIndex})">✏️</button>
+                        </td>
+                        ${cells}
+                    </tr>`;
+                }).join('');
+
+                this.renderPagination(totalPages);
+            },
+
+            formatVal: function (val, type) {
+                if (type === 'money') return val ? `$${Number(val).toFixed(2)}` : '';
+                if (type === 'percent') return val ? `${val}%` : '';
+                return val || '';
+            },
+
+            renderPagination: function (totalPages) {
+                const con = document.getElementById('paginationContainer');
+                if (totalPages <= 1) { con.innerHTML = ''; return; }
+
+                let html = `<button onclick="engine.goToPage(${this.currentPage - 1})" ${this.currentPage === 1 ? 'disabled' : ''}>◀</button>`;
+                html += `<span class="pagination-info">${this.currentPage} / ${totalPages}</span>`;
+                html += `<button onclick="engine.goToPage(${this.currentPage + 1})" ${this.currentPage === totalPages ? 'disabled' : ''}>▶</button>`;
+                con.innerHTML = html;
+            },
+
+            goToPage: function (p) {
+                this.currentPage = p;
+                this.renderTableBody();
+            },
+
+            // --- ACTIONS ---
+            editRecord: function (index) {
+                this.editingIndex = index;
+                const rec = this.data[index];
+
+                // Triggers generic fill
+                this.currentSchema.fields.forEach(f => {
+                    const el = document.getElementById(f.id);
+                    if (el) {
+                        // Handlers need to run to populate dependents 
+                        if (f.id === 'region') this.currentSchema.handlers.updateCountries(rec[f.id]);
+                        if (f.id === 'productCategory') this.currentSchema.handlers.updateProducts(rec[f.id]);
+
+                        el.value = rec[f.id];
+                    }
+                });
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                this.showToast('📝 وضع التعديل');
+            },
+
+            deleteRecord: function (index) {
+                if (confirm('حذف السجل؟')) {
+                    this.data.splice(index, 1);
+                    this.saveToStorage();
+                    this.renderTableBody();
+                    this.updateStats();
+                }
+            },
+
+            clearAll: function () {
+                if (confirm('حذف جميع البيانات؟')) {
+                    this.data = [];
+                    this.saveToStorage();
+                    this.renderTableBody();
+                    this.updateStats();
+                }
+            },
+
+            resetForm: function () {
+                document.getElementById('dynamicForm').reset();
+                this.editingIndex = -1;
+
+                // Defaults
+                if (this.currentSchema.id === 'sales') {
+                    const year = new Date().getFullYear();
+                    document.getElementById('orderId').value = `ORD-${year}-${String(this.orderCounter).padStart(5, '0')}`;
+                    document.getElementById('customerId').value = `CUST-${Math.floor(Math.random() * 9000) + 1000}`;
+                    document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+                }
+            },
+
+            updateStats: function () {
+                const con = document.getElementById('statsContainer');
+                // Generic simple stats for now
+                con.innerHTML = `
+                    <div class="stat-card">
+                        <div class="value">${this.data.length.toLocaleString()}</div>
+                        <div class="label">إجمالي السجلات</div>
+                    </div>
+                 `;
+            },
+
+            showToast: function (msg) {
+                const t = document.getElementById('toast');
+                t.textContent = msg;
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 3000);
+            },
+
+            // --- GENERATORS ---
+            autoFill: function () {
+                this.currentSchema.fields.forEach(f => {
+                    const el = document.getElementById(f.id);
+                    if (f.readonly && f.id !== 'grossSales') return; // Skip styling readonlys unless calc
+
+                    let val = '';
+                    if (f.options) {
+                        val = f.options[Math.floor(Math.random() * f.options.length)];
+                        // Trigger change
+                        if (f.onChange) this.currentSchema.handlers[f.onChange](val, document.getElementById('dynamicForm').elements);
+                    } else if (f.type === 'number') {
+                        val = Math.floor(Math.random() * 100) + 1;
+                    } else if (f.type === 'date') {
+                        val = new Date().toISOString().split('T')[0];
+                    }
+
+                    if (val !== '') el.value = val;
+                    el.classList.add('auto-filled');
+                    setTimeout(() => el.classList.remove('auto-filled'), 1000);
+                });
+
+                // Recalculate if needed
+                if (this.currentSchema.id === 'sales') {
+                    this.currentSchema.handlers.calculateTotals(document.getElementById('dynamicForm').elements);
+                }
+            },
+
+            generateBulk: async function (count) {
+                // For now, simple loop calling generic random logic
+                // Ideally this would be optimized, but this is a POC
+                this.showToast('⚠️ التوليد الجماعي قيد التطوير للنسخة العامة');
+            },
+
+            exportExcel: function () {
+                const ws = XLSX.utils.json_to_sheet(this.data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Data");
+                XLSX.writeFile(wb, `${this.currentSchema.id}_data.xlsx`);
+            },
+
+            searchTable: function (q) {
+                q = q.toLowerCase();
+                const rows = document.querySelectorAll('#tableBody tr');
+                rows.forEach(r => {
+                    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+                });
+            }
+        };
+
+        // Start App
+        document.addEventListener('DOMContentLoaded', () => {
+            // Migrate old data if exists to new key
+            const oldData = localStorage.getItem('salesData');
+            if (oldData && !localStorage.getItem('data_sales')) {
+                localStorage.setItem('data_sales', oldData);
             }
 
-            calculateTotals();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            showToast('📝 جاري تعديل السجل...');
-        }
-
-        function deleteRecord(index) {
-            if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
-                salesData.splice(index, 1);
-                localStorage.setItem('salesData', JSON.stringify(salesData));
-                renderTable();
-                updateStats();
-                showToast('🗑️ تم حذف السجل');
-            }
-        }
-
-        function clearAllData() {
-            if (confirm('هل أنت متأكد من حذف جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه.')) {
-                salesData = [];
-                localStorage.removeItem('salesData');
-                renderTable();
-                updateStats();
-                showToast('🗑️ تم حذف جميع البيانات');
-            }
-        }
-
-        function updateStats() {
-            const totalOrders = salesData.length;
-            const totalSales = salesData.reduce((sum, r) => sum + r.netSales, 0);
-            const totalProfit = salesData.reduce((sum, r) => sum + r.profit, 0);
-            const countries = new Set(salesData.map(r => r.country)).size;
-
-            document.getElementById('totalOrders').textContent = totalOrders.toLocaleString();
-            document.getElementById('totalSales').textContent = `$${totalSales.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-            document.getElementById('totalProfit').textContent = `$${totalProfit.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-            document.getElementById('totalCountries').textContent = countries;
-        }
-
-        function searchTable(query) {
-            const rows = document.querySelectorAll('#tableBody tr');
-            query = query.toLowerCase();
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
-        }
-
-        function exportToExcel() {
-            if (salesData.length === 0) {
-                showToast('❌ لا توجد بيانات للتصدير');
-                return;
-            }
-
-            // Prepare main data sheet
-            const excelData = salesData.map(r => ({
-                'Order_ID': r.orderId,
-                'Order_Date': r.orderDate,
-                'Ship_Date': r.shipDate || '',
-                'Delivery_Date': r.deliveryDate || '',
-                'Order_Status': r.orderStatus,
-                'Customer_ID': r.customerId,
-                'Customer_Segment': r.customerSegment,
-                'Region': r.region,
-                'Country': r.country,
-                'Product_Category': r.productCategory,
-                'Product_Name': r.productName,
-                'Quantity': r.quantity,
-                'Unit_Price': r.unitPrice,
-                'Gross_Sales': r.grossSales,
-                'Discount_Percent': r.discountPercent,
-                'Discount_Amount': r.discountAmount,
-                'Net_Sales': r.netSales,
-                'Cost_of_Goods': r.costOfGoods,
-                'Profit': r.profit,
-                'Profit_Margin_Percent': r.profitMargin,
-                'Sales_Channel': r.salesChannel,
-                'Payment_Method': r.paymentMethod,
-                'Sales_Rep_ID': r.salesRepId,
-                'Sales_Rep_Name': r.salesRepName
-            }));
-
-            // Summary data
-            const totalGross = salesData.reduce((s, r) => s + r.grossSales, 0);
-            const totalNet = salesData.reduce((s, r) => s + r.netSales, 0);
-            const totalProfit = salesData.reduce((s, r) => s + r.profit, 0);
-            const avgMargin = salesData.reduce((s, r) => s + r.profitMargin, 0) / salesData.length;
-            const countries = new Set(salesData.map(r => r.country)).size;
-            const products = new Set(salesData.map(r => r.productName)).size;
-            const reps = new Set(salesData.map(r => r.salesRepId)).size;
-            const dates = salesData.map(r => r.orderDate).sort();
-
-            const summaryData = [
-                { Metric: 'Total Records', Value: salesData.length },
-                { Metric: 'Total Customers', Value: new Set(salesData.map(r => r.customerId)).size },
-                { Metric: 'Total Orders', Value: salesData.length },
-                { Metric: 'Date Range', Value: `${dates[0]} to ${dates[dates.length - 1]}` },
-                { Metric: 'Total Gross Sales', Value: `$${totalGross.toFixed(2)}` },
-                { Metric: 'Total Net Sales', Value: `$${totalNet.toFixed(2)}` },
-                { Metric: 'Total Profit', Value: `$${totalProfit.toFixed(2)}` },
-                { Metric: 'Average Profit Margin %', Value: `${avgMargin.toFixed(2)}%` },
-                { Metric: 'Number of Regions', Value: new Set(salesData.map(r => r.region)).size },
-                { Metric: 'Number of Countries', Value: countries },
-                { Metric: 'Number of Products', Value: products },
-                { Metric: 'Number of Sales Reps', Value: reps }
-            ];
-
-            // Create workbook
-            const wb = XLSX.utils.book_new();
-
-            // Add Sales Data sheet
-            const ws1 = XLSX.utils.json_to_sheet(excelData);
-            XLSX.utils.book_append_sheet(wb, ws1, 'Sales_Data');
-
-            // Add Summary sheet
-            const ws2 = XLSX.utils.json_to_sheet(summaryData);
-            XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
-
-            // Download
-            const fileName = `Global_Sales_Data_${new Date().toISOString().split('T')[0]}.xlsx`;
-            XLSX.writeFile(wb, fileName);
-
-            showToast('✅ تم تصدير الملف بنجاح');
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
+            engine.init('sales');
+        });
     </script>
 </body>
 

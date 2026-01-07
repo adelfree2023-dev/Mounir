@@ -327,6 +327,21 @@
         <div class="header">
             <h1 id="appTitle">📊 نظام البيانات العالمي</h1>
             <p id="appDesc">منصة إدارة بيانات متعددة الأغراض</p>
+
+            <div
+                style="margin-top: 20px; display: inline-block; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 10px;">
+                <select id="schemaSelector" onchange="engine.init(this.value)"
+                    style="padding: 10px 20px; border-radius: 8px; border: none; font-size: 1.1rem; background: var(--bg-input); color: white; cursor: pointer; min-width: 300px;">
+                    <optgroup label="🏢 Business - أعمال">
+                        <option value="sales">💰 Sales - المبيعات</option>
+                        <option value="employees">👥 Employees - الموظفين</option>
+                        <option value="inventory">📦 Inventory - إدارة المخازن</option>
+                    </optgroup>
+                    <option disabled>CRM - العملاء</option>
+                    <option disabled>Marketing - التسويق</option>
+                    </optgroup>
+                </select>
+            </div>
         </div>
 
         <!-- Stats -->
@@ -465,6 +480,64 @@
                         form['profitMargin'].value = margin.toFixed(2);
                     }
                 }
+            },
+
+            employees: {
+                id: 'employees',
+                title: 'نظام إدارة الموارد البشرية HR',
+                desc: 'إدارة سجلات الموظفين، الرواتب، والأقسام',
+                fields: [
+                    { id: 'empId', label: 'رقم الموظف', type: 'text', readonly: true },
+                    { id: 'fullName', label: 'الاسم رباعي', type: 'text' },
+                    { id: 'department', label: 'القسم', type: 'select', options: ['HR', 'IT', 'Marketing', 'Sales', 'Finance', 'Operations'] },
+                    { id: 'position', label: 'المسمى الوظيفي', type: 'select', options: ['Manager', 'Senior Developer', 'Junior Developer', 'Accountant', 'HR Specialist', 'Sales Rep'] },
+                    { id: 'joinDate', label: 'تاريخ التعيين', type: 'date' },
+                    { id: 'contractType', label: 'نوع العقد', type: 'select', options: ['Full Time', 'Part Time', 'Freelance', 'Contract'] },
+                    { id: 'basicSalary', label: 'الراتب الأساسي', type: 'number', required: true, onChange: 'calcSalary' },
+                    { id: 'incentives', label: 'الحوافز', type: 'number', onChange: 'calcSalary' },
+                    { id: 'deductions', label: 'الاستقطاعات', type: 'number', onChange: 'calcSalary' },
+                    { id: 'netSalary', label: 'صافي الراتب', type: 'money', readonly: true },
+                    { id: 'status', label: 'الحالة', type: 'select', options: ['Active', 'On Leave', 'Resigned', 'Terminated'] }
+                ],
+                config: {},
+                handlers: {
+                    calcSalary: (val, form) => {
+                        const basic = parseFloat(form['basicSalary'].value) || 0;
+                        const inc = parseFloat(form['incentives'].value) || 0;
+                        const ded = parseFloat(form['deductions'].value) || 0;
+                        form['netSalary'].value = (basic + inc - ded).toFixed(2);
+                    }
+                }
+            },
+
+            inventory: {
+                id: 'inventory',
+                title: 'نظام إدارة المخازن والمستودعات',
+                desc: 'تتبع المخزون، حركة الأصناف، وتقييم الأصول',
+                fields: [
+                    { id: 'sku', label: 'كود الصنف (SKU)', type: 'text', readonly: true },
+                    { id: 'itemName', label: 'اسم الصنف', type: 'text', required: true },
+                    { id: 'category', label: 'التصنيف', type: 'select', options: ['Raw Materials', 'Finished Goods', 'Packaging', 'Spares', 'Electronics'] },
+                    { id: 'warehouse', label: 'المستودع', type: 'select', options: ['Main Warehouse', 'Distribution Center', 'Retail Store', 'Cold Storage'] },
+                    { id: 'binLocation', label: 'موقع التخزين (Ref)', type: 'text' },
+                    { id: 'unit', label: 'وحدة القياس', type: 'select', options: ['Pcs', 'Kg', 'Box', 'Liter', 'Meter'] },
+                    { id: 'qtyOnHand', label: 'الكمية الحالية', type: 'number', required: true, onChange: 'calcVal' },
+                    { id: 'minLevel', label: 'حد الطلب', type: 'number' },
+                    { id: 'maxLevel', label: 'الحد الأقصى', type: 'number' },
+                    { id: 'unitCost', label: 'تكلفة الوحدة', type: 'number', required: true, onChange: 'calcVal' },
+                    { id: 'totalValue', label: 'إجمالي القيمة', type: 'money', readonly: true },
+                    { id: 'status', label: 'الحالة', type: 'select', options: ['In Stock', 'Low Stock', 'Out of Stock', 'Discontinued'] },
+                    { id: 'lastRestock', label: 'آخر توريد', type: 'date' },
+                    { id: 'supplier', label: 'المورد', type: 'select', options: ['TechImport Ltd', 'Global Supplies', 'Local Traders', 'Factory Direct'] }
+                ],
+                config: {},
+                handlers: {
+                    calcVal: (val, form) => {
+                        const qty = parseFloat(form['qtyOnHand'].value) || 0;
+                        const cost = parseFloat(form['unitCost'].value) || 0;
+                        form['totalValue'].value = (qty * cost).toFixed(2);
+                    }
+                }
             }
         };
 
@@ -478,7 +551,14 @@
             orderCounter: 1,
 
             init: function (schemaId) {
+                // Switch Schema Logic
+                if (this.currentSchema && this.currentSchema.id === schemaId) return;
+
                 this.currentSchema = AppSchemas[schemaId];
+
+                // Update dropdown if not matches (e.g. on first load)
+                document.getElementById('schemaSelector').value = schemaId;
+
                 this.loadData();
                 this.renderUI();
 
@@ -487,8 +567,12 @@
                     this.populateSelect('salesRepName', this.currentSchema.config.salesReps);
                 }
 
-                // Submit Handler
-                document.getElementById('dynamicForm').onsubmit = (e) => {
+                // Submit Handler (Remove old listener to avoid duplicates if any)
+                const oldForm = document.getElementById('dynamicForm');
+                const newForm = oldForm.cloneNode(true);
+                oldForm.parentNode.replaceChild(newForm, oldForm);
+
+                newForm.onsubmit = (e) => {
                     e.preventDefault();
                     this.saveRecord();
                 };
@@ -693,9 +777,28 @@
                 // Defaults
                 if (this.currentSchema.id === 'sales') {
                     const year = new Date().getFullYear();
-                    document.getElementById('orderId').value = `ORD-${year}-${String(this.orderCounter).padStart(5, '0')}`;
-                    document.getElementById('customerId').value = `CUST-${Math.floor(Math.random() * 9000) + 1000}`;
-                    document.getElementById('orderDate').value = new Date().toISOString().split('T')[0];
+                    const el = document.getElementById('orderId');
+                    if (el) el.value = `ORD-${year}-${String(this.orderCounter).padStart(5, '0')}`;
+
+                    const cust = document.getElementById('customerId');
+                    if (cust) cust.value = `CUST-${Math.floor(Math.random() * 9000) + 1000}`;
+
+                    const date = document.getElementById('orderDate');
+                    if (date) date.value = new Date().toISOString().split('T')[0];
+                }
+                else if (this.currentSchema.id === 'employees') {
+                    const el = document.getElementById('empId');
+                    if (el) el.value = `EMP-${String(this.orderCounter).padStart(4, '0')}`;
+
+                    const date = document.getElementById('joinDate');
+                    if (date) date.value = new Date().toISOString().split('T')[0];
+                }
+                else if (this.currentSchema.id === 'inventory') {
+                    const el = document.getElementById('sku');
+                    if (el) el.value = `SKU-${Math.floor(Math.random() * 100000) + 1000}`;
+
+                    const date = document.getElementById('lastRestock');
+                    if (date) date.value = new Date().toISOString().split('T')[0];
                 }
             },
 
@@ -721,34 +824,127 @@
             autoFill: function () {
                 this.currentSchema.fields.forEach(f => {
                     const el = document.getElementById(f.id);
-                    if (f.readonly && f.id !== 'grossSales') return; // Skip styling readonlys unless calc
+                    if (!el || (f.readonly && f.id !== 'grossSales' && f.id !== 'netSalary' && f.id !== 'totalValue')) return;
 
                     let val = '';
                     if (f.options) {
                         val = f.options[Math.floor(Math.random() * f.options.length)];
-                        // Trigger change
-                        if (f.onChange) this.currentSchema.handlers[f.onChange](val, document.getElementById('dynamicForm').elements);
                     } else if (f.type === 'number') {
                         val = Math.floor(Math.random() * 100) + 1;
                     } else if (f.type === 'date') {
-                        val = new Date().toISOString().split('T')[0];
+                        const d = new Date(new Date().getTime() - Math.random() * 10000000000);
+                        val = d.toISOString().split('T')[0];
+                    } else if (f.id === 'fullName' || f.id === 'itemName') {
+                        val = `Item ${Math.floor(Math.random() * 1000)}`;
+                        if (f.id === 'fullName') val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
                     }
 
-                    if (val !== '') el.value = val;
-                    el.classList.add('auto-filled');
-                    setTimeout(() => el.classList.remove('auto-filled'), 1000);
-                });
+                    if (f.onChange) {
+                        // We need to set val and trigger custom logic manually or simulate event
+                        if (el) { el.value = val; this.currentSchema.handlers[f.onChange](val, document.getElementById('dynamicForm').elements); }
+                    } else {
+                        if (el) el.value = val;
+                    }
 
-                // Recalculate if needed
-                if (this.currentSchema.id === 'sales') {
-                    this.currentSchema.handlers.calculateTotals(document.getElementById('dynamicForm').elements);
-                }
+                    if (el) {
+                        el.classList.add('auto-filled');
+                        setTimeout(() => el.classList.remove('auto-filled'), 1000);
+                    }
+                });
             },
 
             generateBulk: async function (count) {
-                // For now, simple loop calling generic random logic
-                // Ideally this would be optimized, but this is a POC
-                this.showToast('⚠️ التوليد الجماعي قيد التطوير للنسخة العامة');
+                const progressBar = document.getElementById('progressBar');
+                const progress = document.getElementById('progress');
+                const progressText = document.getElementById('progressText');
+
+                progressBar.style.display = 'block';
+                progressText.style.display = 'block';
+                progress.style.width = '0%';
+
+                const batchSize = 100;
+                let added = 0;
+
+                // Create a virtual form context to reuse handlers
+                const virtualForm = {};
+
+                for (let i = 0; i < count; i++) {
+                    const record = {};
+
+                    // Generate basic fields
+                    this.currentSchema.fields.forEach(f => {
+                        let val = '';
+                        if (f.options) {
+                            val = f.options[Math.floor(Math.random() * f.options.length)];
+                        } else if (f.type === 'number') {
+                            val = Math.floor(Math.random() * 500) + 10;
+                            if (f.id === 'basicSalary') val = 3000 + Math.floor(Math.random() * 5000);
+                        } else if (f.type === 'date') {
+                            val = new Date(2023, 0, 1 + Math.floor(Math.random() * 365)).toISOString().split('T')[0];
+                        } else if (f.id === 'fullName') {
+                            val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
+                        } else if (f.id === 'itemName') {
+                            val = `Product ${Math.floor(Math.random() * 1000)}`;
+                        }
+
+                        // Auto-IDs
+                        if (f.id === 'orderId') val = `ORD-${2024}-${String(this.orderCounter + i).padStart(5, '0')}`;
+                        if (f.id === 'empId') val = `EMP-${String(this.orderCounter + i).padStart(4, '0')}`;
+                        if (f.id === 'sku') val = `SKU-${Math.floor(Math.random() * 100000)}`;
+                        if (f.id === 'customerId') val = `CUST-${Math.floor(Math.random() * 9000) + 1000}`;
+
+                        record[f.id] = val;
+                        // Populate virtual form for calculations
+                        virtualForm[f.id] = { value: val };
+                    });
+
+                    // Run calculations
+                    this.currentSchema.fields.forEach(f => {
+                        if (f.onChange && this.currentSchema.handlers[f.onChange]) {
+                            // Create a proxy to simulate form elements
+                            const handler = this.currentSchema.handlers[f.onChange];
+                            // We need a way to set the calculated output back to 'record'
+                            // This is a bit tricky without DOM. 
+                            // Simplified approach: Custom logic per schema for bulk
+                            if (this.currentSchema.id === 'sales') {
+                                const q = record['quantity']; const p = record['unitPrice']; const d = record['discountPercent']; const c = record['costOfGoods'] || (q * p * 0.6);
+                                record['grossSales'] = (q * p).toFixed(2);
+                                record['discountAmount'] = (q * p * d / 100).toFixed(2);
+                                record['netSales'] = (q * p - q * p * d / 100).toFixed(2);
+                                record['costOfGoods'] = c.toFixed(2);
+                                record['profit'] = (parseFloat(record['netSales']) - c).toFixed(2);
+                                record['profitMargin'] = (parseFloat(record['profit']) / parseFloat(record['netSales']) * 100).toFixed(2);
+                            } else if (this.currentSchema.id === 'employees') {
+                                const b = record['basicSalary']; const inc = record['incentives'] || 0; const ded = record['deductions'] || 0;
+                                record['netSalary'] = (b + inc - ded).toFixed(2);
+                            } else if (this.currentSchema.id === 'inventory') {
+                                record['totalValue'] = (record['qtyOnHand'] * record['unitCost']).toFixed(2);
+                            }
+                        }
+                    });
+
+                    this.data.push(record);
+                    added++;
+
+                    if (added % batchSize === 0 || added === count) {
+                        const percent = Math.round((added / count) * 100);
+                        progress.style.width = percent + '%';
+                        progressText.textContent = `${added.toLocaleString()} / ${count.toLocaleString()}`;
+                        await new Promise(r => setTimeout(r, 0));
+                    }
+                }
+
+                this.orderCounter += count;
+                localStorage.setItem(`counter_${this.currentSchema.id}`, this.orderCounter);
+                this.saveToStorage();
+                this.renderTableBody();
+                this.updateStats();
+
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    progressText.style.display = 'none';
+                    this.showToast(`✅ تم إضافة ${count} سجل!`);
+                }, 500);
             },
 
             exportExcel: function () {

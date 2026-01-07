@@ -283,21 +283,35 @@ const engine = {
     },
 
     // --- GENERATORS ---
-    autoFill: function () {
-        this.currentSchema.fields.forEach(f => {
+    autoFill: async function () {
+        // Iterate twice: 
+        // 1. Independent fields (trigger dependencies)
+        // 2. Dependent fields (now populated)
+
+        const independentFields = this.currentSchema.fields.filter(f => !['country', 'productName'].includes(f.id));
+        const dependentFields = this.currentSchema.fields.filter(f => ['country', 'productName'].includes(f.id));
+
+        const processField = async (f) => {
             const el = document.getElementById(f.id);
             if (!el || (f.readonly && !f.id.includes('total') && !f.id.includes('Sales') && !f.id.includes('Salary') && f.id !== 'workingHours')) return;
 
             let val = '';
-            if (f.options) {
-                val = f.options[Math.floor(Math.random() * f.options.length)];
+
+            // Check DOM options if schema options empty (for dependent fields)
+            let opts = f.options;
+            if ((!opts || opts.length === 0) && el.tagName === 'SELECT') {
+                opts = Array.from(el.options).map(o => o.value).filter(v => v);
+            }
+
+            if (opts && opts.length > 0) {
+                val = opts[Math.floor(Math.random() * opts.length)];
             } else if (f.type === 'number') {
                 val = Math.floor(Math.random() * 100) + 1;
             } else if (f.type === 'time') {
                 const h = String(Math.floor(Math.random() * 9) + 8).padStart(2, '0');
                 const m = String(Math.floor(Math.random() * 60)).padStart(2, '0');
                 val = `${h}:${m}`;
-                if (f.id === 'checkOut') val = '17:00'; // Simply default for calculation demo
+                if (f.id === 'checkOut') val = '17:00';
             } else if (f.type === 'date') {
                 val = new Date().toISOString().split('T')[0];
             } else if (f.type === 'text' && (f.id.includes('Name') || f.id.includes('tech') || f.id.includes('contact'))) {
@@ -309,8 +323,12 @@ const engine = {
             }
 
             if (f.onChange) {
-                // We need to set val and trigger custom logic manually or simulate event
-                if (el) { el.value = val; this.handleFieldChange(f.id); }
+                if (el) {
+                    el.value = val;
+                    this.handleFieldChange(f.id);
+                    // Wait for handler to populate dependents
+                    await new Promise(r => setTimeout(r, 50));
+                }
             } else {
                 if (el) el.value = val;
             }
@@ -319,7 +337,10 @@ const engine = {
                 el.classList.add('auto-filled');
                 setTimeout(() => el.classList.remove('auto-filled'), 1000);
             }
-        });
+        };
+
+        for (const f of independentFields) await processField(f);
+        for (const f of dependentFields) await processField(f);
     },
 
     generateBulk: async function (count) {

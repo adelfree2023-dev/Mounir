@@ -389,5 +389,104 @@ const AppSchemas = {
         ],
         config: {},
         handlers: {}
+    },
+
+    // --- PHASE 3: IT & TECH ---
+    it_inventory: {
+        id: 'it_inventory',
+        title: 'إدارة الأصول التقنية IT Assets',
+        desc: 'تتبع الأجهزة، العهد، والصيانة',
+        fields: [
+            { id: 'tagId', label: 'رقم الأصل (Tag ID)', type: 'text', readonly: true },
+            { id: 'type', label: 'نوع الجهاز', type: 'select', options: ['Laptop', 'Desktop', 'Monitor', 'Printer', 'Scanner', 'Server', 'Networking'] },
+            { id: 'brand', label: 'الماركة', type: 'select', options: ['Dell', 'HP', 'Lenovo', 'Apple', 'Cisco', 'Samsung'] },
+            { id: 'model', label: 'الموديل', type: 'text', required: true },
+            { id: 'serial', label: 'الرقم التسلسلي', type: 'text', required: true },
+            { id: 'assignedTo', label: 'مسؤول العهدة (الموظف)', type: 'text' },
+            { id: 'purchaseDate', label: 'تاريخ الشراء', type: 'date' },
+            { id: 'warrantyExp', label: 'انتهاء الضمان', type: 'date' },
+            { id: 'cost', label: 'التكلفة', type: 'money' },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['In Use', 'In Stock', 'Under Repair', 'Retired', 'Lost'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    software_licenses: {
+        id: 'software_licenses',
+        title: 'تراخيص البرامج Software Licenses',
+        desc: 'إدارة اشتراكات البرمجيات وتواريخ التجديد',
+        fields: [
+            { id: 'licenseId', label: 'رقم الترخيص', type: 'text', readonly: true },
+            { id: 'softwareName', label: 'اسم البرنامج', type: 'text', required: true },
+            { id: 'vendor', label: 'الشركة المنتجة', type: 'text' },
+            { id: 'type', label: 'نوع الترخيص', type: 'select', options: ['SaaS Subscription', 'Perpetual', 'Open Source', 'Enterprise'] },
+            { id: 'seats', label: 'عدد المستخدمين', type: 'number' },
+            { id: 'key', label: 'مفتاح التفعيل', type: 'text' },
+            { id: 'purchaseDate', label: 'تاريخ الشراء', type: 'date' },
+            { id: 'expiryDate', label: 'تاريخ التجديد', type: 'date', required: true },
+            { id: 'cost', label: 'التكلفة السنوية', type: 'money' },
+            { id: 'status', label: 'حالة الترخيص', type: 'select', options: ['Active', 'Expired', 'Near Expiry', 'Cancelled'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    it_tickets: {
+        id: 'it_tickets',
+        title: 'تذاكر الدعم الفني IT Helpdesk',
+        desc: 'الدعم الفني الداخلي ومتابعة المشاكل التقنية',
+        fields: [
+            { id: 'ticketId', label: 'رقم التذكرة', type: 'text', readonly: true },
+            { id: 'requester', label: 'مقدم الطلب', type: 'text', required: true },
+            { id: 'department', label: 'القسم', type: 'select', options: ['Sales', 'HR', 'Finance', 'Marketing', 'Ops'] },
+            { id: 'category', label: 'التصنيف', type: 'select', options: ['Hardware', 'Software', 'Network', 'Email', 'Access', 'Security'] },
+            { id: 'priority', label: 'الأولوية', type: 'select', options: ['High', 'Medium', 'Low', 'Critical'] },
+            { id: 'subject', label: 'الموضوع', type: 'text', required: true },
+            { id: 'assignedAgent', label: 'الفني المسؤول', type: 'text' },
+            { id: 'createdDate', label: 'تاريخ الإنشاء', type: 'date' },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Open', 'In Progress', 'Waiting User', 'Resolved', 'Closed'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    server_status: {
+        id: 'server_status',
+        title: 'حالة السيرفرات Server Status',
+        desc: 'مراقبة البنية التحتية والسيرفرات',
+        fields: [
+            { id: 'serverId', label: 'رقم السيرفر (ID)', type: 'text', readonly: true },
+            { id: 'hostname', label: 'اسم المضيف (Hostname)', type: 'text', required: true },
+            { id: 'ipAddress', label: 'عنوان IP', type: 'text' },
+            { id: 'os', label: 'نظام التشغيل', type: 'select', options: ['Windows Server 2022', 'Ubuntu 22.04', 'CentOS 8', 'RedHat', 'Debian'] },
+            { id: 'location', label: 'الموقع', type: 'select', options: ['On-Premise', 'AWS', 'Azure', 'Google Cloud', 'DigitalOcean'] },
+            { id: 'cpuUsage', label: 'استهلاك المعالج %', type: 'percent' },
+            { id: 'ramUsage', label: 'استهلاك الرام %', type: 'percent' },
+            { id: 'diskUsage', label: 'استهلاك القرص %', type: 'percent' },
+            { id: 'uptime', label: 'وقت التشغيل (أيام)', type: 'number' },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Online', 'Offline', 'Maintenance', 'Degraded', 'Critical'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    access_logs: {
+        id: 'access_logs',
+        title: 'سجلات الدخول Access Logs',
+        desc: 'مراقبة أمن المعلومات وصلاحيات الدخول',
+        fields: [
+            { id: 'logId', label: 'رقم السجل', type: 'text', readonly: true },
+            { id: 'userId', label: 'رقم المستخدم', type: 'text' },
+            { id: 'username', label: 'اسم المستخدم', type: 'text' },
+            { id: 'system', label: 'النظام', type: 'select', options: ['ERP', 'CRM', 'Email', 'VPN', 'File Server'] },
+            { id: 'action', label: 'الحدث', type: 'select', options: ['Login', 'Logout', 'Failed Login', 'Password Change', 'File Access'] },
+            { id: 'timestamp', label: 'الوقت والتاريخ', type: 'text' }, // We'll auto-fill generic TS
+            { id: 'ipAddress', label: 'عنوان IP المصدر', type: 'text' },
+            { id: 'riskLevel', label: 'مستوى الخطورة', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'] },
+            { id: 'status', label: 'النتيجة', type: 'select', options: ['Success', 'Failure', 'Blocked'] }
+        ],
+        config: {},
+        handlers: {}
     }
 };

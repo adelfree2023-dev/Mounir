@@ -410,6 +410,49 @@
             transform: translateX(0);
         }
 
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border: 2px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0 15px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
@@ -707,6 +750,7 @@
                 <h3>لا توجد بيانات بعد</h3>
                 <p>ابدأ بإضافة سجلات مبيعات جديدة</p>
             </div>
+            <div id="paginationContainer" class="pagination"></div>
         </div>
     </div>
 
@@ -758,6 +802,10 @@
         let salesData = JSON.parse(localStorage.getItem('salesData')) || [];
         let orderCounter = parseInt(localStorage.getItem('orderCounter')) || 1;
         let editingIndex = -1;
+
+        // Pagination
+        const ITEMS_PER_PAGE = 25;
+        let currentPage = 1;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function () {
@@ -1090,19 +1138,33 @@
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             const emptyState = document.getElementById('emptyState');
+            const paginationContainer = document.getElementById('paginationContainer');
 
             if (salesData.length === 0) {
                 tbody.innerHTML = '';
                 emptyState.style.display = 'block';
+                paginationContainer.innerHTML = '';
                 return;
             }
 
             emptyState.style.display = 'none';
-            tbody.innerHTML = salesData.map((record, index) => `
+
+            // Calculate pagination
+            const totalPages = Math.ceil(salesData.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, salesData.length);
+            const pageData = salesData.slice(startIndex, endIndex);
+
+            tbody.innerHTML = pageData.map((record, i) => {
+                const actualIndex = startIndex + i;
+                return `
                 <tr>
                     <td class="actions">
-                        <button class="btn btn-primary btn-sm" onclick="editRecord(${index})">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRecord(${index})">🗑️</button>
+                        <button class="btn btn-primary btn-sm" onclick="editRecord(${actualIndex})">✏️</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord(${actualIndex})">🗑️</button>
                     </td>
                     <td>${record.orderId}</td>
                     <td>${record.orderDate}</td>
@@ -1124,7 +1186,60 @@
                     <td>${record.paymentMethod}</td>
                     <td>${record.salesRepName}</td>
                 </tr>
-            `).join('');
+            `}).join('');
+
+            // Render pagination
+            renderPagination(totalPages);
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('paginationContainer');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // Previous button
+            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀ السابق</button>`;
+
+            // Page numbers
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            if (endPage - startPage < maxVisible - 1) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+
+            if (startPage > 1) {
+                html += `<button onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) html += `<span class="pagination-info">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="pagination-info">...</span>`;
+                html += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            // Next button
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}">التالي ▶</button>`;
+
+            // Info
+            html += `<span class="pagination-info">صفحة ${currentPage} من ${totalPages} (إجمالي: ${salesData.length.toLocaleString()} سجل)</span>`;
+
+            container.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderTable();
+            // Scroll to table
+            document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth' });
         }
 
         function editRecord(index) {

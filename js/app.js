@@ -13,9 +13,13 @@ const engine = {
 
         this.currentSchema = AppSchemas[schemaId];
 
-        // Update dropdown if not matches (e.g. on first load)
-        const selector = document.getElementById('schemaSelector');
-        if (selector) selector.value = schemaId;
+        // Update dropdown UI text if custom select is used
+        const trigger = document.querySelector('.custom-select__trigger span');
+        if (trigger) trigger.textContent = this.currentSchema.title;
+
+        // Close dropdown
+        const select = document.querySelector('.custom-select');
+        if (select) select.classList.remove('open');
 
         this.loadData();
         this.renderUI();
@@ -318,8 +322,16 @@ const engine = {
                 if (f.id === 'checkOut') val = '17:00';
             } else if (f.type === 'date') {
                 val = new Date().toISOString().split('T')[0];
-            } else if (f.type === 'text' && (f.id.includes('Name') || f.id.includes('tech') || f.id.includes('contact'))) {
-                val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
+            } else if (f.type === 'text') {
+                if (f.id.toLowerCase().includes('name') || f.id.includes('tech') || f.id.includes('contact') || f.id.includes('passenger') || f.id.includes('guest') || f.id.includes('buyer') || f.id.includes('owner')) {
+                    val = ['Ahmed Ali', 'Mohamed Salem', 'Sarah Jones', 'Lina Smith', 'Hassan Kamel'][Math.floor(Math.random() * 5)];
+                } else if (f.id.includes('venue') || f.id.includes('address') || f.id.includes('location') || f.id.includes('hall')) {
+                    val = ['Cairo Main Center', 'Giza Plaza', 'Alex Corniche', 'Downtown Mall', 'Smart Village'][Math.floor(Math.random() * 5)];
+                } else if (f.id.includes('title') || f.id.includes('subject')) {
+                    val = ['New Project Launch', 'Monthly Meeting', 'Annual Review', 'Urgent Fix'][Math.floor(Math.random() * 4)];
+                } else {
+                    val = `Sample ${f.label} ${Math.floor(Math.random() * 100)}`;
+                }
             } else if (f.id === 'phone') {
                 val = '01' + Math.floor(Math.random() * 100000000);
             } else if (f.id === 'email') {
@@ -459,8 +471,35 @@ const engine = {
         rows.forEach(r => {
             r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
         });
+    },
+
+    generateCustomBulk: function () {
+        const input = document.getElementById('customBulkCount');
+        const count = parseInt(input.value);
+        if (count > 0) {
+            this.generateBulk(count);
+        } else {
+            this.showToast('❌ يرجى إدخال رقم صحيح');
+        }
     }
 };
+
+// Handlers for Custom Select
+window.toggleSelect = function () {
+    document.querySelector('.custom-select').classList.toggle('open');
+}
+
+window.selectOption = function (val) {
+    engine.init(val);
+}
+
+// Close select if clicked outside
+window.addEventListener('click', function (e) {
+    const select = document.querySelector('.custom-select');
+    if (select && !select.contains(e.target)) {
+        select.classList.remove('open');
+    }
+});
 
 // Start App
 document.addEventListener('DOMContentLoaded', () => {

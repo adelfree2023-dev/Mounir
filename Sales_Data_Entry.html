@@ -332,13 +332,23 @@
                 style="margin-top: 20px; display: inline-block; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 10px;">
                 <select id="schemaSelector" onchange="engine.init(this.value)"
                     style="padding: 10px 20px; border-radius: 8px; border: none; font-size: 1.1rem; background: var(--bg-input); color: white; cursor: pointer; min-width: 300px;">
-                    <optgroup label="🏢 Business - أعمال">
+                    <optgroup label="🏢 Core Business (Phase 1)">
                         <option value="sales">💰 Sales - المبيعات</option>
                         <option value="employees">👥 Employees - الموظفين</option>
-                        <option value="inventory">📦 Inventory - إدارة المخازن</option>
+                        <option value="attendance">🕒 Attendance - الحضور والانصراف</option>
+                        <option value="customers">🤝 Customers - العملاء</option>
+                        <option value="purchasing">🛒 Purchasing - المشتريات</option>
+                        <option value="suppliers">🚚 Suppliers - الموردين</option>
+                        <option value="inventory">📦 Inventory - المخازن</option>
+                        <option value="finance">💵 Finance - المالية</option>
+                        <option value="support">🎧 Support - خدمة العملاء</option>
+                        <option value="operations">⚙️ Operations - العمليات والصيانة</option>
                     </optgroup>
-                    <option disabled>CRM - العملاء</option>
-                    <option disabled>Marketing - التسويق</option>
+                    <optgroup label="🔮 Future Phases - مراحل قادمة">
+                        <option disabled>Marketing - التسويق (Phase 2)</option>
+                        <option disabled>IT & Tech - التقنية (Phase 3)</option>
+                        <option disabled>Education - التعليم (Phase 4)</option>
+                        <option disabled>Services - خدمات (Phase 5)</option>
                     </optgroup>
                 </select>
             </div>
@@ -512,32 +522,163 @@
 
             inventory: {
                 id: 'inventory',
-                title: 'نظام إدارة المخازن والمستودعات',
-                desc: 'تتبع المخزون، حركة الأصناف، وتقييم الأصول',
+                title: 'نظام إدارة المخازن Inventory',
+                desc: 'تتبع المخزون، حركة الأصناف، وإعادة الطلب',
                 fields: [
-                    { id: 'sku', label: 'كود الصنف (SKU)', type: 'text', readonly: true },
-                    { id: 'itemName', label: 'اسم الصنف', type: 'text', required: true },
-                    { id: 'category', label: 'التصنيف', type: 'select', options: ['Raw Materials', 'Finished Goods', 'Packaging', 'Spares', 'Electronics'] },
-                    { id: 'warehouse', label: 'المستودع', type: 'select', options: ['Main Warehouse', 'Distribution Center', 'Retail Store', 'Cold Storage'] },
-                    { id: 'binLocation', label: 'موقع التخزين (Ref)', type: 'text' },
-                    { id: 'unit', label: 'وحدة القياس', type: 'select', options: ['Pcs', 'Kg', 'Box', 'Liter', 'Meter'] },
-                    { id: 'qtyOnHand', label: 'الكمية الحالية', type: 'number', required: true, onChange: 'calcVal' },
-                    { id: 'minLevel', label: 'حد الطلب', type: 'number' },
-                    { id: 'maxLevel', label: 'الحد الأقصى', type: 'number' },
-                    { id: 'unitCost', label: 'تكلفة الوحدة', type: 'number', required: true, onChange: 'calcVal' },
-                    { id: 'totalValue', label: 'إجمالي القيمة', type: 'money', readonly: true },
-                    { id: 'status', label: 'الحالة', type: 'select', options: ['In Stock', 'Low Stock', 'Out of Stock', 'Discontinued'] },
-                    { id: 'lastRestock', label: 'آخر توريد', type: 'date' },
-                    { id: 'supplier', label: 'المورد', type: 'select', options: ['TechImport Ltd', 'Global Supplies', 'Local Traders', 'Factory Direct'] }
+                    { id: 'inventoryId', label: 'رقم السجل', type: 'text', readonly: true },
+                    { id: 'productId', label: 'رقم المنتج', type: 'text' },
+                    { id: 'productName', label: 'اسم المنتج', type: 'text' },
+                    { id: 'warehouse', label: 'المخزن', type: 'select', options: ['WH-Cairo', 'WH-Giza', 'WH-Alex', 'WH-Delta'] },
+                    { id: 'stockQty', label: 'الكمية المتاحة', type: 'number', required: true },
+                    { id: 'reorderLevel', label: 'حد إعادة الطلب', type: 'number' },
+                    { id: 'lastUpdated', label: 'آخر تحديث', type: 'date' },
+                    { id: 'status', label: 'حالة المخزون', type: 'select', options: ['In Stock', 'Low Stock', 'Out of Stock'] }
+                ],
+                config: {},
+                handlers: {}
+            },
+
+            attendance: {
+                id: 'attendance',
+                title: 'سجل الحضور والانصراف Attendance',
+                desc: 'متابعة ساعات العمل، الحضور، والغياب',
+                fields: [
+                    { id: 'attId', label: 'رقم السجل', type: 'text', readonly: true },
+                    { id: 'empId', label: 'رقم الموظف', type: 'text' },
+                    { id: 'date', label: 'التاريخ', type: 'date', required: true },
+                    { id: 'checkIn', label: 'وقت الحضور', type: 'time' },
+                    { id: 'checkOut', label: 'وقت الانصراف', type: 'time', onChange: 'calcHours' },
+                    { id: 'workingHours', label: 'ساعات العمل', type: 'number', readonly: true },
+                    { id: 'overtime', label: 'ساعات إضافية', type: 'number' },
+                    { id: 'absenceType', label: 'نوع الغياب', type: 'select', options: ['Present', 'Sick Leave', 'Casual Leave', 'Unpaid', 'Remote'] }
                 ],
                 config: {},
                 handlers: {
-                    calcVal: (val, form) => {
-                        const qty = parseFloat(form['qtyOnHand'].value) || 0;
-                        const cost = parseFloat(form['unitCost'].value) || 0;
-                        form['totalValue'].value = (qty * cost).toFixed(2);
+                    calcHours: (val, form) => {
+                        const inTime = form['checkIn'].value;
+                        const outTime = form['checkOut'].value;
+                        if (inTime && outTime) {
+                            const start = new Date(`2000-01-01T${inTime}`);
+                            const end = new Date(`2000-01-01T${outTime}`);
+                            const diff = (end - start) / 1000 / 60 / 60; // hours
+                            form['workingHours'].value = diff > 0 ? diff.toFixed(2) : 0;
+                        }
                     }
                 }
+            },
+
+            customers: {
+                id: 'customers',
+                title: 'قاعدة بيانات العملاء CRM',
+                desc: 'بيانات العملاء، جهات الاتصال، والحالة',
+                fields: [
+                    { id: 'custId', label: 'رقم العميل', type: 'text', readonly: true },
+                    { id: 'custName', label: 'اسم العميل', type: 'text', required: true },
+                    { id: 'custType', label: 'نوع العميل', type: 'select', options: ['Corporate', 'Individual', 'Government', 'SMB'] },
+                    { id: 'industry', label: 'المجال', type: 'select', options: ['Construction', 'Retail', 'Technology', 'Healthcare', 'Finance'] },
+                    { id: 'phone', label: 'رقم الهاتف', type: 'text' },
+                    { id: 'email', label: 'البريد الإلكتروني', type: 'text' },
+                    { id: 'city', label: 'المدينة', type: 'select', options: ['Cairo', 'Giza', 'Alexandria', 'Mansoura', 'Luxor'] },
+                    { id: 'country', label: 'الدولة', type: 'text', readonly: true, value: 'Egypt' }, // Defaulting to Egypt based on context
+                    { id: 'regDate', label: 'تاريخ التسجيل', type: 'date' },
+                    { id: 'status', label: 'حالة العميل', type: 'select', options: ['Active', 'Inactive', 'Lead', 'Blacklisted'] }
+                ],
+                config: {},
+                handlers: {}
+            },
+
+            purchasing: {
+                id: 'purchasing',
+                title: 'إدارة المشتريات Purchasing',
+                desc: 'أوامر الشراء واتفاقيات التوريد',
+                fields: [
+                    { id: 'poId', label: 'رقم أمر الشراء', type: 'text', readonly: true },
+                    { id: 'suppId', label: 'رقم المورد', type: 'text' },
+                    { id: 'orderDate', label: 'تاريخ الطلب', type: 'date' },
+                    { id: 'prodId', label: 'رقم المنتج', type: 'text' },
+                    { id: 'qty', label: 'الكمية', type: 'number', onChange: 'calcTotal' },
+                    { id: 'unitCost', label: 'تكلفة الوحدة', type: 'number', onChange: 'calcTotal' },
+                    { id: 'totalCost', label: 'إجمالي التكلفة', type: 'money', readonly: true },
+                    { id: 'delDate', label: 'تاريخ التسليم', type: 'date' },
+                    { id: 'status', label: 'حالة الطلب', type: 'select', options: ['Pending', 'Approved', 'Received', 'Cancelled'] }
+                ],
+                config: {},
+                handlers: {
+                    calcTotal: (val, form) => {
+                        const q = parseFloat(form['qty'].value) || 0;
+                        const c = parseFloat(form['unitCost'].value) || 0;
+                        form['totalCost'].value = (q * c).toFixed(2);
+                    }
+                }
+            },
+
+            suppliers: {
+                id: 'suppliers',
+                title: 'سجلات الموردين Suppliers',
+                desc: 'بيانات الموردين وتقييماتهم',
+                fields: [
+                    { id: 'suppId', label: 'رقم المورد', type: 'text', readonly: true },
+                    { id: 'suppName', label: 'اسم المورد', type: 'text', required: true },
+                    { id: 'contact', label: 'مسؤول التواصل', type: 'text' },
+                    { id: 'phone', label: 'الهاتف', type: 'text' },
+                    { id: 'email', label: 'البريد', type: 'text' },
+                    { id: 'city', label: 'المدينة', type: 'text' },
+                    { id: 'terms', label: 'شروط السداد', type: 'select', options: ['Net 30', 'Net 60', 'Cash', 'Advance'] },
+                    { id: 'rating', label: 'التقييم (1-5)', type: 'select', options: [1, 2, 3, 4, 5] }
+                ],
+                config: {},
+                handlers: {}
+            },
+
+            finance: {
+                id: 'finance',
+                title: 'النظام المالي Finance',
+                desc: 'القيود اليومية والعمليات المحاسبية',
+                fields: [
+                    { id: 'transId', label: 'رقم العملية', type: 'text', readonly: true },
+                    { id: 'transDate', label: 'تاريخ العملية', type: 'date' },
+                    { id: 'account', label: 'الحساب', type: 'select', options: ['Revenue', 'Expense', 'Asset', 'Liability', 'Equity'] },
+                    { id: 'type', label: 'نوع القيد', type: 'select', options: ['Debit', 'Credit'] }, // Simplified UI, logic handled below
+                    { id: 'amount', label: 'المبلغ', type: 'number', required: true },
+                    { id: 'costCenter', label: 'مركز التكلفة', type: 'select', options: ['Sales', 'HR', 'IT', 'Admin', 'Production'] },
+                    { id: 'currency', label: 'العملة', type: 'select', options: ['EGP', 'USD', 'EUR', 'SAR'] }
+                ],
+                config: {},
+                handlers: {}
+            },
+
+            support: {
+                id: 'support',
+                title: 'خدمة العملاء Customer Support',
+                desc: 'تذاكر الدعم والشكاوى',
+                fields: [
+                    { id: 'ticketId', label: 'رقم التذكرة', type: 'text', readonly: true },
+                    { id: 'custId', label: 'رقم العميل', type: 'text' },
+                    { id: 'issueType', label: 'نوع المشكلة', type: 'select', options: ['Complaint', 'Inquiry', 'Technical Issue', 'Billing', 'Feature Request'] },
+                    { id: 'openDate', label: 'تاريخ الفتح', type: 'date' },
+                    { id: 'closeDate', label: 'تاريخ الإغلاق', type: 'date' },
+                    { id: 'status', label: 'الحالة', type: 'select', options: ['Open', 'In Progress', 'Resolved', 'Closed'] },
+                    { id: 'score', label: 'رضا العميل (1-5)', type: 'select', options: [1, 2, 3, 4, 5] }
+                ],
+                config: {},
+                handlers: {}
+            },
+
+            operations: {
+                id: 'operations',
+                title: 'العمليات والصيانة Operations',
+                desc: 'أوامر العمل وصيانة الأصول',
+                fields: [
+                    { id: 'workOrder', label: 'أمر العمل', type: 'text', readonly: true },
+                    { id: 'assetId', label: 'رقم الأصل', type: 'text' },
+                    { id: 'type', label: 'نوع الصيانة', type: 'select', options: ['Preventive', 'Corrective', 'Emergency', 'Inspection'] },
+                    { id: 'startDate', label: 'تاريخ البدء', type: 'date' },
+                    { id: 'endDate', label: 'تاريخ الانتهاء', type: 'date' },
+                    { id: 'cost', label: 'التكلفة', type: 'money' },
+                    { id: 'tech', label: 'الفني المسؤول', type: 'text' }
+                ],
+                config: {},
+                handlers: {}
             }
         };
 
@@ -793,12 +934,15 @@
                     const date = document.getElementById('joinDate');
                     if (date) date.value = new Date().toISOString().split('T')[0];
                 }
-                else if (this.currentSchema.id === 'inventory') {
-                    const el = document.getElementById('sku');
-                    if (el) el.value = `SKU-${Math.floor(Math.random() * 100000) + 1000}`;
-
-                    const date = document.getElementById('lastRestock');
-                    if (date) date.value = new Date().toISOString().split('T')[0];
+                else {
+                    // Generic Default for any Schema with an ID field
+                    this.currentSchema.fields.forEach(f => {
+                        if (f.readonly && f.id.toLowerCase().includes('id')) {
+                            const prefix = f.id.substring(0, 3).toUpperCase();
+                            const el = document.getElementById(f.id);
+                            if (el) el.value = `${prefix}-${2025}-${String(this.orderCounter).padStart(5, '0')}`;
+                        }
+                    });
                 }
             },
 
@@ -824,23 +968,29 @@
             autoFill: function () {
                 this.currentSchema.fields.forEach(f => {
                     const el = document.getElementById(f.id);
-                    if (!el || (f.readonly && f.id !== 'grossSales' && f.id !== 'netSalary' && f.id !== 'totalValue')) return;
+                    if (!el || (f.readonly && !f.id.includes('total') && !f.id.includes('Sales') && !f.id.includes('Salary') && f.id !== 'workingHours')) return;
 
                     let val = '';
                     if (f.options) {
                         val = f.options[Math.floor(Math.random() * f.options.length)];
                     } else if (f.type === 'number') {
                         val = Math.floor(Math.random() * 100) + 1;
+                    } else if (f.type === 'time') {
+                        const h = String(Math.floor(Math.random() * 9) + 8).padStart(2, '0');
+                        const m = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+                        val = `${h}:${m}`;
+                        if (f.id === 'checkOut') val = '17:00'; // Simply default for calculation demo
                     } else if (f.type === 'date') {
-                        const d = new Date(new Date().getTime() - Math.random() * 10000000000);
-                        val = d.toISOString().split('T')[0];
-                    } else if (f.id === 'fullName' || f.id === 'itemName') {
-                        val = `Item ${Math.floor(Math.random() * 1000)}`;
-                        if (f.id === 'fullName') val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
+                        val = new Date().toISOString().split('T')[0];
+                    } else if (f.type === 'text' && (f.id.includes('Name') || f.id.includes('tech') || f.id.includes('contact'))) {
+                        val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
+                    } else if (f.id === 'phone') {
+                        val = '01' + Math.floor(Math.random() * 100000000);
+                    } else if (f.id === 'email') {
+                        val = `user${Math.floor(Math.random() * 1000)}@example.com`;
                     }
 
                     if (f.onChange) {
-                        // We need to set val and trigger custom logic manually or simulate event
                         if (el) { el.value = val; this.currentSchema.handlers[f.onChange](val, document.getElementById('dynamicForm').elements); }
                     } else {
                         if (el) el.value = val;
@@ -865,9 +1015,7 @@
                 const batchSize = 100;
                 let added = 0;
 
-                // Create a virtual form context to reuse handlers
-                const virtualForm = {};
-
+                // Optimized bulk generation
                 for (let i = 0; i < count; i++) {
                     const record = {};
 
@@ -878,50 +1026,41 @@
                             val = f.options[Math.floor(Math.random() * f.options.length)];
                         } else if (f.type === 'number') {
                             val = Math.floor(Math.random() * 500) + 10;
-                            if (f.id === 'basicSalary') val = 3000 + Math.floor(Math.random() * 5000);
                         } else if (f.type === 'date') {
                             val = new Date(2023, 0, 1 + Math.floor(Math.random() * 365)).toISOString().split('T')[0];
-                        } else if (f.id === 'fullName') {
+                        } else if (f.type === 'time') {
+                            val = `${String(Math.floor(Math.random() * 9) + 8).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`;
+                        } else if (f.id.includes('Name') || f.id === 'tech' || f.id === 'contact') {
                             val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
-                        } else if (f.id === 'itemName') {
-                            val = `Product ${Math.floor(Math.random() * 1000)}`;
+                        } else if (f.id === 'phone') {
+                            val = '01' + Math.floor(Math.random() * 100000000);
+                        } else if (f.id === 'email') {
+                            val = `user${Math.floor(Math.random() * 1000)}@mail.com`;
                         }
 
-                        // Auto-IDs
-                        if (f.id === 'orderId') val = `ORD-${2024}-${String(this.orderCounter + i).padStart(5, '0')}`;
-                        if (f.id === 'empId') val = `EMP-${String(this.orderCounter + i).padStart(4, '0')}`;
-                        if (f.id === 'sku') val = `SKU-${Math.floor(Math.random() * 100000)}`;
-                        if (f.id === 'customerId') val = `CUST-${Math.floor(Math.random() * 9000) + 1000}`;
+                        // Auto-IDs (Generic)
+                        if (f.readonly && f.id.toLowerCase().includes('id')) {
+                            const prefix = f.id.substring(0, 3).toUpperCase();
+                            val = `${prefix}-${2025}-${String(this.orderCounter + i).padStart(5, '0')}`;
+                        }
 
                         record[f.id] = val;
-                        // Populate virtual form for calculations
-                        virtualForm[f.id] = { value: val };
                     });
 
-                    // Run calculations
-                    this.currentSchema.fields.forEach(f => {
-                        if (f.onChange && this.currentSchema.handlers[f.onChange]) {
-                            // Create a proxy to simulate form elements
-                            const handler = this.currentSchema.handlers[f.onChange];
-                            // We need a way to set the calculated output back to 'record'
-                            // This is a bit tricky without DOM. 
-                            // Simplified approach: Custom logic per schema for bulk
-                            if (this.currentSchema.id === 'sales') {
-                                const q = record['quantity']; const p = record['unitPrice']; const d = record['discountPercent']; const c = record['costOfGoods'] || (q * p * 0.6);
-                                record['grossSales'] = (q * p).toFixed(2);
-                                record['discountAmount'] = (q * p * d / 100).toFixed(2);
-                                record['netSales'] = (q * p - q * p * d / 100).toFixed(2);
-                                record['costOfGoods'] = c.toFixed(2);
-                                record['profit'] = (parseFloat(record['netSales']) - c).toFixed(2);
-                                record['profitMargin'] = (parseFloat(record['profit']) / parseFloat(record['netSales']) * 100).toFixed(2);
-                            } else if (this.currentSchema.id === 'employees') {
-                                const b = record['basicSalary']; const inc = record['incentives'] || 0; const ded = record['deductions'] || 0;
-                                record['netSalary'] = (b + inc - ded).toFixed(2);
-                            } else if (this.currentSchema.id === 'inventory') {
-                                record['totalValue'] = (record['qtyOnHand'] * record['unitCost']).toFixed(2);
-                            }
-                        }
-                    });
+                    // Schema-Specific Logic (Simplified for Bulk)
+                    if (this.currentSchema.id === 'sales') {
+                        const q = record['quantity'] = Math.floor(Math.random() * 20) + 1;
+                        const p = record['unitPrice'] = Math.floor(Math.random() * 1000) + 50;
+                        record['grossSales'] = (q * p).toFixed(2);
+                        record['netSales'] = (q * p).toFixed(2); // Simplified
+                        record['profit'] = (q * p * 0.2).toFixed(2);
+                    }
+                    else if (this.currentSchema.id === 'attendance') {
+                        record['checkIn'] = '09:00'; record['checkOut'] = '17:00'; record['workingHours'] = 8;
+                    }
+                    else if (this.currentSchema.id === 'finance') {
+                        if (!record['amount']) record['amount'] = Math.floor(Math.random() * 50000);
+                    }
 
                     this.data.push(record);
                     added++;

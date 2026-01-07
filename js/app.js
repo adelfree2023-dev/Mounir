@@ -299,13 +299,17 @@ const engine = {
 
             // Check DOM options if schema options empty (for dependent fields)
             let opts = f.options;
-            if ((!opts || opts.length === 0) && el.tagName === 'SELECT') {
-                opts = Array.from(el.options).map(o => o.value).filter(v => v);
+
+            // For Select fields, ALWAYS prefer DOM options as they might have been updated (init or onChange)
+            if (el.tagName === 'SELECT') {
+                const domOpts = Array.from(el.options).filter(o => o.value !== "").map(o => o.value);
+                if (domOpts.length > 0) opts = domOpts;
             }
 
             if (opts && opts.length > 0) {
+                // Handle mixed types (numbers in options vs string values in DOM)
                 val = opts[Math.floor(Math.random() * opts.length)];
-            } else if (f.type === 'number') {
+            } else if (f.type === 'number' || f.type === 'money' || f.type === 'percent') {
                 val = Math.floor(Math.random() * 100) + 1;
             } else if (f.type === 'time') {
                 const h = String(Math.floor(Math.random() * 9) + 8).padStart(2, '0');
@@ -327,7 +331,7 @@ const engine = {
                     el.value = val;
                     this.handleFieldChange(f.id);
                     // Wait for handler to populate dependents
-                    await new Promise(r => setTimeout(r, 50));
+                    await new Promise(r => setTimeout(r, 100));
                 }
             } else {
                 if (el) el.value = val;

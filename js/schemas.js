@@ -488,5 +488,175 @@ const AppSchemas = {
         ],
         config: {},
         handlers: {}
+    },
+
+    // --- PHASE 4: EDUCATION ---
+    students: {
+        id: 'students',
+        title: 'الطلاب Students',
+        desc: 'سجلات الطلاب والبيانات الأكاديمية',
+        fields: [
+            { id: 'studentId', label: 'رقم الطالب', type: 'text', readonly: true },
+            { id: 'fullName', label: 'اسم الطالب', type: 'text', required: true },
+            { id: 'grade', label: 'الصف الدراسي', type: 'select', options: ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'High School'] },
+            { id: 'class', label: 'الفصل', type: 'select', options: ['Class A', 'Class B', 'Class C'] },
+            { id: 'guardian', label: 'ولي الأمر', type: 'text' },
+            { id: 'phone', label: 'هاتف التواصل', type: 'text' },
+            { id: 'enrollDate', label: 'تاريخ التسجيل', type: 'date' },
+            { id: 'feesStatus', label: 'حالة المصروفات', type: 'select', options: ['Paid', 'Partial', 'Unpaid'] },
+            { id: 'gpa', label: 'المعدل التراكمي GPA', type: 'number' }
+        ],
+        config: {},
+        handlers: {}
+    },
+    teachers: {
+        id: 'teachers',
+        title: 'المعلبمن Teachers',
+        desc: 'بيانات أعضاء هيئة التدريس',
+        fields: [
+            { id: 'teacherId', label: 'رقم المعلم', type: 'text', readonly: true },
+            { id: 'name', label: 'الاسم', type: 'text', required: true },
+            { id: 'subject', label: 'المادة', type: 'select', options: ['Math', 'Science', 'English', 'History', 'Arabic', 'Art'] },
+            { id: 'qualification', label: 'المؤهل', type: 'text' },
+            { id: 'yearsExp', label: 'سنوات الخبرة', type: 'number' },
+            { id: 'salary', label: 'الراتب', type: 'money' },
+            { id: 'schedule', label: 'الجدول', type: 'text' }
+        ],
+        config: {},
+        handlers: {}
+    },
+    courses: {
+        id: 'courses',
+        title: 'المقررات Courses',
+        desc: 'إدارة المواد الدراسية والمناهج',
+        fields: [
+            { id: 'courseId', label: 'كود المادة', type: 'text', readonly: true },
+            { id: 'courseName', label: 'اسم المادة', type: 'text', required: true },
+            { id: 'level', label: 'المستوى', type: 'select', options: ['Beginner', 'Intermediate', 'Advanced'] },
+            { id: 'credits', label: 'الساعات المعتمدة', type: 'number' },
+            { id: 'instructor', label: 'المحاضر المسؤول', type: 'text' },
+            { id: 'capacity', label: 'سعة القاعة', type: 'number' }
+        ],
+        config: {},
+        handlers: {}
+    },
+    exams: {
+        id: 'exams',
+        title: 'الامتحانات Exams',
+        desc: 'جدول الاختبارات والنتائج',
+        fields: [
+            { id: 'examId', label: 'رقم الامتحان', type: 'text', readonly: true },
+            { id: 'subject', label: 'المادة', type: 'text' },
+            { id: 'date', label: 'التاريخ', type: 'date' },
+            { id: 'time', label: 'الوقت', type: 'time' },
+            { id: 'hall', label: 'القاعة', type: 'text' },
+            { id: 'totalMarks', label: 'الدرجة العظمى', type: 'number' },
+            { id: 'avgScore', label: 'متوسط الدرجات', type: 'number' }
+        ],
+        config: {},
+        handlers: {}
+    },
+    library: {
+        id: 'library',
+        title: 'المكتبة Library',
+        desc: 'إعارة الكتب والمصادر',
+        fields: [
+            { id: 'bookId', label: 'رقم الكتاب', type: 'text', readonly: true },
+            { id: 'title', label: 'العنوان', type: 'text', required: true },
+            { id: 'author', label: 'المؤلف', type: 'text' },
+            { id: 'isbn', label: 'ISBN', type: 'text' },
+            { id: 'category', label: 'التصنيف', type: 'select', options: ['Science', 'Fiction', 'History', 'Tech', 'Arts'] },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Available', 'Borrowed', 'Lost'] },
+            { id: 'borrower', label: 'المستعير', type: 'text' }
+        ],
+        config: {},
+        handlers: {}
+    },
+
+    // --- PHASE 5: SERVICES & GLOBAL ---
+    real_estate: {
+        id: 'real_estate',
+        title: 'العقارات Real Estate',
+        desc: 'إدارة الأملاك والوحدات السكنية',
+        fields: [
+            { id: 'propertyId', label: 'رقم الوحدة', type: 'text', readonly: true },
+            { id: 'type', label: 'النوع', type: 'select', options: ['Apartment', 'Villa', 'Office', 'Store', 'Land'] },
+            { id: 'address', label: 'العنوان', type: 'text' },
+            { id: 'area', label: 'المساحة (م2)', type: 'number' },
+            { id: 'price', label: 'السعر', type: 'money' },
+            { id: 'bedrooms', label: 'غرف النوم', type: 'number' },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['For Sale', 'For Rent', 'Sold', 'Rented'] },
+            { id: 'owner', label: 'المالك', type: 'text' }
+        ],
+        config: {},
+        handlers: {}
+    },
+    hotel_booking: {
+        id: 'hotel_booking',
+        title: 'حجوزات الفنادق Hotel',
+        desc: 'إدارة الغرف والنزلاء',
+        fields: [
+            { id: 'bookingId', label: 'رقم الحجز', type: 'text', readonly: true },
+            { id: 'guestName', label: 'اسم النزيل', type: 'text', required: true },
+            { id: 'roomType', label: 'نوع الغرفة', type: 'select', options: ['Single', 'Double', 'Suite', 'Deluxe'] },
+            { id: 'checkIn', label: 'تاريخ الوصول', type: 'date' },
+            { id: 'checkOut', label: 'تاريخ المغادرة', type: 'date' },
+            { id: 'nights', label: 'الليالي', type: 'number' },
+            { id: 'totalPrice', label: 'الإجمالي', type: 'money' },
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Confirmed', 'Checked In', 'Checked Out', 'Cancelled'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+    travel_flights: {
+        id: 'travel_flights',
+        title: 'الطيران والسفر Flights',
+        desc: 'حجوزات تذاكر الطيران',
+        fields: [
+            { id: 'ticketId', label: 'رقم التذكرة', type: 'text', readonly: true },
+            { id: 'passenger', label: 'المسافر', type: 'text' },
+            { id: 'airline', label: 'الخطوط', type: 'select', options: ['EgyptAir', 'Emirates', 'Qatar', 'Lufthansa', 'British Airways'] },
+            { id: 'from', label: 'من', type: 'text' },
+            { id: 'to', label: 'إلى', type: 'text' },
+            { id: 'date', label: 'تاريخ السفر', type: 'date' },
+            { id: 'class', label: 'الدرجة', type: 'select', options: ['Economy', 'Business', 'First'] },
+            { id: 'price', label: 'السعر', type: 'money' }
+        ],
+        config: {},
+        handlers: {}
+    },
+    medical_records: {
+        id: 'medical_records',
+        title: 'السجلات الطبية Medical',
+        desc: 'ملفات المرضى والزيارات',
+        fields: [
+            { id: 'patientId', label: 'رقم الملف', type: 'text', readonly: true },
+            { id: 'name', label: 'اسم المريض', type: 'text' },
+            { id: 'age', label: 'العمر', type: 'number' },
+            { id: 'bloodType', label: 'فصيلة الدم', type: 'select', options: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] },
+            { id: 'diagnosis', label: 'التشخيص', type: 'text' },
+            { id: 'doctor', label: 'الطبيب المعالج', type: 'text' },
+            { id: 'visitDate', label: 'تاريخ الزيارة', type: 'date' },
+            { id: 'insurance', label: 'التأمين', type: 'select', options: ['Private', 'Government', 'None'] }
+        ],
+        config: {},
+        handlers: {}
+    },
+    events: {
+        id: 'events',
+        title: 'الفعاليات Events',
+        desc: 'إدارة المؤتمرات والحفلات',
+        fields: [
+            { id: 'eventId', label: 'رقم الفعالية', type: 'text', readonly: true },
+            { id: 'eventName', label: 'اسم الحدث', type: 'text' },
+            { id: 'type', label: 'النوع', type: 'select', options: ['Conference', 'Workshop', 'Concert', 'Wedding', 'Exhibition'] },
+            { id: 'date', label: 'التاريخ', type: 'date' },
+            { id: 'venue', label: 'المكان', type: 'text' },
+            { id: 'attendees', label: 'عدد الحضور', type: 'number' },
+            { id: 'budget', label: 'الميزانية', type: 'money' },
+            { id: 'organizer', label: 'المنظم', type: 'text' }
+        ],
+        config: {},
+        handlers: {}
     }
 };

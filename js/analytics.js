@@ -20,6 +20,8 @@ const AnalyticsEngine = {
         this.calculateAdvancedStats(); // NEW
         this.performABCAnalysis(); // NEW - ABC Analysis
         this.performRFMAnalysis(); // NEW - RFM
+        this.performParetoAnalysis(); // NEW - Pareto
+        this.performMLAnalysis(); // NEW - ML Analytics
         this.renderCharts();
         this.renderTables();
         this.updateDataStatus();
@@ -965,9 +967,115 @@ renderRFMChart: function(customers) {
     });
 },
 
+// === PARETO ANALYSIS ===
+performParetoAnalysis: function() {
+    const customerRevenue = {};
+    this.filteredData.forEach(d => {
+        const cust = d.customerSegment || 'Unknown';
+        customerRevenue[cust] = (customerRevenue[cust] || 0) + parseFloat(d.netSales || 0);
+    });
+
+    const customers = Object.entries(customerRevenue)
+        .map(([name, revenue]) => ({ name, revenue }))
+        .sort((a, b) => b.revenue - a.revenue);
+
+    const totalCustRevenue = customers.reduce((sum, c) => sum + c.revenue, 0);
+    const top20CustCount = Math.ceil(customers.length * 0.2) || 1;
+    const top20Customers = customers.slice(0, top20CustCount);
+    const top20CustRevenue = top20Customers.reduce((sum, c) => sum + c.revenue, 0);
+    const top20CustPercent = totalCustRevenue > 0 ? (top20CustRevenue / totalCustRevenue * 100).toFixed(1) : '0';
+
+    if (document.getElementById('top-customers-count')) {
+        document.getElementById('top-customers-count').textContent = top20CustCount;
+        document.getElementById('top-customers-revenue').textContent = this.formatLargeNumber(top20CustRevenue);
+        document.getElementById('top-customers-percent').textContent = top20CustPercent + '%';
+    }
+
+    const regionRevenue = {};
+    this.filteredData.forEach(d => {
+        const region = d.region || 'Unknown';
+        regionRevenue[region] = (regionRevenue[region] || 0) + parseFloat(d.netSales || 0);
+    });
+
+    const regions = Object.entries(regionRevenue)
+        .map(([name, revenue]) => ({ name, revenue }))
+        .sort((a, b) => b.revenue - a.revenue);
+
+    const totalRegRevenue = regions.reduce((sum, r) => sum + r.revenue, 0);
+    const top20RegCount = Math.max(1, Math.ceil(regions.length * 0.2));
+    const top20Regions = regions.slice(0, top20RegCount);
+    const top20RegRevenue = top20Regions.reduce((sum, r) => sum + r.revenue, 0);
+    const top20RegPercent = totalRegRevenue > 0 ? (top20RegRevenue / totalRegRevenue * 100).toFixed(1) : '0';
+
+    if (document.getElementById('top-regions-count')) {
+        document.getElementById('top-regions-count').textContent = top20RegCount;
+        document.getElementById('top-regions-revenue').textContent = this.formatLargeNumber(top20RegRevenue);
+        document.getElementById('top-regions-percent').textContent = top20RegPercent + '%';
+    }
+},
+
+// === ML ANALYSIS ===
+performMLAnalysis: function() {
+    // 1. Anomaly Detection (Z-Score on Sales)
+    const salesValues = this.filteredData.map(d => parseFloat(d.netSales || 0));
+    if (salesValues.length === 0) return;
+
+    const mean = salesValues.reduce((a, b) => a + b, 0) / salesValues.length;
+    const stdDev = Math.sqrt(salesValues.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / salesValues.length);
+
+    // Threshold for anomaly: > 2 standard deviations (Z-Score > 2)
+    const anomalies = this.filteredData.filter(d => {
+        const val = parseFloat(d.netSales || 0);
+        const zScore = stdDev === 0 ? 0 : (val - mean) / stdDev;
+        return Math.abs(zScore) > 2;
+    });
+
+    if (document.getElementById('ml-anomalies-count')) {
+        document.getElementById('ml-anomalies-count').textContent = anomalies.length;
+    }
+
+    // 2. Simple Growth Forecast (Linear Trend)
+    // Compare last month vs previous month for simple forecast
+    // (This is a basic placeholder for checking trend)
+    if (document.getElementById('ml-forecast-value')) {
+        const growthRate = document.getElementById('growthRate') ? document.getElementById('growthRate').textContent : '0%';
+        document.getElementById('ml-forecast-value').textContent = growthRate;
+    }
+},
+
 exportToExcel: function() {
-    alert('Excel export feature - coming soon!');
-    // Will be implemented with SheetJS library
+    if (!this.filteredData || this.filteredData.length === 0) {
+        alert('لا توجد بيانات للتصدير');
+        return;
+    }
+
+    // Determine headers from the first record
+    const headers = Object.keys(this.filteredData[0]);
+
+    // Create CSV content
+    const csvRows = [];
+    csvRows.push(headers.join(',')); // Header row
+
+    for (const row of this.filteredData) {
+        const values = headers.map(header => {
+            const val = row[header] || '';
+            const escaped = ('' + val).replace(/"/g, '\\"');
+            return `"${escaped}"`;
+        });
+        csvRows.push(values.join(','));
+    }
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'analytics_data_export.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 };
 

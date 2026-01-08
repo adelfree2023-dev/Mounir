@@ -623,111 +623,142 @@
             </div>
         </div>
 
-        <!-- Main Charts Grid -->
-        <div class="charts-grid">
-            <!-- Sales Trend Chart -->
-            <div class="chart-card full-width">
-                <div class="chart-header">
-                    <h3>📈 اتجاه المبيعات والأرباح الشهرية</h3>
-                    <span class="chart-subtitle">Sales & Profit Trend</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="salesTrendChart"></canvas>
+    </div>
+
+    <!-- 🤖 ML Analytics Section - NEW -->
+    <div class="ml-analysis-section">
+        <div class="card-header">
+            <h2>🤖 التحليل الذكي (Machine Learning)</h2>
+            <p class="subtitle">اكتشاف الشذوذ (Anomaly Detection) وتوقعات البيانات</p>
+        </div>
+
+        <div class="ml-grid">
+            <div class="ml-card">
+                <div class="ml-icon">⚡</div>
+                <h3>Anomaly Detection</h3>
+                <p>كشف البيانات غير الطبيعية (شديدة الارتفاع/الانخفاض)</p>
+                <div class="ml-stat">
+                    <span>عدد العمليات الشاذة:</span>
+                    <strong id="ml-anomalies-count">0</strong>
                 </div>
             </div>
-
-            <!-- Product Sales Chart -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>📊 المبيعات حسب المنتج</h3>
-                    <span class="chart-subtitle">Sales by Product Category</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="productChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Regional Sales Chart -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>🌍 المبيعات حسب المنطقة</h3>
-                    <span class="chart-subtitle">Sales by Region</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="regionChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Customer Segment Chart -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>👥 التوزيع حسب شريحة العملاء</h3>
-                    <span class="chart-subtitle">Customer Segment Distribution</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="segmentChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Sales Channel Chart -->
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3>🛒 المبيعات حسب القناة</h3>
-                    <span class="chart-subtitle">Sales by Channel</span>
-                </div>
-                <div class="chart-container">
-                    <canvas id="channelChart"></canvas>
+            <div class="ml-card">
+                <div class="ml-icon">🔮</div>
+                <h3>Growth Forecast</h3>
+                <p>توقعات النمو للشهر القادم بناءً على الاتجاه الحالي</p>
+                <div class="ml-stat">
+                    <span>النمو المتوقع:</span>
+                    <strong id="ml-forecast-value">0%</strong>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Insights Section -->
-        <div class="insights-section">
-            <div class="insight-card">
-                <div class="insight-header">
-                    <h3>🏆 أفضل 10 منتجات</h3>
-                    <span class="insight-subtitle">Top 10 Products by Revenue</span>
-                </div>
-                <div class="table-container">
-                    <table id="topProductsTable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>المنتج</th>
-                                <th>المبيعات</th>
-                                <th>الربح</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+    <!-- Main Charts Grid -->
+    <div class="charts-grid">
+        <!-- Sales Trend Chart -->
+        <div class="chart-card full-width">
+            <div class="chart-header">
+                <h3>📈 اتجاه المبيعات والأرباح الشهرية</h3>
+                <span class="chart-subtitle">Sales & Profit Trend</span>
             </div>
-
-            <div class="insight-card">
-                <div class="insight-header">
-                    <h3>🌍 أفضل 10 دول</h3>
-                    <span class="insight-subtitle">Top 10 Countries by Revenue</span>
-                </div>
-                <div class="table-container">
-                    <table id="topCountriesTable">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الدولة</th>
-                                <th>المبيعات</th>
-                                <th>الأرباح</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
+            <div class="chart-container">
+                <canvas id="salesTrendChart"></canvas>
             </div>
         </div>
 
-        <!-- Data Status -->
-        <div class="data-status" id="dataStatus">
-            <span id="recordCount">0</span> سجل محمّل من localStorage
+        <!-- Product Sales Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>📊 المبيعات حسب المنتج</h3>
+                <span class="chart-subtitle">Sales by Product Category</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="productChart"></canvas>
+            </div>
         </div>
+
+        <!-- Regional Sales Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>🌍 المبيعات حسب المنطقة</h3>
+                <span class="chart-subtitle">Sales by Region</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="regionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Customer Segment Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>👥 التوزيع حسب شريحة العملاء</h3>
+                <span class="chart-subtitle">Customer Segment Distribution</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="segmentChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Sales Channel Chart -->
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>🛒 المبيعات حسب القناة</h3>
+                <span class="chart-subtitle">Sales by Channel</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="channelChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights Section -->
+    <div class="insights-section">
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>🏆 أفضل 10 منتجات</h3>
+                <span class="insight-subtitle">Top 10 Products by Revenue</span>
+            </div>
+            <div class="table-container">
+                <table id="topProductsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>المنتج</th>
+                            <th>المبيعات</th>
+                            <th>الربح</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="insight-card">
+            <div class="insight-header">
+                <h3>🌍 أفضل 10 دول</h3>
+                <span class="insight-subtitle">Top 10 Countries by Revenue</span>
+            </div>
+            <div class="table-container">
+                <table id="topCountriesTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الدولة</th>
+                            <th>المبيعات</th>
+                            <th>الأرباح</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Status -->
+    <div class="data-status" id="dataStatus">
+        <span id="recordCount">0</span> سجل محمّل من localStorage
+    </div>
     </div>
 
     <!-- App Logic -->

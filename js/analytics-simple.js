@@ -7,7 +7,6 @@ const Analytics = {
     allData: [],
     filteredData: [],
     charts: {},
-    currentSchema: 'sales', // NEW: Track current schema
 
     // ========================================
     // 1. INITIALIZATION
@@ -21,69 +20,12 @@ const Analytics = {
     },
 
     loadData() {
-        const key = `data_${this.currentSchema}`;
-        this.allData = JSON.parse(localStorage.getItem(key)) || [];
+        this.allData = JSON.parse(localStorage.getItem('data_sales')) || [];
         this.filteredData = [...this.allData];
 
         // Update record count
         const countEl = document.getElementById('recordCount');
         if (countEl) countEl.textContent = this.allData.length;
-    },
-
-    // NEW: Switch Schema
-    switchSchema(schemaId) {
-        this.currentSchema = schemaId;
-        console.log(`🔄 Switching to ${schemaId}`);
-        this.loadData();
-        this.setDefaultDates();
-        this.renderAll();
-    },
-
-    // NEW: Smart Field Mapping for all schemas
-    getFieldMap() {
-        const maps = {
-            // Core Business
-            sales: { value: 'netSales', value2: 'profit', date: 'orderDate', category: 'productCategory', name: 'productName' },
-            employees: { value: 'salary', value2: 'bonusAmount', date: 'joinDate', category: 'department', name: 'employeeName' },
-            attendance: { value: 'hoursWorked', value2: 'overtimeHours', date: 'attendanceDate', category: 'shift', name: 'employeeName' },
-            customers: { value: 'totalSpent', value2: 'loyaltyPoints', date: 'registrationDate', category: 'customerSegment', name: 'customerName' },
-            purchasing: { value: 'totalCost', value2: 'taxAmount', date: 'purchaseDate', category: 'category', name: 'itemName' },
-            suppliers: { value: 'contractValue', value2: 'discountAmount', date: 'contractDate', category: 'supplierType', name: 'supplierName' },
-            inventory: { value: 'totalValue', value2: 'unitPrice', date: 'lastUpdated', category: 'category', name: 'itemName' },
-            finance: { value: 'amount', value2: 'balance', date: 'transactionDate', category: 'transactionType', name: 'description' },
-            support: { value: 'resolutionTime', value2: 'satisfactionScore', date: 'createdDate', category: 'priority', name: 'ticketID' },
-            operations: { value: 'duration', value2: 'cost', date: 'operationDate', category: 'operationType', name: 'operationName' },
-
-            // Marketing
-            campaigns: { value: 'budget', value2: 'conversions', date: 'startDate', category: 'campaignType', name: 'campaignName' },
-            ads: { value: 'cost', value2: 'clicks', date: 'startDate', category: 'platform', name: 'adName' },
-            leads: { value: 'estimatedValue', value2: 'score', date: 'createdDate', category: 'leadSource', name: 'leadName' },
-            social_media: { value: 'engagementRate', value2: 'reach', date: 'postDate', category: 'platform', name: 'postTitle' },
-            analytics: { value: 'pageviews', value2: 'bounceRate', date: 'date', category: 'source', name: 'pagePath' },
-
-            // IT & Tech
-            it_inventory: { value: 'purchasePrice', value2: 'currentValue', date: 'purchaseDate', category: 'deviceType', name: 'deviceName' },
-            software_licenses: { value: 'cost', value2: 'userCount', date: 'purchaseDate', category: 'softwareType', name: 'softwareName' },
-            it_tickets: { value: 'resolutionTime', value2: 'severity', date: 'createdDate', category: 'category', name: 'ticketID' },
-            server_status: { value: 'cpuUsage', value2: 'memoryUsage', date: 'checkDate', category: 'serverType', name: 'serverName' },
-            access_logs: { value: 'requestCount', value2: 'responseTime', date: 'accessDate', category: 'method', name: 'endpoint' },
-
-            // Education
-            students: { value: 'GPA', value2: 'attendanceRate', date: 'enrollmentDate', category: 'major', name: 'studentName' },
-            teachers: { value: 'experienceYears', value2: 'coursesCount', date: 'hireDate', category: 'department', name: 'teacherName' },
-            courses: { value: 'enrolledStudents', value2: 'completionRate', date: 'startDate', category: 'courseLevel', name: 'courseName' },
-            exams: { value: 'averageScore', value2: 'passRate', date: 'examDate', category: 'examType', name: 'examName' },
-            library: { value: 'borrowCount', value2: 'availableCopies', date: 'publishDate', category: 'category', name: 'bookTitle' },
-
-            // Services
-            real_estate: { value: 'price', value2: 'area', date: 'listingDate', category: 'propertyType', name: 'propertyTitle' },
-            hotel_booking: { value: 'totalPrice', value2: 'nightsCount', date: 'checkInDate', category: 'roomType', name: 'guestName' },
-            travel_flights: { value: 'ticketPrice', value2: 'distance', date: 'flightDate', category: 'class', name: 'flightNumber' },
-            medical_records: { value: 'treatmentCost', value2: 'visitDuration', date: 'visitDate', category: 'diagnosis', name: 'patientName' },
-            events: { value: 'budget', value2: 'attendeesCount', date: 'eventDate', category: 'eventType', name: 'eventName' }
-        };
-
-        return maps[this.currentSchema] || maps.sales;
     },
 
     setDefaultDates() {

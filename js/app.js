@@ -459,13 +459,16 @@ const engine = {
                 else if ((f.type === 'number' || f.type === 'money' || f.type === 'percent') && !f.readonly) {
                     val = Math.floor(Math.random() * 500) + 10;
                 }
-                // Handle date fields
+                // Handle date fields - IMPROVED: Better time distribution
                 else if (f.type === 'date') {
-                    // Random date in 2023-2025
-                    const year = 2023 + Math.floor(Math.random() * 3);
-                    const month = Math.floor(Math.random() * 12);
-                    const day = 1 + Math.floor(Math.random() * 28);
-                    val = new Date(year, month, day).toISOString().split('T')[0];
+                    // Distribute data across last 12 months with realistic patterns
+                    const daysAgo = Math.floor((i / count) * 365); // Spread across year
+                    const orderDate = new Date();
+                    orderDate.setDate(orderDate.getDate() - (365 - daysAgo));
+                    val = orderDate.toISOString().split('T')[0];
+
+                    // Store for later seasonality calculations
+                    record['_orderDate'] = orderDate;
                 }
                 // Handle time fields
                 else if (f.type === 'time') {
@@ -510,53 +513,122 @@ const engine = {
                 }
             }
 
-            // THIRD PASS: Schema-Specific Calculations
+            // THIRD PASS: Schema-Specific Calculations with REALISTIC PATTERNS
             if (this.currentSchema.id === 'sales') {
-                // Realistic quantities based on product category
+                // Get order date for seasonality calculations
+                const orderDate = record['_orderDate'] || new Date();
+                const month = orderDate.getMonth(); // 0-11
+
+                // SEASONALITY FACTOR (Realistic market patterns)
+                const seasonalBoost = {
+                    7: 1.15,  // August - Back to School (+15%)
+                    8: 1.25,  // September - Fall Season (+25%)
+                    10: 1.45, // November - Black Friday (+45%)
+                    11: 1.70  // December - Holiday Season (+70%)
+                };
+                const seasonalityFactor = seasonalBoost[month] || 1.0;
+
+                // GROWTH TREND (3% monthly growth)
+                const monthsFromStart = Math.floor((365 - (new Date() - orderDate) / (24 * 60 * 60 * 1000)) / 30);
+                const growthFactor = 1 + (monthsFromStart * 0.03);
+
+                // Realistic quantities based on product category + seasonality
                 const category = record['productCategory'];
-                let quantity;
+                let baseQuantity;
                 if (category === 'Electronics') {
-                    quantity = Math.floor(Math.random() * 10) + 1; // 1-10
+                    baseQuantity = Math.floor(Math.random() * 8) + 1; // 1-8
                 } else if (category === 'Furniture') {
-                    quantity = Math.floor(Math.random() * 5) + 1; // 1-5
+                    baseQuantity = Math.floor(Math.random() * 4) + 1; // 1-4
                 } else if (category === 'Office Supplies') {
-                    quantity = Math.floor(Math.random() * 200) + 10; // 10-210
+                    baseQuantity = Math.floor(Math.random() * 150) + 20; // 20-170
+                } else if (category === 'Clothing') {
+                    baseQuantity = Math.floor(Math.random() * 30) + 5; // 5-35
                 } else {
-                    quantity = Math.floor(Math.random() * 50) + 5; // 5-55
+                    baseQuantity = Math.floor(Math.random() * 40) + 5; // 5-45
                 }
+
+                // Apply seasonality to quantity
+                const quantity = Math.floor(baseQuantity * seasonalityFactor);
                 record['quantity'] = quantity;
 
-                // Realistic prices based on product type
+                // Realistic prices with MARKET VARIATIONS (±15%)
                 const product = record['productName'];
-                let unitPrice;
-                if (product && product.includes('Laptop')) {
-                    unitPrice = Math.floor(Math.random() * 2000) + 500; // $500-2500
-                } else if (product && product.includes('Desktop')) {
-                    unitPrice = Math.floor(Math.random() * 1400) + 400; // $400-1800
-                } else if (product && (product.includes('Pen') || product.includes('Paper'))) {
-                    unitPrice = Math.floor(Math.random() * 9) + 1; // $1-10
-                } else if (product && product.includes('Chair')) {
-                    unitPrice = Math.floor(Math.random() * 400) + 100; // $100-500
-                } else {
-                    unitPrice = Math.floor(Math.random() * 500) + 50; // Default: $50-550
-                }
+                let basePrice;
+
+                // High-end Electronics
+                if (product && product.includes('Laptop - Dell XPS')) basePrice = 1800;
+                else if (product && product.includes('Laptop - HP Spectre')) basePrice = 1600;
+                else if (product && product.includes('Laptop - Lenovo')) basePrice = 1200;
+                else if (product && product.includes('Laptop - MacBook')) basePrice = 2400;
+                else if (product && product.includes('Desktop - iMac')) basePrice = 2200;
+                else if (product && product.includes('Desktop - HP')) basePrice = 900;
+                else if (product && product.includes('Tablet - iPad')) basePrice = 850;
+                else if (product && product.includes('Tablet - Samsung')) basePrice = 650;
+                else if (product && product.includes('Smartphone -iPhone')) basePrice = 1100;
+                else if (product && product.includes('Smartphone - Samsung')) basePrice = 950;
+                else if (product && product.includes('Monitor')) basePrice = 400;
+                else if (product && product.includes('Keyboard')) basePrice = 120;
+                else if (product && product.includes('Mouse')) basePrice = 70;
+                else if (product && product.includes('Headphones')) basePrice = 350;
+                else if (product && product.includes('Printer')) basePrice = 280;
+
+                // Furniture
+                else if (product && product.includes('Chair - Herman Miller')) basePrice = 1400;
+                else if (product && product.includes('Chair - Ergonomic')) basePrice = 450;
+                else if (product && product.includes('Desk - Standing')) basePrice = 800;
+                else if (product && product.includes('Desk - Executive')) basePrice = 1200;
+                else if (product && product.includes('Desk - L-Shaped')) basePrice = 650;
+                else if (product && product.includes('Sofa')) basePrice = 1800;
+                else if (product && product.includes('Conference Table')) basePrice = 2500;
+                else if (product && product.includes('Bookshelf')) basePrice = 350;
+
+                // Office Supplies
+                else if (product && product.includes('Paper')) basePrice = 8;
+                else if (product && product.includes('Pens')) basePrice = 12;
+                else if (product && product.includes('Notebooks')) basePrice = 6;
+                else if (product && product.includes('Binders')) basePrice = 15;
+                else if (product && product.includes('Calculator')) basePrice = 25;
+                else if (product && product.includes('Staplers')) basePrice = 18;
+
+                // Clothing
+                else if (product && product.includes('Suit')) basePrice = 450;
+                else if (product && product.includes('Shirt')) basePrice = 60;
+                else if (product && product.includes('Pants')) basePrice = 80;
+                else if (product && product.includes('Shoes')) basePrice = 120;
+                else if (product && product.includes('Blazer')) basePrice = 180;
+
+                // Food & Beverages
+                else if (product && product.includes('Coffee')) basePrice = 22;
+                else if (product && product.includes('Tea')) basePrice = 15;
+                else if (product && product.includes('Snacks')) basePrice = 8;
+                else if (product && product.includes('Water')) basePrice = 12;
+                else if (product && product.includes('Juice')) basePrice = 18;
+
+                // Default fallback
+                else basePrice = 100;
+
+                // Apply price variation (±15% market fluctuation)
+                const priceVariation = (Math.random() * 0.3) - 0.15; // -15% to +15%
+                const unitPrice = Math.floor(basePrice * (1 + priceVariation) * growthFactor);
                 record['unitPrice'] = unitPrice;
 
                 // Calculate gross sales
                 const grossSales = quantity * unitPrice;
                 record['grossSales'] = grossSales.toFixed(2);
 
-                // Realistic discount based on customer segment
+                // CUSTOMER-BASED REALISTIC DISCOUNTS
                 const segment = record['customerSegment'];
                 let discountPercent;
                 if (segment === 'Enterprise') {
-                    discountPercent = [10, 15, 20][Math.floor(Math.random() * 3)];
-                } else if (segment === 'SMB') {
-                    discountPercent = [5, 10][Math.floor(Math.random() * 2)];
+                    discountPercent = 10 + Math.floor(Math.random() * 11); // 10-20%
                 } else if (segment === 'Government') {
-                    discountPercent = [10, 15][Math.floor(Math.random() * 2)];
+                    discountPercent = 15 + Math.floor(Math.random() * 11); // 15-25%
+                } else if (segment === 'SMB') {
+                    discountPercent = 5 + Math.floor(Math.random() * 6); // 5-10%
+                } else if (segment === 'Individual') {
+                    discountPercent = Math.floor(Math.random() * 6); // 0-5%
                 } else {
-                    discountPercent = [0, 5][Math.floor(Math.random() * 2)];
+                    discountPercent = Math.floor(Math.random() * 11); // 0-10%
                 }
                 record['discountPercent'] = discountPercent;
 

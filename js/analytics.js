@@ -1117,7 +1117,44 @@ exportToExcel: function() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-}
+},
+
+// NEW: Fix data format (remove $ and commas)
+fixDataFormat: function() {
+    if (!confirm('سيتم فحص البيانات وإصلاح التنسيقات (مثل إزالة $). متابعة؟')) return;
+
+    let fixedCount = 0;
+    const cleanedData = this.data.map(d => {
+        const newD = { ...d };
+        if (typeof newD.netSales === 'string') {
+            newD.netSales = this.parseMoney(newD.netSales);
+            fixedCount++;
+        }
+        if (typeof newD.profit === 'string') newD.profit = this.parseMoney(newD.profit);
+        return newD;
+    });
+
+    this.data = cleanedData;
+    localStorage.setItem('data_sales', JSON.stringify(cleanedData));
+    alert(`✅ تم إصلاح تنسيق ${fixedCount} سجل. سيتم إعادة تحميل الصفحة.`);
+    location.reload();
+},
+
+// NEW: Delete all data
+factoryReset: function() {
+    if (!confirm('⚠️ تحذير: سيتم حذف جميع البيانات من المتصفح نهائياً للبدء من جديد.\n\nهل أنت متأكد؟')) return;
+
+    localStorage.removeItem('data_sales');
+    localStorage.removeItem('salesData');
+    localStorage.removeItem('counter_sales');
+    // Clear other keys if any
+    Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('data_') || k.startsWith('counter_')) localStorage.removeItem(k);
+    });
+
+    alert('تم حذف البيانات بنجاح. سيتم نقلك للصفحة الرئيسية لتوليد بيانات جديدة نظيفة.');
+    window.location.href = 'index.html';
+},
 };
 
 // Initialize on page load

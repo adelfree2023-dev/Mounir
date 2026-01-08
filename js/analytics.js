@@ -10,6 +10,11 @@ const AnalyticsEngine = {
         this.loadData();
 
         if (this.data.length === 0) {
+            // New: More explicit user guidance
+            const confirmGen = confirm('⚠️ لا توجد بيانات مسجلة في النظام!\n\nهل تريد العودة لصفحة الإدخال لتوليد بيانات (Generate Bulk)؟');
+            if (confirmGen) {
+                window.location.href = 'index.html';
+            }
             this.showEmptyState();
             return;
         }
@@ -41,27 +46,42 @@ const AnalyticsEngine = {
         }
     },
 
-    // NEW: Set default date range on load
+    // NEW: Set default date range smartly based on data
     setDefaultDateRange: function () {
-        const dates = this.data.map(d => new Date(d.orderDate)).filter(d => !isNaN(d));
-        if (dates.length === 0) return;
+        const dates = this.data.map(d => new Date(d.orderDate)).filter(d => !isNaN(d.getTime()));
 
-        const minDate = new Date(Math.min(...dates));
-        const maxDate = new Date(Math.max(...dates));
+        let minDate, maxDate;
+
+        if (dates.length > 0) {
+            minDate = new Date(Math.min(...dates));
+            maxDate = new Date(Math.max(...dates));
+            // Add buffer
+            minDate.setDate(minDate.getDate() - 7);
+            maxDate.setDate(maxDate.getDate() + 7);
+        } else {
+            // Fallback: Last 365 days
+            maxDate = new Date();
+            minDate = new Date();
+            minDate.setDate(maxDate.getDate() - 365);
+        }
 
         const startInput = document.getElementById('startDate');
         const endInput = document.getElementById('endDate');
 
         if (startInput && endInput) {
-            startInput.value = minDate.toISOString().split('T')[0];
-            endInput.value = maxDate.toISOString().split('T')[0];
-            startInput.min = minDate.toISOString().split('T')[0];
-            startInput.max = maxDate.toISOString().split('T')[0];
-            endInput.min = minDate.toISOString().split('T')[0];
-            endInput.max = maxDate.toISOString().split('T')[0];
+            const startStr = minDate.toISOString().split('T')[0];
+            const endStr = maxDate.toISOString().split('T')[0];
+
+            startInput.value = startStr;
+            endInput.value = endStr;
+
+            // Also update the current filter object explicitly
+            this.currentFilter = { start: minDate, end: maxDate };
         }
 
-        this.updateActiveFilterDisplay();
+        // Initially show ALL data to be safe, then apply filters
+        this.filteredData = [...this.data];
+        this.applyFilters();
     },
 
     // NEW: Apply date range filter

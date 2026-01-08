@@ -288,74 +288,107 @@ const engine = {
 
     // --- GENERATORS ---
     autoFill: async function () {
-        // Iterate twice: 
-        // 1. Independent fields (trigger dependencies)
-        // 2. Dependent fields (now populated)
-
+        // Enhanced Auto-Fill: Better handling of dependent fields and realistic data
         const independentFields = this.currentSchema.fields.filter(f => !['country', 'productName'].includes(f.id));
         const dependentFields = this.currentSchema.fields.filter(f => ['country', 'productName'].includes(f.id));
 
+        // Realistic names database
+        const realisticNames = [
+            'Ahmed Mohamed Ali', 'Mohamed Hassan Ibrahim', 'Fatma Ahmed Mahmoud', 'Sara Ali Hassan',
+            'John Michael Smith', 'Sarah Elizabeth Johnson', 'Michael James Brown', 'Emily Rose Davis',
+            'Hassan Kamel Fahmy', 'Laila Youssef Nabil', 'Omar Khaled Sayed', 'Mona Sherif Ahmed'
+        ];
+
         const processField = async (f) => {
             const el = document.getElementById(f.id);
-            if (!el || (f.readonly && !f.id.includes('total') && !f.id.includes('Sales') && !f.id.includes('Salary') && f.id !== 'workingHours')) return;
+
+            // Skip if element doesn't exist
+            if (!el) return;
+
+            // Allow readonly fields that are calculated (totals, sales, salary, etc.)
+            if (f.readonly && !f.id.includes('total') && !f.id.includes('Sales') &&
+                !f.id.includes('Salary') && !f.id.includes('Margin') &&
+                !f.id.includes('Amount') && f.id !== 'workingHours' &&
+                !f.id.includes('profit') && !f.id.includes('roi') && !f.id.includes('ctr') &&
+                !f.id.includes('cpa')) {
+                return; // Skip non-calculated readonly fields (like IDs)
+            }
 
             let val = '';
-
-            // Check DOM options if schema options empty (for dependent fields)
             let opts = f.options;
 
-            // For Select fields, ALWAYS prefer DOM options as they might have been updated (init or onChange)
+            // For Select fields, prefer DOM options (they might be updated dynamically)
             if (el.tagName === 'SELECT') {
                 const domOpts = Array.from(el.options).filter(o => o.value !== "").map(o => o.value);
                 if (domOpts.length > 0) opts = domOpts;
             }
 
+            // Generate value based on field type
             if (opts && opts.length > 0) {
-                // Handle mixed types (numbers in options vs string values in DOM)
                 val = opts[Math.floor(Math.random() * opts.length)];
             } else if (f.type === 'number' || f.type === 'money' || f.type === 'percent') {
-                val = Math.floor(Math.random() * 100) + 1;
+                // Calculated fields will be filled by onChange handlers
+                if (!f.readonly) {
+                    val = Math.floor(Math.random() * 100) + 1;
+                }
             } else if (f.type === 'time') {
                 const h = String(Math.floor(Math.random() * 9) + 8).padStart(2, '0');
                 const m = String(Math.floor(Math.random() * 60)).padStart(2, '0');
                 val = `${h}:${m}`;
                 if (f.id === 'checkOut') val = '17:00';
             } else if (f.type === 'date') {
-                val = new Date().toISOString().split('T')[0];
+                // Random date within last year
+                const daysAgo = Math.floor(Math.random() * 365);
+                const date = new Date();
+                date.setDate(date.getDate() - daysAgo);
+                val = date.toISOString().split('T')[0];
             } else if (f.type === 'text') {
-                if (f.id.toLowerCase().includes('name') || f.id.includes('tech') || f.id.includes('contact') || f.id.includes('passenger') || f.id.includes('guest') || f.id.includes('buyer') || f.id.includes('owner')) {
-                    val = ['Ahmed Ali', 'Mohamed Salem', 'Sarah Jones', 'Lina Smith', 'Hassan Kamel'][Math.floor(Math.random() * 5)];
-                } else if (f.id.includes('venue') || f.id.includes('address') || f.id.includes('location') || f.id.includes('hall')) {
-                    val = ['Cairo Main Center', 'Giza Plaza', 'Alex Corniche', 'Downtown Mall', 'Smart Village'][Math.floor(Math.random() * 5)];
-                } else if (f.id.includes('title') || f.id.includes('subject')) {
-                    val = ['New Project Launch', 'Monthly Meeting', 'Annual Review', 'Urgent Fix'][Math.floor(Math.random() * 4)];
+                // Realistic data based on field purpose
+                if (f.id.toLowerCase().includes('name') || f.id.includes('tech') ||
+                    f.id.includes('contact') || f.id.includes('passenger') ||
+                    f.id.includes('guest') || f.id.includes('buyer') || f.id.includes('owner') ||
+                    f.id.includes('requester') || f.id.includes('author') || f.id.includes('designer')) {
+                    val = realisticNames[Math.floor(Math.random() * realisticNames.length)];
+                } else if (f.id.includes('venue') || f.id.includes('address') ||
+                    f.id.includes('location') || f.id.includes('hall')) {
+                    val = ['Cairo Main Center', 'Giza Plaza', 'Alexandria Corniche', 'Smart Village Hub', 'Downtown Business District'][Math.floor(Math.random() * 5)];
+                } else if (f.id.includes('title') || f.id.includes('subject') || f.id.includes('topic')) {
+                    val = ['Q4 Strategy Review', 'Client Meeting', 'Annual Report 2025', 'System Upgrade', 'Team Building Event'][Math.floor(Math.random() * 5)];
+                } else if (f.id.includes('url') || f.id.includes('page')) {
+                    val = ['/products', '/services', '/about', '/contact', '/blog/article'][Math.floor(Math.random() * 5)];
                 } else {
-                    val = `Sample ${f.label} ${Math.floor(Math.random() * 100)}`;
+                    val = `Data Entry ${Math.floor(Math.random() * 1000)}`;
                 }
             } else if (f.id === 'phone') {
-                val = '01' + Math.floor(Math.random() * 100000000);
+                val = '01' + String(Math.floor(Math.random() * 1000000000)).padStart(9, '0');
             } else if (f.id === 'email') {
-                val = `user${Math.floor(Math.random() * 1000)}@example.com`;
+                const domains = ['example.com', 'company.com', 'business.eg', 'mail.com'];
+                val = `user${Math.floor(Math.random() * 10000)}@${domains[Math.floor(Math.random() * domains.length)]}`;
             }
 
+            // Set value and trigger onChange if field has one
             if (f.onChange) {
-                if (el) {
+                if (el && !f.readonly) {
                     el.value = val;
                     this.handleFieldChange(f.id);
-                    // Wait for handler to populate dependents
-                    await new Promise(r => setTimeout(r, 100));
+                    // Increased wait time for dependent fields to populate
+                    await new Promise(r => setTimeout(r, 150));
                 }
             } else {
-                if (el) el.value = val;
+                if (el && !f.readonly) el.value = val;
             }
 
+            // Visual feedback
             if (el) {
                 el.classList.add('auto-filled');
                 setTimeout(() => el.classList.remove('auto-filled'), 1000);
             }
         };
 
+        // Process independent fields first (these may trigger dependent fields)
         for (const f of independentFields) await processField(f);
+
+        // Then process dependent fields (country, productName)
         for (const f of dependentFields) await processField(f);
     },
 
@@ -371,32 +404,57 @@ const engine = {
         const batchSize = 100;
         let added = 0;
 
-        // Create a virtual form context to reuse handlers
-        const virtualForm = {};
+        // Realistic names for bulk generation
+        const names = [
+            'Ahmed Mohamed Ali', 'Mohamed Hassan Ibrahim', 'Fatma Ahmed Mahmoud', 'Sara Ali Hassan',
+            'John Michael Smith', 'Sarah Elizabeth Johnson', 'Michael James Brown', 'Emily Rose Davis',
+            'Hassan Kamel Fahmy', 'Laila Youssef Nabil', 'Omar Khaled Sayed', 'Mona Sherif Ahmed',
+            'Ali Hassan Sayed', 'Nour Mohamed Kamel', 'Youssef Ahmed Ali', 'Mariam Khaled Hassan'
+        ];
 
         for (let i = 0; i < count; i++) {
             const record = {};
 
-            // Generate basic fields
+            // FIRST PASS: Generate all simple fields
             this.currentSchema.fields.forEach(f => {
                 let val = '';
-                if (f.options) {
+
+                // Handle select fields with options
+                if (f.options && f.options.length > 0) {
                     val = f.options[Math.floor(Math.random() * f.options.length)];
-                } else if (f.type === 'number') {
+                }
+                // Handle number fields (non-readonly)
+                else if ((f.type === 'number' || f.type === 'money' || f.type === 'percent') && !f.readonly) {
                     val = Math.floor(Math.random() * 500) + 10;
-                } else if (f.type === 'date') {
-                    val = new Date(2023, 0, 1 + Math.floor(Math.random() * 365)).toISOString().split('T')[0];
-                } else if (f.type === 'time') {
+                }
+                // Handle date fields
+                else if (f.type === 'date') {
+                    // Random date in 2023-2025
+                    const year = 2023 + Math.floor(Math.random() * 3);
+                    const month = Math.floor(Math.random() * 12);
+                    const day = 1 + Math.floor(Math.random() * 28);
+                    val = new Date(year, month, day).toISOString().split('T')[0];
+                }
+                // Handle time fields
+                else if (f.type === 'time') {
                     val = `${String(Math.floor(Math.random() * 9) + 8).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`;
-                } else if (f.id.includes('Name') || f.id === 'tech' || f.id === 'contact') {
-                    val = ['Ahmed', 'Mohamed', 'Sarah', 'Lina'][Math.floor(Math.random() * 4)] + ' ' + ['Ali', 'Hassan', 'Smith', 'Jones'][Math.floor(Math.random() * 4)];
-                } else if (f.id === 'phone') {
-                    val = '01' + Math.floor(Math.random() * 100000000);
-                } else if (f.id === 'email') {
-                    val = `user${Math.floor(Math.random() * 1000)}@mail.com`;
+                }
+                // Handle text names
+                else if (f.id.includes('Name') || f.id === 'tech' || f.id === 'contact' ||
+                    f.id.includes('requester') || f.id.includes('author')) {
+                    val = names[Math.floor(Math.random() * names.length)];
+                }
+                // Handle phone numbers
+                else if (f.id === 'phone') {
+                    val = '01' + String(Math.floor(Math.random() * 1000000000)).padStart(9, '0');
+                }
+                // Handle emails
+                else if (f.id === 'email') {
+                    const domains = ['example.com', 'company.com', 'business.eg', 'mail.com'];
+                    val = `user${Math.floor(Math.random() * 10000)}@${domains[Math.floor(Math.random() * domains.length)]}`;
                 }
 
-                // Auto-IDs (Generic)
+                // Auto-generate IDs
                 if (f.readonly && f.id.toLowerCase().includes('id')) {
                     const prefix = f.id.substring(0, 3).toUpperCase();
                     val = `${prefix}-${2025}-${String(this.orderCounter + i).padStart(5, '0')}`;
@@ -405,19 +463,96 @@ const engine = {
                 record[f.id] = val;
             });
 
-            // Schema-Specific Logic (Simplified for Bulk)
+            // SECOND PASS: Handle dependent fields (country, productName)
+            if (record['region'] && this.currentSchema.config && this.currentSchema.config.countriesByRegion) {
+                const countries = this.currentSchema.config.countriesByRegion[record['region']];
+                if (countries && countries.length > 0) {
+                    record['country'] = countries[Math.floor(Math.random() * countries.length)];
+                }
+            }
+
+            if (record['productCategory'] && this.currentSchema.config && this.currentSchema.config.productsByCategory) {
+                const products = this.currentSchema.config.productsByCategory[record['productCategory']];
+                if (products && products.length > 0) {
+                    record['productName'] = products[Math.floor(Math.random() * products.length)];
+                }
+            }
+
+            // THIRD PASS: Schema-Specific Calculations
             if (this.currentSchema.id === 'sales') {
-                const q = record['quantity'] = Math.floor(Math.random() * 20) + 1;
-                const p = record['unitPrice'] = Math.floor(Math.random() * 1000) + 50;
-                const d = record['discountPercent'] = 0;
-                record['grossSales'] = (q * p).toFixed(2);
-                record['netSales'] = (q * p).toFixed(2);
-                record['profit'] = (q * p * 0.2).toFixed(2);
-                record['discountAmount'] = "0.00";
-                record['profitMargin'] = "20.00";
+                // Realistic quantities based on product category
+                const category = record['productCategory'];
+                let quantity;
+                if (category === 'Electronics') {
+                    quantity = Math.floor(Math.random() * 10) + 1; // 1-10
+                } else if (category === 'Furniture') {
+                    quantity = Math.floor(Math.random() * 5) + 1; // 1-5
+                } else if (category === 'Office Supplies') {
+                    quantity = Math.floor(Math.random() * 200) + 10; // 10-210
+                } else {
+                    quantity = Math.floor(Math.random() * 50) + 5; // 5-55
+                }
+                record['quantity'] = quantity;
+
+                // Realistic prices based on product type
+                const product = record['productName'];
+                let unitPrice;
+                if (product && product.includes('Laptop')) {
+                    unitPrice = Math.floor(Math.random() * 2000) + 500; // $500-2500
+                } else if (product && product.includes('Desktop')) {
+                    unitPrice = Math.floor(Math.random() * 1400) + 400; // $400-1800
+                } else if (product && (product.includes('Pen') || product.includes('Paper'))) {
+                    unitPrice = Math.floor(Math.random() * 9) + 1; // $1-10
+                } else if (product && product.includes('Chair')) {
+                    unitPrice = Math.floor(Math.random() * 400) + 100; // $100-500
+                } else {
+                    unitPrice = Math.floor(Math.random() * 500) + 50; // Default: $50-550
+                }
+                record['unitPrice'] = unitPrice;
+
+                // Calculate gross sales
+                const grossSales = quantity * unitPrice;
+                record['grossSales'] = grossSales.toFixed(2);
+
+                // Realistic discount based on customer segment
+                const segment = record['customerSegment'];
+                let discountPercent;
+                if (segment === 'Enterprise') {
+                    discountPercent = [10, 15, 20][Math.floor(Math.random() * 3)];
+                } else if (segment === 'SMB') {
+                    discountPercent = [5, 10][Math.floor(Math.random() * 2)];
+                } else if (segment === 'Government') {
+                    discountPercent = [10, 15][Math.floor(Math.random() * 2)];
+                } else {
+                    discountPercent = [0, 5][Math.floor(Math.random() * 2)];
+                }
+                record['discountPercent'] = discountPercent;
+
+                // Calculate discount amount
+                const discountAmount = grossSales * (discountPercent / 100);
+                record['discountAmount'] = discountAmount.toFixed(2);
+
+                // Calculate net sales
+                const netSales = grossSales - discountAmount;
+                record['netSales'] = netSales.toFixed(2);
+
+                // Calculate cost of goods (50-75% of net sales)
+                const costMargin = 0.5 + Math.random() * 0.25;
+                const costOfGoods = netSales * costMargin;
+                record['costOfGoods'] = costOfGoods.toFixed(2);
+
+                // Calculate profit
+                const profit = netSales - costOfGoods;
+                record['profit'] = profit.toFixed(2);
+
+                // Calculate profit margin
+                const profitMargin = netSales > 0 ? (profit / netSales) * 100 : 0;
+                record['profitMargin'] = profitMargin.toFixed(2);
             }
             else if (this.currentSchema.id === 'attendance') {
-                record['checkIn'] = '09:00'; record['checkOut'] = '17:00'; record['workingHours'] = 8;
+                record['checkIn'] = '09:00';
+                record['checkOut'] = '17:00';
+                record['workingHours'] = 8;
             }
             else if (this.currentSchema.id === 'finance') {
                 if (!record['amount']) record['amount'] = Math.floor(Math.random() * 50000);
@@ -429,14 +564,17 @@ const engine = {
             }
             else if (this.currentSchema.id === 'employees') {
                 if (record['basicSalary']) {
-                    record['netSalary'] = record['basicSalary'];
+                    const basic = parseFloat(record['basicSalary']);
+                    const incentives = parseFloat(record['incentives']) || 0;
+                    const deductions = parseFloat(record['deductions']) || 0;
+                    record['netSalary'] = (basic + incentives - deductions).toFixed(2);
                 }
             }
-
 
             this.data.push(record);
             added++;
 
+            // Update progress bar
             if (added % batchSize === 0 || added === count) {
                 const percent = Math.round((added / count) * 100);
                 progress.style.width = percent + '%';

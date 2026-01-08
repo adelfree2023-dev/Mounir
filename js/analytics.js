@@ -18,6 +18,8 @@ const AnalyticsEngine = {
         this.setDefaultDateRange(); // NEW
         this.calculateKPIs();
         this.calculateAdvancedStats(); // NEW
+        this.performABCAnalysis(); // NEW - ABC Analysis
+        this.performRFMAnalysis(); // NEW - RFM
         this.renderCharts();
         this.renderTables();
         this.updateDataStatus();
@@ -726,3 +728,132 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Analytics Dashboard Loading...');
     AnalyticsEngine.init();
 });
+
+// === ABC ANALYSIS ===
+performABCAnalysis: function() {
+    const productRevenue = {};
+    this.filteredData.forEach(d => {
+        const product = d.productName || "Unknown";
+        const revenue = parseFloat(d.netSales || 0);
+        productRevenue[product] = (productRevenue[product] || 0) + revenue;
+    });
+
+    const products = Object.keys(productRevenue)
+        .map(p => ({ name: p, revenue: productRevenue[p] }))
+        .sort((a, b) => b.revenue - a.revenue);
+
+    const totalRevenue = products.reduce((sum, p) => sum + p.revenue, 0);
+    let cumulative = 0;
+
+    products.forEach((product, index) => {
+        const revenuePercent = (product.revenue / totalRevenue) * 100;
+        cumulative += revenuePercent;
+        product.revenuePercent = revenuePercent;
+        product.cumulativePercent = cumulative;
+        product.rank = index + 1;
+
+        if (cumulative <= 80) {
+            product.category = "A";
+            product.categoryColor = "#10b981";
+        } else if (cumulative <= 95) {
+            product.category = "B";
+            product.categoryColor = "#f59e0b";
+        } else {
+            product.category = "C";
+            product.categoryColor = "#ef4444";
+        }
+    });
+
+    this.updateABCSummary(products, totalRevenue);
+    this.renderParetoChart(products);
+},
+
+updateABCSummary: function(products, totalRevenue) {
+    const catA = products.filter(p => p.category === "A");
+    const catB = products.filter(p => p.category === "B");
+    const catC = products.filter(p => p.category === "C");
+
+    const revA = catA.reduce((sum, p) => sum + p.revenue, 0);
+    const revB = catB.reduce((sum, p) => sum + p.revenue, 0);
+    const revC = catC.reduce((sum, p) => sum + p.revenue, 0);
+
+    document.getElementById("abc-a-count").textContent = catA.length;
+    document.getElementById("abc-a-revenue").textContent = this.formatLargeNumber(revA);
+    document.getElementById("abc-a-percent").textContent = ((revA / totalRevenue) * 100).toFixed(1) + "%";
+
+    document.getElementById("abc-b-count").textContent = catB.length;
+    document.getElementById("abc-b-revenue").textContent = this.formatLargeNumber(revB);
+    document.getElementById("abc-b-percent").textContent = ((revB / totalRevenue) * 100).toFixed(1) + "%";
+
+    document.getElementById("abc-c-count").textContent = catC.length;
+    document.getElementById("abc-c-revenue").textContent = this.formatLargeNumber(revC);
+    document.getElementById("abc-c-percent").textContent = ((revC / totalRevenue) * 100).toFixed(1) + "%";
+},
+
+renderParetoChart: function(products) {
+    const ctx = document.getElementById("paretoChart");
+    if (!ctx) return;
+
+    const top20 = products.slice(0, 20);
+    const labels = top20.map(p => p.name.substring(0, 25));
+    const revenues = top20.map(p => p.revenue);
+    const cumulatives = top20.map(p => p.cumulativePercent);
+    const colors = top20.map(p => p.categoryColor);
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                type: "bar",
+                label: "الإيرادات",
+                data: revenues,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 2,
+                yAxisID: "y"
+            }, {
+                type: "line",
+                label: "النسبة التراكمية",
+                data: cumulatives,
+                borderColor: "#6366f1",
+                backgroundColor: "rgba(99, 102, 241, 0.1)",
+                borderWidth: 3,
+                tension: 0.3,
+                yAxisID: "y1",
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: "#f1f5f9", font: { size: 12 } }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: "#94a3b8", maxRotation: 45, minRotation: 45 }
+                },
+                y: {
+                    position: "left",
+                    ticks: {
+                        color: "#94a3b8",
+                        callback: v => "$" + (v / 1000).toFixed(0) + "K"
+                    }
+                },
+                y1: {
+                    position: "right",
+                    min: 0,
+                    max: 100,
+                    ticks: {
+                        color: "#6366f1",
+                        callback: v => v + "%"
+                    }
+                }
+            }
+        }
+    });
+},
+

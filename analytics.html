@@ -347,6 +347,210 @@
             </div>
         </div>
 
+        <!-- 📊 ABC Analysis Section - NEW -->
+        <div class="abc-analysis-section">
+            <div class="card-header">
+                <h2>📊 تحليل ABC - قاعدة باريتو 80/20</h2>
+                <p class="subtitle">اكتشف المنتجات عالية القيمة (20% منتجات = 80% إيرادات)</p>
+            </div>
+
+            <!-- ABC Summary Cards -->
+            <div class="abc-summary-cards">
+                <div class="abc-card category-a">
+                    <div class="abc-badge">A</div>
+                    <h3>فئة A - عالية القيمة</h3>
+                    <div class="abc-stats">
+                        <div class="stat">
+                            <span class="stat-label">عدد المنتجات</span>
+                            <span class="stat-value" id="abc-a-count">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">الإيرادات</span>
+                            <span class="stat-value" id="abc-a-revenue">$0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">النسبة</span>
+                            <span class="stat-value" id="abc-a-percent">0%</span>
+                        </div>
+                    </div>
+                    <p class="abc-description">المنتجات الأكثر أهمية - التركيز الأساسي</p>
+                </div>
+
+                <div class="abc-card category-b">
+                    <div class="abc-badge">B</div>
+                    <h3>فئة B - متوسطة القيمة</h3>
+                    <div class="abc-stats">
+                        <div class="stat">
+                            <span class="stat-label">عدد المنتجات</span>
+                            <span class="stat-value" id="abc-b-count">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">الإيرادات</span>
+                            <span class="stat-value" id="abc-b-revenue">$0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">النسبة</span>
+                            <span class="stat-value" id="abc-b-percent">0%</span>
+                        </div>
+                    </div>
+                    <p class="abc-description">منتجات مهمة - مراقبة مستمرة</p>
+                </div>
+
+                <div class="abc-card category-c">
+                    <div class="abc-badge">C</div>
+                    <h3>فئة C - منخفضة القيمة</h3>
+                    <div class="abc-stats">
+                        <div class="stat">
+                            <span class="stat-label">عدد المنتجات</span>
+                            <span class="stat-value" id="abc-c-count">0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">الإيرادات</span>
+                            <span class="stat-value" id="abc-c-revenue">$0</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">النسبة</span>
+                            <span class="stat-value" id="abc-c-percent">0%</span>
+                        </div>
+                    </div>
+                    <p class="abc-description">تأثير محدود - إدارة بسيطة</p>
+                </div>
+            </div>
+
+            <!-- Pareto Chart -->
+            <div class="chart-card">
+                <h3>📈 مخطط باريتو (Pareto Chart)</h3>
+                <p class="chart-subtitle">الإيرادات التراكمية حسب المنتج</p>
+                <div class="chart-container">
+                    <canvas id="paretoChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 👥 RFM Segmentation Section - NEW -->
+        <div class="rfm-analysis-section">
+            <div class="card-header">
+                <h2>👥 تحليل RFM - تقسيم العملاء الذكي</h2>
+                <p class="subtitle">صنّف عملاءك حسب: Recency (الحداثة), Frequency (التكرار), Monetary (القيمة المالية)
+                </p>
+            </div>
+
+            <!-- RFM Explanation -->
+            <div class="rfm-explanation">
+                <div class="rfm-metric">
+                    <div class="metric-icon">📅</div>
+                    <h4>Recency</h4>
+                    <p>متى كان آخر طلب؟ (أحدث = أفضل)</p>
+                </div>
+                <div class="rfm-metric">
+                    <div class="metric-icon">🔁</div>
+                    <h4>Frequency</h4>
+                    <p>كم مرة اشترى؟ (أكثر = أفضل)</p>
+                </div>
+                <div class="rfm-metric">
+                    <div class="metric-icon">💰</div>
+                    <h4>Monetary</h4>
+                    <p>كم أنفق؟ (أكبر = أفضل)</p>
+                </div>
+            </div>
+
+            <!-- RFM Segments Cards -->
+            <div class="rfm-segments-grid">
+                <div class="rfm-segment-card champions">
+                    <div class="segment-icon">🏆</div>
+                    <h3>Champions</h3>
+                    <p class="segment-desc">أفضل العملاء - اشتروا مؤخراً، بتكرار عالي، وإنفاق كبير</p>
+                    <div class="segment-stats">
+                        <div class="stat">
+                            <span>العدد:</span>
+                            <strong id="rfm-champions-count">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>الإيرادات:</span>
+                            <strong id="rfm-champions-revenue">$0</strong>
+                        </div>
+                    </div>
+                    <div class="segment-action">✅ احتفظ بهم - قدم مكافآت VIP</div>
+                </div>
+
+                <div class="rfm-segment-card loyal">
+                    <div class="segment-icon">💙</div>
+                    <h3>Loyal Customers</h3>
+                    <p class="segment-desc">عملاء مخلصون - يشترون بانتظام</p>
+                    <div class="segment-stats">
+                        <div class="stat">
+                            <span>العدد:</span>
+                            <strong id="rfm-loyal-count">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>الإيرادات:</span>
+                            <strong id="rfm-loyal-revenue">$0</strong>
+                        </div>
+                    </div>
+                    <div class="segment-action">💎 اهتم بهم - عروض خاصة</div>
+                </div>
+
+                <div class="rfm-segment-card potential">
+                    <div class="segment-icon">🌱</div>
+                    <h3>Potential Loyalists</h3>
+                    <p class="segment-desc">عملاء واعدون - يمكن تحويلهم لمخلصين</p>
+                    <div class="segment-stats">
+                        <div class="stat">
+                            <span>العدد:</span>
+                            <strong id="rfm-potential-count">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>الإيرادات:</span>
+                            <strong id="rfm-potential-revenue">$0</strong>
+                        </div>
+                    </div>
+                    <div class="segment-action">📈 طوّر العلاقة - برامج ولاء</div>
+                </div>
+
+                <div class="rfm-segment-card at-risk">
+                    <div class="segment-icon">⚠️</div>
+                    <h3>At Risk</h3>
+                    <p class="segment-desc">معرضون للخطر - كانوا جيدين لكن توقفوا</p>
+                    <div class="segment-stats">
+                        <div class="stat">
+                            <span>العدد:</span>
+                            <strong id="rfm-at-risk-count">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>الإيرادات:</span>
+                            <strong id="rfm-at-risk-revenue">$0</strong>
+                        </div>
+                    </div>
+                    <div class="segment-action">🔔 استعدهم - خصومات خاصة</div>
+                </div>
+
+                <div class="rfm-segment-card lost">
+                    <div class="segment-icon">😔</div>
+                    <h3>Lost Customers</h3>
+                    <p class="segment-desc">فقدناهم - لم يشتروا منذ فترة طويلة</p>
+                    <div class="segment-stats">
+                        <div class="stat">
+                            <span>العدد:</span>
+                            <strong id="rfm-lost-count">0</strong>
+                        </div>
+                        <div class="stat">
+                            <span>الإيرادات:</span>
+                            <strong id="rfm-lost-revenue">$0</strong>
+                        </div>
+                    </div>
+                    <div class="segment-action">💔 حاول استعادتهم - عروض قوية</div>
+                </div>
+            </div>
+
+            <!-- RFM Distribution Chart -->
+            <div class="chart-card">
+                <h3>📊 توزيع العملاء حسب RFM</h3>
+                <div class="chart-container">
+                    <canvas id="rfmChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Charts Grid -->
         <div class="charts-grid">
             <!-- Sales Trend Chart -->

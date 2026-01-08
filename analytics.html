@@ -64,6 +64,19 @@
                 </button>
             </div>
 
+            <!-- NEW: Emergency Data Fix/Reset -->
+            <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
+                <button class="btn-reset-filter"
+                    style="background: #ff4444; color: white; width: 100%; margin-bottom: 5px;"
+                    onclick="AnalyticsEngine.factoryReset()">
+                    🗑️ حذف جميع البيانات (بدء جديد)
+                </button>
+                <button class="btn-apply-filter" style="background: #2196F3; width: 100%;"
+                    onclick="AnalyticsEngine.fixDataFormat()">
+                    🔧 إصلاح تنسيق البيانات
+                </button>
+            </div>
+
             <!-- Active Filter Display -->
             <div class="active-filter-display" id="activeFilterDisplay">
                 عرض جميع البيانات

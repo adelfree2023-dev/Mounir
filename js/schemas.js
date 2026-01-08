@@ -30,20 +30,20 @@ const AppSchemas = {
         ],
         config: {
             countriesByRegion: {
-                'North America': ['USA', 'Canada', 'Mexico'],
-                'Europe': ['Germany', 'UK', 'France', 'Italy', 'Spain', 'Netherlands'],
-                'Asia Pacific': ['China', 'Japan', 'India', 'Australia', 'Singapore', 'South Korea'],
-                'Latin America': ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru'],
-                'Middle East & Africa': ['UAE', 'Saudi Arabia', 'South Africa', 'Egypt', 'Nigeria']
+                'North America': ['USA', 'Canada', 'Mexico', 'Panama', 'Costa Rica', 'Guatemala', 'Honduras', 'El Salvador', 'Nicaragua', 'Belize', 'Jamaica', 'Trinidad and Tobago', 'Bahamas', 'Dominican Republic', 'Cuba'],
+                'Europe': ['Germany', 'UK', 'France', 'Italy', 'Spain', 'Netherlands', 'Belgium', 'Switzerland', 'Austria', 'Sweden', 'Norway', 'Denmark', 'Finland', 'Poland', 'Portugal', 'Greece', 'Ireland', 'Czech Republic', 'Hungary', 'Romania'],
+                'Asia Pacific': ['China', 'Japan', 'India', 'Australia', 'Singapore', 'South Korea', 'Thailand', 'Malaysia', 'Indonesia', 'Philippines', 'Vietnam', 'New Zealand', 'Taiwan', 'Hong Kong', 'Pakistan', 'Bangladesh'],
+                'Latin America': ['Brazil', 'Argentina', 'Chile', 'Colombia', 'Peru', 'Venezuela', 'Ecuador', 'Bolivia', 'Uruguay', 'Paraguay', 'Guyana', 'Suriname'],
+                'Middle East & Africa': ['UAE', 'Saudi Arabia', 'South Africa', 'Egypt', 'Nigeria', 'Qatar', 'Kuwait', 'Bahrain', 'Oman', 'Jordan', 'Lebanon', 'Morocco', 'Tunisia', 'Kenya', 'Ghana', 'Ethiopia']
             },
             productsByCategory: {
-                'Electronics': ['Laptop', 'Desktop Computer', 'Tablet', 'Smartphone', 'Monitor'],
-                'Furniture': ['Office Chair', 'Desk', 'Filing Cabinet', 'Sofa'],
-                'Office Supplies': ['Paper', 'Pens', 'Notebooks', 'Binders'],
-                'Clothing': ['Suit', 'Shirt', 'Pants', 'Shoes'],
-                'Food & Beverages': ['Coffee', 'Tea', 'Snacks', 'Water']
+                'Electronics': ['Laptop - Dell XPS', 'Laptop - HP Spectre', 'Laptop - Lenovo ThinkPad', 'Laptop - MacBook Pro', 'Desktop - iMac', 'Desktop - HP Pavilion', 'Tablet - iPad Pro', 'Tablet - Samsung Galaxy Tab', 'Smartphone - iPhone 15', 'Smartphone - Samsung S24', 'Smartphone - Google Pixel', 'Monitor - Dell 27"', 'Monitor - LG UltraWide', 'Keyboard - Logitech MX', 'Mouse - Razer DeathAdder', 'Webcam - Logitech C920', 'Headphones - Sony WH-1000XM5', 'Printer - HP LaserJet', 'Router - TP-Link AX6000', 'Hard Drive - Seagate 2TB'],
+                'Furniture': ['Office Chair - Ergonomic Premium', 'Office Chair - Herman Miller Aeron', 'Desk - Standing Adjustable', 'Desk - Executive Wooden', 'Desk - L-Shaped Corner', 'Filing Cabinet - 4 Drawer', 'Filing Cabinet - Lateral', 'Sofa - 3-Seater Leather', 'Sofa - Modular Sectional', 'Conference Table - 10 Person', 'Bookshelf - 6-Tier Wooden', 'Storage Cabinet - Metal', 'Reception Desk - Modern', 'Lounge Chair - Recliner', 'Coffee Table - Glass Top', 'Whiteboard - Magnetic 6ft'],
+                'Office Supplies': ['Paper - A4 Ream 500 Sheets', 'Paper - Legal Size', 'Pens - Ballpoint Pack of 50', 'Pens - Gel Ink Premium', 'Notebooks - Spiral A5', 'Notebooks - Hardcover Journal', 'Binders - 3-Ring 2 Inch', 'Folders - Manila File', 'Staplers - Heavy Duty', 'Paper Clips - Assorted', 'Calculator - Scientific', 'Markers - Whiteboard Set', 'Highlighters - 6 Colors', 'Tape - Scotch Multi-Pack', 'Scissors - Professional', 'Envelopes - Pack of 100'],
+                'Clothing': ['Suit - Men Business Navy', 'Suit - Women Executive', 'Shirt - Formal White Cotton', 'Shirt - Casual Polo', 'Pants - Dress Trousers', 'Pants - Khaki Chinos', 'Shoes - Oxford Leather', 'Shoes - Loafers Brown', 'Blazer - Single Breasted', 'Tie - Silk Classic', 'Belt - Genuine Leather', 'Dress - Business Professional', 'Skirt - Pencil Office', 'Sweater - Cardigan Wool', 'Jacket - Winter Coat'],
+                'Food & Beverages': ['Coffee - Premium Arabica Beans', 'Coffee - Espresso Capsules', 'Coffee - Instant Pack', 'Tea - Green Organic', 'Tea - Earl Grey', 'Tea - Herbal Mix', 'Snacks - Mixed Nuts', 'Snacks - Protein Bars', 'Snacks - Granola Pack', 'Water - Mineral 24-Pack', 'Water - Sparkling Cases', 'Juice - Orange Fresh', 'Energy Drink - 12 Cans', 'Soda - Variety Pack', 'Cookies - Assorted Box']
             },
-            salesReps: ['John Smith', 'Sarah Johnson', 'Michael Brown', 'Emily Davis', 'Jennifer Lee']
+            salesReps: ['Ahmed Hassan - Senior Rep', 'Sarah Mitchell - Team Lead', 'Michael Chen - Regional Manager', 'Emily Rodriguez - Sales Executive', 'David Thompson - Account Manager', 'Jennifer Lee - Business Developer', 'Robert Williams - Sales Director', 'Maria Garcia - Client Relations', 'James Anderson - Territory Manager', 'Lisa Brown - Senior Consultant', 'Mohammed Ali - Sales Associate', 'Anna Schmidt - Key Account Manager', 'Christopher Davis - VP Sales', 'Patricia Martinez - Sales Specialist', 'Daniel Kim - Enterprise Sales', 'Jessica Taylor - Channel Partner Manager', 'Thomas Wilson - Inside Sales Rep', 'Laura Johnson - Customer Success Manager', 'Kevin Zhang - Strategic Accounts', 'Michelle O\'Brien - Sales Coordinator']
         },
         handlers: {
             updateCountries: (val, form) => {
@@ -82,15 +82,15 @@ const AppSchemas = {
         fields: [
             { id: 'empId', label: 'رقم الموظف', type: 'text', readonly: true },
             { id: 'fullName', label: 'الاسم رباعي', type: 'text' },
-            { id: 'department', label: 'القسم', type: 'select', options: ['HR', 'IT', 'Marketing', 'Sales', 'Finance', 'Operations'] },
-            { id: 'position', label: 'المسمى الوظيفي', type: 'select', options: ['Manager', 'Senior Developer', 'Junior Developer', 'Accountant', 'HR Specialist', 'Sales Rep'] },
+            { id: 'department', label: 'القسم', type: 'select', options: ['Human Resources', 'Information Technology', 'Marketing & Communications', 'Sales & Business Development', 'Finance & Accounting', 'Operations & Logistics', 'Customer Service', 'Legal & Compliance', 'Research & Development', 'Quality Assurance', 'Product Management', 'Supply Chain', 'Public Relations', 'Corporate Strategy', 'Administration'] },
+            { id: 'position', label: 'المسمى الوظيفي', type: 'select', options: ['Chief Executive Officer', 'Chief Technology Officer', 'Chief Financial Officer', 'VP of Operations', 'VP of Sales', 'Engineering Manager', 'Senior Software Engineer', 'Software Engineer', 'Junior Developer', 'DevOps Engineer', 'Data Scientist', 'Business Analyst', 'Project Manager', 'Product Manager', 'Marketing Manager', 'Sales Manager', 'Account Executive', 'HR Manager', 'Recruiter', 'Accountant', 'Financial Analyst', 'Customer Success Manager', 'Support Specialist', 'QA Engineer', 'UX Designer', 'Content Writer', 'Legal Counsel', 'Office Administrator', 'Executive Assistant', 'Intern'] },
             { id: 'joinDate', label: 'تاريخ التعيين', type: 'date' },
-            { id: 'contractType', label: 'نوع العقد', type: 'select', options: ['Full Time', 'Part Time', 'Freelance', 'Contract'] },
+            { id: 'contractType', label: 'نوع العقد', type: 'select', options: ['Full Time - Permanent', 'Full Time - Fixed Term', 'Part Time', 'Freelance', 'Contract', 'Internship', 'Temporary', 'Consultant'] },
             { id: 'basicSalary', label: 'الراتب الأساسي', type: 'number', required: true, onChange: 'calcSalary' },
             { id: 'incentives', label: 'الحوافز', type: 'number', onChange: 'calcSalary' },
             { id: 'deductions', label: 'الاستقطاعات', type: 'number', onChange: 'calcSalary' },
             { id: 'netSalary', label: 'صافي الراتب', type: 'money', readonly: true },
-            { id: 'status', label: 'الحالة', type: 'select', options: ['Active', 'On Leave', 'Resigned', 'Terminated'] }
+            { id: 'status', label: 'الحالة', type: 'select', options: ['Active', 'On Leave', 'Sick Leave', 'Maternity Leave', 'Resigned', 'Terminated', 'Retired', 'Probation'] }
         ],
         config: {},
         handlers: {

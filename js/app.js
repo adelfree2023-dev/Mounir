@@ -40,6 +40,11 @@ const engine = {
                 this.saveRecord();
             };
         }
+
+        // NEW: Auto-fill form on schema switch for better UX
+        setTimeout(() => {
+            this.autoFill();
+        }, 300); // Small delay to ensure all selects are populated
     },
 
     loadData: function () {

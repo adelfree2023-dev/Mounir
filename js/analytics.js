@@ -147,6 +147,13 @@ const AnalyticsEngine = {
         this.updateDataStatus();
     },
 
+    // Helper to format large numbers - NEW
+    formatLargeNumber: function (num) {
+        if (num >= 1000000) return `$${(num / 1000000).toFixed(1)}M`;
+        if (num >= 10000) return `$${(num / 1000).toFixed(1)}K`;
+        return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    },
+
     // Calculate Key Performance Indicators
     calculateKPIs: function () {
         const totalSales = this.filteredData.reduce((sum, d) => sum + parseFloat(d.netSales || 0), 0);
@@ -166,11 +173,11 @@ const AnalyticsEngine = {
             ? discounts.reduce((a, b) => a + b, 0) / discounts.length
             : 0;
 
-        // Update DOM
-        document.getElementById('totalSales').textContent = `$${totalSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        document.getElementById('totalProfit').textContent = `$${totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        // Update DOM with smart formatting - FIXED
+        document.getElementById('totalSales').textContent = this.formatLargeNumber(totalSales);
+        document.getElementById('totalProfit').textContent = this.formatLargeNumber(totalProfit);
         document.getElementById('totalOrders').textContent = totalOrders.toLocaleString();
-        document.getElementById('avgOrderValue').textContent = `$${avgOrderValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('avgOrderValue').textContent = this.formatLargeNumber(avgOrderValue);
         document.getElementById('avgProfitMargin').textContent = `${avgProfitMargin.toFixed(1)}%`;
         document.getElementById('avgDiscount').textContent = `${avgDiscount.toFixed(1)}%`;
     },

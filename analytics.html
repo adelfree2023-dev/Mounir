@@ -40,42 +40,30 @@
                     <label>إلى تاريخ</label>
                     <input type="date" id="endDate" class="date-input">
                 </div>
-                <button class="btn-apply-filter" onclick="AnalyticsEngine.applyFilters()">
+                <button class="btn-apply-filter" onclick="UniversalAnalytics.applyFilters()">
                     ✓ تطبيق
                 </button>
-                <button class="btn-reset-filter" onclick="AnalyticsEngine.resetFilters()">
+                <button class="btn-reset-filter" onclick="UniversalAnalytics.resetFilters()">
                     ↺ إعادة تعيين
                 </button>
             </div>
 
             <!-- Quick Filter Buttons -->
             <div class="quick-filters">
-                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('last30')">
+                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('last30')">
                     آخر 30 يوم
                 </button>
-                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('last90')">
+                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('last90')">
                     آخر 90 يوم
                 </button>
-                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('thisYear')">
+                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('thisYear')">
                     هذا العام
                 </button>
-                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('lastYear')">
+                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('lastYear')">
                     العام الماضي
                 </button>
             </div>
 
-            <!-- NEW: Emergency Data Fix/Reset -->
-            <div style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
-                <button class="btn-reset-filter"
-                    style="background: #ff4444; color: white; width: 100%; margin-bottom: 5px;"
-                    onclick="AnalyticsEngine.factoryReset()">
-                    🗑️ حذف جميع البيانات (بدء جديد)
-                </button>
-                <button class="btn-apply-filter" style="background: #2196F3; width: 100%;"
-                    onclick="AnalyticsEngine.fixDataFormat()">
-                    🔧 إصلاح تنسيق البيانات
-                </button>
-            </div>
 
             <!-- Active Filter Display -->
             <div class="active-filter-display" id="activeFilterDisplay">

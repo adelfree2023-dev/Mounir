@@ -441,3 +441,14 @@
 .empty-state a:hover {
     transform: translateY(-2px);
 }
+/* Learning Dashboard Styles - NEW */
+
+/*== Learning Dashboard Container ==*/
+.learning-dashboard {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px 0;
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}

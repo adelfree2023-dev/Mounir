@@ -43,10 +43,9 @@ const Analytics = {
     applyFilter() {
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
-        const fields = this.getFieldMap();
 
         this.filteredData = this.allData.filter(record => {
-            const date = record[fields.date] || record.date || record.orderDate;
+            const date = record.orderDate || record.date;
             return date >= start && date <= end;
         });
 
@@ -75,32 +74,28 @@ const Analytics = {
     // ========================================
     calculateKPIs() {
         const data = this.filteredData;
-        const fields = this.getFieldMap();
 
-        const totalValue = data.reduce((sum, r) => sum + (parseFloat(r[fields.value]) || 0), 0);
-        const totalValue2 = data.reduce((sum, r) => sum + (parseFloat(r[fields.value2]) || 0), 0);
-        const totalRecords = data.length;
-        const avgValue = totalRecords > 0 ? totalValue / totalRecords : 0;
-        const ratio = totalValue > 0 ? (totalValue2 / totalValue) * 100 : 0;
-        const avgValue2 = totalRecords > 0 ? totalValue2 / totalRecords : 0;
+        const totalSales = data.reduce((sum, r) => sum + (parseFloat(r.netSales) || 0), 0);
+        const totalProfit = data.reduce((sum, r) => sum + (parseFloat(r.profit) || 0), 0);
+        const totalOrders = data.length;
+        const avgOrder = totalOrders > 0 ? totalSales / totalOrders : 0;
+        const profitMargin = totalSales > 0 ? (totalProfit / totalSales) * 100 : 0;
+        const avgDiscount = data.length > 0
+            ? data.reduce((sum, r) => sum + (parseFloat(r.discountPercent) || 0), 0) / data.length
+            : 0;
 
-        return { totalValue, totalValue2, totalRecords, avgValue, ratio, avgValue2 };
+        return { totalSales, totalProfit, totalOrders, avgOrder, profitMargin, avgDiscount };
     },
 
     updateKPIs() {
         const kpis = this.calculateKPIs();
-        const fields = this.getFieldMap();
 
-        // Update with currency format for financial schemas
-        const isFinancial = ['sales', 'finance', 'purchasing', 'suppliers', 'inventory', 'real_estate', 'hotel_booking', 'travel_flights', 'medical_records', 'events', 'campaigns', 'ads'].includes(this.currentSchema);
-        const prefix = isFinancial ? '$' : '';
-
-        document.getElementById('totalSales').textContent = `${prefix}${kpis.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        document.getElementById('totalProfit').textContent = `${prefix}${kpis.totalValue2.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-        document.getElementById('totalOrders').textContent = kpis.totalRecords.toLocaleString();
-        document.getElementById('avgOrder').textContent = `${prefix}${kpis.avgValue.toFixed(2)}`;
-        document.getElementById('profitMargin').textContent = `${kpis.ratio.toFixed(1)}%`;
-        document.getElementById('avgDiscount').textContent = `${kpis.avgValue2.toFixed(1)}`;
+        document.getElementById('totalSales').textContent = `$${kpis.totalSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('totalProfit').textContent = `$${kpis.totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('totalOrders').textContent = kpis.totalOrders.toLocaleString();
+        document.getElementById('avgOrder').textContent = `$${kpis.avgOrder.toFixed(2)}`;
+        document.getElementById('profitMargin').textContent = `${kpis.profitMargin.toFixed(1)}%`;
+        document.getElementById('avgDiscount').textContent = `${kpis.avgDiscount.toFixed(1)}%`;
     },
 
     // ========================================
@@ -108,22 +103,21 @@ const Analytics = {
     // ========================================
     renderSalesTrend() {
         const monthlyData = {};
-        const fields = this.getFieldMap();
 
         this.filteredData.forEach(record => {
-            const month = (record[fields.date] || '').substring(0, 7);
+            const month = (record.orderDate || '').substring(0, 7);
             if (!month) return;
 
             if (!monthlyData[month]) {
-                monthlyData[month] = { value1: 0, value2: 0 };
+                monthlyData[month] = { sales: 0, profit: 0 };
             }
-            monthlyData[month].value1 += parseFloat(record[fields.value]) || 0;
-            monthlyData[month].value2 += parseFloat(record[fields.value2]) || 0;
+            monthlyData[month].sales += parseFloat(record.netSales) || 0;
+            monthlyData[month].profit += parseFloat(record.profit) || 0;
         });
 
         const months = Object.keys(monthlyData).sort();
-        const data1 = months.map(m => monthlyData[m].value1);
-        const data2 = months.map(m => monthlyData[m].value2);
+        const salesData = months.map(m => monthlyData[m].sales);
+        const profitData = months.map(m => monthlyData[m].profit);
 
         if (this.charts.salesTrend) this.charts.salesTrend.destroy();
 
@@ -133,16 +127,16 @@ const Analytics = {
                 labels: months,
                 datasets: [
                     {
-                        label: 'Primary',
-                        data: data1,
+                        label: 'المبيعات',
+                        data: salesData,
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         tension: 0.4,
                         fill: true
                     },
                     {
-                        label: 'Secondary',
-                        data: data2,
+                        label: 'الأرباح',
+                        data: profitData,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         tension: 0.4,
@@ -163,11 +157,10 @@ const Analytics = {
     // ========================================
     renderProductsChart() {
         const productData = {};
-        const fields = this.getFieldMap();
 
         this.filteredData.forEach(record => {
-            const category = record[fields.category] || 'Unknown';
-            productData[category] = (productData[category] || 0) + (parseFloat(record[fields.value]) || 0);
+            const product = record.productCategory || 'Unknown';
+            productData[product] = (productData[product] || 0) + (parseFloat(record.netSales) || 0);
         });
 
         if (this.charts.products) this.charts.products.destroy();
@@ -255,11 +248,10 @@ const Analytics = {
     // ========================================
     renderTopProducts() {
         const productMap = {};
-        const fields = this.getFieldMap();
 
         this.filteredData.forEach(record => {
-            const item = record[fields.name] || 'Unknown';
-            productMap[item] = (productMap[item] || 0) + (parseFloat(record[fields.value]) || 0);
+            const product = record.productName || 'Unknown';
+            productMap[product] = (productMap[product] || 0) + (parseFloat(record.netSales) || 0);
         });
 
         const sorted = Object.entries(productMap)
@@ -281,16 +273,14 @@ const Analytics = {
     // 9. TABLE: TOP COUNTRIES
     // ========================================
     renderTopCountries() {
-        const fields = this.getFieldMap();
-        const categoryMap = {};
+        const countryMap = {};
 
         this.filteredData.forEach(record => {
-            // Try country first, then fall back to category
-            const key = record.country || record[fields.category] || 'Unknown';
-            categoryMap[key] = (categoryMap[key] || 0) + (parseFloat(record[fields.value]) || 0);
+            const country = record.country || 'Unknown';
+            countryMap[country] = (countryMap[country] || 0) + (parseFloat(record.netSales) || 0);
         });
 
-        const sorted = Object.entries(categoryMap)
+        const sorted = Object.entries(countryMap)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5);
 
@@ -332,11 +322,10 @@ const Analytics = {
     // ========================================
     renderABCAnalysis() {
         const productData = {};
-        const fields = this.getFieldMap();
 
         this.filteredData.forEach(record => {
-            const product = record[fields.name] || 'Unknown';
-            productData[product] = (productData[product] || 0) + (parseFloat(record[fields.value]) || 0);
+            const product = record.productName || 'Unknown';
+            productData[product] = (productData[product] || 0) + (parseFloat(record.netSales) || 0);
         });
 
         const sorted = Object.entries(productData)
@@ -344,6 +333,8 @@ const Analytics = {
 
         const totalSales = sorted.reduce((sum, item) => sum + item[1], 0);
         let cumulative = 0;
+
+        const abc = { A: [], B: [], C: [] }; // Define abc here
 
         sorted.forEach(([product, sales]) => {
             cumulative += sales;
@@ -396,10 +387,9 @@ const Analytics = {
     renderRFMSegmentation() {
         const customers = {};
         const today = new Date();
-        const fields = this.getFieldMap();
 
         this.filteredData.forEach(record => {
-            const customer = record.salesRepName || record.customerName || record[fields.name] || 'Unknown';
+            const customer = record.salesRepName || record.customerName || 'Unknown';
             if (!customers[customer]) {
                 customers[customer] = {
                     recency: 0,
@@ -409,13 +399,13 @@ const Analytics = {
                 };
             }
 
-            const date = new Date(record[fields.date] || today);
+            const date = new Date(record.orderDate || today);
             if (!customers[customer].lastDate || date > customers[customer].lastDate) {
                 customers[customer].lastDate = date;
             }
 
             customers[customer].frequency++;
-            customers[customer].monetary += parseFloat(record[fields.value]) || 0;
+            customers[customer].monetary += parseFloat(record.netSales) || 0;
         });
 
         // Calculate recency
@@ -472,25 +462,24 @@ const Analytics = {
     // 13. ADVANCED STATISTICS
     // ========================================
     renderAdvancedStats() {
-        const fields = this.getFieldMap();
-        const values = this.filteredData.map(r => parseFloat(r[fields.value]) || 0);
-        if (values.length === 0) return;
+        const sales = this.filteredData.map(r => parseFloat(r.netSales) || 0);
+        if (sales.length === 0) return;
 
         // Growth Rate
-        const half = Math.floor(values.length / 2);
-        const firstHalf = values.slice(0, half);
-        const secondHalf = values.slice(half);
+        const half = Math.floor(sales.length / 2);
+        const firstHalf = sales.slice(0, half);
+        const secondHalf = sales.slice(half);
         const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
         const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
         const growthRate = avgFirst > 0 ? ((avgSecond - avgFirst) / avgFirst) * 100 : 0;
 
         // Standard Deviation
-        const mean = values.reduce((a, b) => a + b, 0) / values.length;
-        const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+        const mean = sales.reduce((a, b) => a + b, 0) / sales.length;
+        const variance = sales.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / sales.length;
         const stdDev = Math.sqrt(variance);
 
         // Median
-        const sorted = [...values].sort((a, b) => a - b);
+        const sorted = [...sales].sort((a, b) => a - b);
         const median = sorted.length % 2 === 0
             ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
             : sorted[Math.floor(sorted.length / 2)];
@@ -592,21 +581,20 @@ const Analytics = {
         const data = this.filteredData;
         if (data.length < 3) return;
 
-        const fields = this.getFieldMap();
-        const values = data.map(r => parseFloat(r[fields.value]) || 0);
-        const mean = values.reduce((a, b) => a + b, 0) / values.length;
-        const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+        const sales = data.map(r => parseFloat(r.netSales) || 0);
+        const mean = sales.reduce((a, b) => a + b, 0) / sales.length;
+        const variance = sales.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / sales.length;
         const stdDev = Math.sqrt(variance);
 
         // Find anomalies (Z-Score > 2)
         const anomalies = [];
         data.forEach((record, i) => {
-            const value = parseFloat(record[fields.value]) || 0;
+            const value = parseFloat(record.netSales) || 0;
             const zScore = stdDev === 0 ? 0 : (value - mean) / stdDev;
 
             if (Math.abs(zScore) > 2) {
                 anomalies.push({
-                    date: record[fields.date] || record.date || '-',
+                    date: record.orderDate || record.date || '-',
                     value: value,
                     zScore: zScore
                 });

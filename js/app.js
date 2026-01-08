@@ -335,9 +335,28 @@ const engine = {
             if (opts && opts.length > 0) {
                 val = opts[Math.floor(Math.random() * opts.length)];
             } else if (f.type === 'number' || f.type === 'money' || f.type === 'percent') {
-                // Calculated fields will be filled by onChange handlers
+                // Smart number generation based on field name
                 if (!f.readonly) {
-                    val = Math.floor(Math.random() * 100) + 1;
+                    // Price fields - realistic prices
+                    if (f.id.includes('Price') || f.id.includes('price') || f.id.includes('Cost') || f.id.includes('cost')) {
+                        val = Math.floor(Math.random() * 500) + 50; // $50-550
+                    }
+                    // Quantity fields - realistic quantities
+                    else if (f.id.includes('quantity') || f.id.includes('Quantity') || f.id.includes('qty')) {
+                        val = Math.floor(Math.random() * 20) + 1; // 1-20
+                    }
+                    // Percent fields - realistic percentages
+                    else if (f.type === 'percent' || f.id.includes('percent') || f.id.includes('rate')) {
+                        val = Math.floor(Math.random() * 20); // 0-20%
+                    }
+                    // Amount fields - larger values
+                    else if (f.id.includes('amount') || f.id.includes('Amount')) {
+                        val = Math.floor(Math.random() * 10000) + 100; // $100-10,100
+                    }
+                    // Default - moderate values
+                    else {
+                        val = Math.floor(Math.random() * 200) + 1; // 1-200
+                    }
                 }
             } else if (f.type === 'time') {
                 const h = String(Math.floor(Math.random() * 9) + 8).padStart(2, '0');

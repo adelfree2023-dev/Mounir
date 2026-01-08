@@ -26,6 +26,50 @@
             </div>
         </div>
 
+        <!-- Filter Panel -->
+        <div class="filter-panel">
+            <h3>📅 فلترة حسب التاريخ</h3>
+
+            <!-- Date Range Inputs -->
+            <div class="date-range-inputs">
+                <div class="date-input-group">
+                    <label>من تاريخ</label>
+                    <input type="date" id="startDate" class="date-input">
+                </div>
+                <div class="date-input-group">
+                    <label>إلى تاريخ</label>
+                    <input type="date" id="endDate" class="date-input">
+                </div>
+                <button class="btn-apply-filter" onclick="AnalyticsEngine.applyFilters()">
+                    ✓ تطبيق
+                </button>
+                <button class="btn-reset-filter" onclick="AnalyticsEngine.resetFilters()">
+                    ↺ إعادة تعيين
+                </button>
+            </div>
+
+            <!-- Quick Filter Buttons -->
+            <div class="quick-filters">
+                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('last30')">
+                    آخر 30 يوم
+                </button>
+                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('last90')">
+                    آخر 90 يوم
+                </button>
+                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('thisYear')">
+                    هذا العام
+                </button>
+                <button class="btn-quick-filter" onclick="AnalyticsEngine.setQuickFilter('lastYear')">
+                    العام الماضي
+                </button>
+            </div>
+
+            <!-- Active Filter Display -->
+            <div class="active-filter-display" id="activeFilterDisplay">
+                عرض جميع البيانات
+            </div>
+        </div>
+
         <!-- KPIs Section -->
         <div class="kpis-container">
             <div class="kpi-card">
@@ -73,6 +117,29 @@
                 <div class="kpi-content">
                     <div class="kpi-label">متوسط الخصم</div>
                     <div class="kpi-value" id="avgDiscount">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistical Summary -->
+        <div class="statistical-summary">
+            <h3>📊 التحليل الإحصائي المتقدم</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">معدل النمو</span>
+                    <span class="stat-value" id="growthRate">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">الانحراف المعياري</span>
+                    <span class="stat-value" id="stdDeviation">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">الوسيط</span>
+                    <span class="stat-value" id="medianSales">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">اتجاه السوق</span>
+                    <span class="stat-value" id="trendDirection">-</span>
                 </div>
             </div>
         </div>

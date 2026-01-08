@@ -1,7 +1,9 @@
-// Analytics Engine - Data Analysis & Visualization
+// Analytics Engine - Data Analysis & Visualization with Advanced Filtering
 const AnalyticsEngine = {
     data: [],
+    filteredData: [], // NEW: Filtered dataset
     charts: {},
+    currentFilter: null, // NEW: Track active filter
 
     // Initialize the dashboard
     init: function () {
@@ -12,7 +14,10 @@ const AnalyticsEngine = {
             return;
         }
 
+        this.filteredData = [...this.data]; // Start with all data
+        this.setDefaultDateRange(); // NEW
         this.calculateKPIs();
+        this.calculateAdvancedStats(); // NEW
         this.renderCharts();
         this.renderTables();
         this.updateDataStatus();
@@ -32,21 +37,131 @@ const AnalyticsEngine = {
         }
     },
 
+    // NEW: Set default date range on load
+    setDefaultDateRange: function () {
+        const dates = this.data.map(d => new Date(d.orderDate)).filter(d => !isNaN(d));
+        if (dates.length === 0) return;
+
+        const minDate = new Date(Math.min(...dates));
+        const maxDate = new Date(Math.max(...dates));
+
+        const startInput = document.getElementById('startDate');
+        const endInput = document.getElementById('endDate');
+
+        if (startInput && endInput) {
+            startInput.value = minDate.toISOString().split('T')[0];
+            endInput.value = maxDate.toISOString().split('T')[0];
+            startInput.min = minDate.toISOString().split('T')[0];
+            startInput.max = maxDate.toISOString().split('T')[0];
+            endInput.min = minDate.toISOString().split('T')[0];
+            endInput.max = maxDate.toISOString().split('T')[0];
+        }
+
+        this.updateActiveFilterDisplay();
+    },
+
+    // NEW: Apply date range filter
+    applyFilters: function () {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+            alert('⚠️ الرجاء اختيار تاريخ البداية والنهاية');
+            return;
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59); // Include entire end day
+
+        this.filteredData = this.data.filter(d => {
+            const orderDate = new Date(d.orderDate);
+            return orderDate >= start && orderDate <= end;
+        });
+
+        this.currentFilter = { start: startDate, end: endDate };
+        this.updateActiveFilterDisplay();
+        this.refreshAnalytics();
+    },
+
+    // NEW: Quick filter presets
+    setQuickFilter: function (preset) {
+        const endDate = new Date();
+        let startDate = new Date();
+
+        switch (preset) {
+            case 'last30':
+                startDate.setDate(endDate.getDate() - 30);
+                break;
+            case 'last90':
+                startDate.setDate(endDate.getDate() - 90);
+                break;
+            case 'thisYear':
+                startDate = new Date(endDate.getFullYear(), 0, 1);
+                break;
+            case 'lastYear':
+                startDate = new Date(endDate.getFullYear() - 1, 0, 1);
+                endDate.setFullYear(endDate.getFullYear() - 1, 11, 31);
+                break;
+        }
+
+        document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+        document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+
+        this.applyFilters();
+    },
+
+    // NEW: Reset filters
+    resetFilters: function () {
+        this.filteredData = [...this.data];
+        this.currentFilter = null;
+        this.setDefaultDateRange();
+        this.refreshAnalytics();
+    },
+
+    // NEW: Update filter display
+    updateActiveFilterDisplay: function () {
+        const display = document.getElementById('activeFilterDisplay');
+        if (!display) return;
+
+        if (this.currentFilter) {
+            const start = new Date(this.currentFilter.start).toLocaleDateString('ar-EG');
+            const end = new Date(this.currentFilter.end).toLocaleDateString('ar-EG');
+            display.textContent = `📅 من ${start} إلى ${end} (${this.filteredData.length} سجل)`;
+        } else {
+            display.textContent = `عرض جميع البيانات (${this.data.length} سجل)`;
+        }
+    },
+
+    // NEW: Refresh all analytics
+    refreshAnalytics: function () {
+        this.calculateKPIs();
+        this.calculateAdvancedStats();
+
+        // Destroy old charts
+        Object.values(this.charts).forEach(chart => chart.destroy());
+        this.charts = {};
+
+        this.renderCharts();
+        this.renderTables();
+        this.updateDataStatus();
+    },
+
     // Calculate Key Performance Indicators
     calculateKPIs: function () {
-        const totalSales = this.data.reduce((sum, d) => sum + parseFloat(d.netSales || 0), 0);
-        const totalProfit = this.data.reduce((sum, d) => sum + parseFloat(d.profit || 0), 0);
-        const totalOrders = this.data.length;
+        const totalSales = this.filteredData.reduce((sum, d) => sum + parseFloat(d.netSales || 0), 0);
+        const totalProfit = this.filteredData.reduce((sum, d) => sum + parseFloat(d.profit || 0), 0);
+        const totalOrders = this.filteredData.length;
         const avgOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
 
-        const profitMargins = this.data
+        const profitMargins = this.filteredData
             .map(d => parseFloat(d.profitMargin || 0))
             .filter(v => v > 0);
         const avgProfitMargin = profitMargins.length > 0
             ? profitMargins.reduce((a, b) => a + b, 0) / profitMargins.length
             : 0;
 
-        const discounts = this.data.map(d => parseFloat(d.discountPercent || 0));
+        const discounts = this.filteredData.map(d => parseFloat(d.discountPercent || 0));
         const avgDiscount = discounts.length > 0
             ? discounts.reduce((a, b) => a + b, 0) / discounts.length
             : 0;
@@ -60,6 +175,72 @@ const AnalyticsEngine = {
         document.getElementById('avgDiscount').textContent = `${avgDiscount.toFixed(1)}%`;
     },
 
+    // NEW: Calculate advanced statistics
+    calculateAdvancedStats: function () {
+        const salesData = this.filteredData
+            .map(d => parseFloat(d.netSales || 0))
+            .filter(v => v > 0)
+            .sort((a, b) => a - b);
+
+        if (salesData.length === 0) {
+            document.getElementById('growthRate').textContent = '-';
+            document.getElementById('stdDeviation').textContent = '-';
+            document.getElementById('medianSales').textContent = '-';
+            document.getElementById('trendDirection').textContent = '-';
+            return;
+        }
+
+        // Mean
+        const mean = salesData.reduce((a, b) => a + b, 0) / salesData.length;
+
+        // Median
+        const mid = Math.floor(salesData.length / 2);
+        const median = salesData.length % 2 === 0
+            ? (salesData[mid - 1] + salesData[mid]) / 2
+            : salesData[mid];
+
+        // Standard Deviation
+        const variance = salesData.reduce((sum, val) =>
+            sum + Math.pow(val - mean, 2), 0) / salesData.length;
+        const stdDev = Math.sqrt(variance);
+
+        // Growth Rate (first half vs second half)
+        const halfPoint = Math.floor(this.filteredData.length / 2);
+        const firstHalf = this.filteredData.slice(0, halfPoint);
+        const secondHalf = this.filteredData.slice(halfPoint);
+
+        const avgFirst = firstHalf.reduce((sum, d) =>
+            sum + parseFloat(d.netSales || 0), 0) / firstHalf.length;
+        const avgSecond = secondHalf.reduce((sum, d) =>
+            sum + parseFloat(d.netSales || 0), 0) / secondHalf.length;
+
+        const growthRate = avgFirst > 0
+            ? ((avgSecond - avgFirst) / avgFirst) * 100
+            : 0;
+
+        // Trend Direction
+        let trendDirection = '→ ثابت';
+        let trendColor = '#94a3b8';
+        if (growthRate > 5) {
+            trendDirection = '↗ صاعد';
+            trendColor = '#10b981';
+        } else if (growthRate < -5) {
+            trendDirection = '↘ هابط';
+            trendColor = '#ef4444';
+        }
+
+        // Update DOM
+        document.getElementById('growthRate').textContent = `${growthRate.toFixed(1)}%`;
+        document.getElementById('growthRate').style.color = growthRate > 0 ? '#10b981' : growthRate < 0 ? '#ef4444' : '#94a3b8';
+
+        document.getElementById('stdDeviation').textContent = `$${stdDev.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
+        document.getElementById('medianSales').textContent = `$${median.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+        const trendEl = document.getElementById('trendDirection');
+        trendEl.textContent = trendDirection;
+        trendEl.style.color = trendColor;
+    },
+
     // Render all charts
     renderCharts: function () {
         this.renderSalesTrendChart();
@@ -71,7 +252,7 @@ const AnalyticsEngine = {
 
     // 1. Sales Trend Chart (Line Chart)
     renderSalesTrendChart: function () {
-        const monthlyData = this.groupByMonth(this.data);
+        const monthlyData = this.groupByMonth(this.filteredData);
 
         const ctx = document.getElementById('salesTrendChart');
         this.charts.salesTrend = new Chart(ctx, {
@@ -402,7 +583,7 @@ const AnalyticsEngine = {
         const productSales = {};
         const productProfit = {};
 
-        this.data.forEach(d => {
+        this.filteredData.forEach(d => {
             const product = d.productName || 'Unknown';
             const sales = parseFloat(d.netSales || 0);
             const profit = parseFloat(d.profit || 0);
@@ -436,7 +617,7 @@ const AnalyticsEngine = {
         const countrySales = {};
         const countryProfit = {};
 
-        this.data.forEach(d => {
+        this.filteredData.forEach(d => {
             const country = d.country || 'Unknown';
             const sales = parseFloat(d.netSales || 0);
             const profit = parseFloat(d.profit || 0);
@@ -501,7 +682,7 @@ const AnalyticsEngine = {
     groupByField: function (field, sumField) {
         const grouped = {};
 
-        this.data.forEach(d => {
+        this.filteredData.forEach(d => {
             const key = d[field] || 'Unknown';
             const value = parseFloat(d[sumField] || 0);
 
@@ -516,7 +697,7 @@ const AnalyticsEngine = {
 
     // Update data status
     updateDataStatus: function () {
-        document.getElementById('recordCount').textContent = this.data.length.toLocaleString();
+        document.getElementById('recordCount').textContent = this.filteredData.length.toLocaleString();
     },
 
     // Show empty state

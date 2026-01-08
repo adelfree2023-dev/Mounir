@@ -723,6 +723,34 @@ const engine = {
         } else {
             this.showToast('❌ يرجى إدخال رقم صحيح');
         }
+    },
+
+    // CRITICAL FIX: Explicit save function
+    saveToStorage: function () {
+        if (!this.currentSchema) return;
+        const key = `data_${this.currentSchema.id}`;
+
+        // Clean data before saving (remove currency symbols if any)
+        const cleanData = this.data.map(r => {
+            const newR = { ...r };
+            // Ensure numbers are numbers
+            if (newR.netSales) newR.netSales = this.parseNumber(newR.netSales);
+            if (newR.profit) newR.profit = this.parseNumber(newR.profit);
+            return newR;
+        });
+
+        localStorage.setItem(key, JSON.stringify(cleanData));
+        // Also save to legacy key just in case
+        if (this.currentSchema.id === 'sales') {
+            localStorage.setItem('salesData', JSON.stringify(cleanData));
+        }
+        console.log(`Saved ${cleanData.length} records to ${key}`);
+    },
+
+    parseNumber: function (val) {
+        if (typeof val === 'number') return val;
+        if (!val) return 0;
+        return parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
     }
 };
 

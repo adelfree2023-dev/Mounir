@@ -322,6 +322,120 @@
                 </table>
             </div>
         </div>
+
+        <!-- Advanced Analytics Sections -->
+        <div style="margin-top: 40px; padding-top: 40px; border-top: 2px solid var(--border);">
+            <h2 style="text-align: center; margin-bottom: 30px; color: white;">🚀 تحليلات متقدمة</h2>
+
+            <!-- ABC Analysis Section -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>🎯 ABC Analysis - تصنيف المنتجات</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">اكتشف المنتجات عالية القيمة (قاعدة 80/20)
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;">
+                    <div
+                        style="background: linear-gradient(135deg, #10b981, #059669); padding: 20px; border-radius: 10px;">
+                        <h4 style="margin: 0 0 10px 0; color: white;">🌟 فئة A - عالية</h4>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: white;" id="abc-a-percent">0%</div>
+                        <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;" id="abc-a-count">0 منتج</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 20px; border-radius: 10px;">
+                        <h4 style="margin: 0 0 10px 0; color: white;">⚡ فئة B - متوسطة</h4>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: white;" id="abc-b-percent">0%</div>
+                        <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;" id="abc-b-count">0 منتج</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #6b7280, #4b5563); padding: 20px; border-radius: 10px;">
+                        <h4 style="margin: 0 0 10px 0; color: white;">📦 فئة C - منخفضة</h4>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: white;" id="abc-c-percent">0%</div>
+                        <div style="color: rgba(255,255,255,0.8); font-size: 0.9rem;" id="abc-c-count">0 منتج</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="abcChart"></canvas>
+                </div>
+            </div>
+
+            <!-- RFM Segmentation Section -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>👥 RFM Segmentation - تقسيم العملاء</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Recency (الحداثة) | Frequency (التكرار) |
+                    Monetary (القيمة)</p>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div
+                        style="background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">🏆</div>
+                        <div style="font-weight: bold; color: white;">Champions</div>
+                        <div style="font-size: 1.3rem; color: white; margin-top: 5px;" id="rfm-champions">0</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">💙</div>
+                        <div style="font-weight: bold; color: white;">Loyal</div>
+                        <div style="font-size: 1.3rem; color: white; margin-top: 5px;" id="rfm-loyal">0</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #10b981, #059669); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">🌱</div>
+                        <div style="font-weight: bold; color: white;">Potential</div>
+                        <div style="font-size: 1.3rem; color: white; margin-top: 5px;" id="rfm-potential">0</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">⚠️</div>
+                        <div style="font-weight: bold; color: white;">At Risk</div>
+                        <div style="font-size: 1.3rem; color: white; margin-top: 5px;" id="rfm-at-risk">0</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #6b7280, #4b5563); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">😔</div>
+                        <div style="font-weight: bold; color: white;">Lost</div>
+                        <div style="font-size: 1.3rem; color: white; margin-top: 5px;" id="rfm-lost">0</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="rfmChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Advanced Statistics -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>🧠 Advanced Statistics - إحصائيات متقدمة</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div
+                        style="background: rgba(59, 130, 246, 0.1); padding: 20px; border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">معدل النمو</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: white; margin-top: 5px;"
+                            id="growth-rate">0%</div>
+                    </div>
+                    <div
+                        style="background: rgba(16, 185, 129, 0.1); padding: 20px; border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">الانحراف المعياري</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: white; margin-top: 5px;"
+                            id="std-deviation">$0</div>
+                    </div>
+                    <div
+                        style="background: rgba(245, 158, 11, 0.1); padding: 20px; border-radius: 10px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">الوسيط</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: white; margin-top: 5px;" id="median">$0
+                        </div>
+                    </div>
+                    <div
+                        style="background: rgba(139, 92, 246, 0.1); padding: 20px; border-radius: 10px; border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">اتجاه السوق</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: white; margin-top: 5px;" id="trend">→️
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Analytics Logic -->

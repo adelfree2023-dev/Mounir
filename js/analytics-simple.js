@@ -302,6 +302,189 @@ const Analytics = {
         this.renderChannelsChart();
         this.renderTopProducts();
         this.renderTopCountries();
+
+        // Advanced Analytics
+        this.renderABCAnalysis();
+        this.renderRFMSegmentation();
+        this.renderAdvancedStats();
+    },
+
+    // ========================================
+    // 11. ABC ANALYSIS
+    // ========================================
+    renderABCAnalysis() {
+        const productData = {};
+
+        this.filteredData.forEach(record => {
+            const product = record.productName || 'Unknown';
+            productData[product] = (productData[product] || 0) + (parseFloat(record.netSales) || 0);
+        });
+
+        const sorted = Object.entries(productData)
+            .sort((a, b) => b[1] - a[1]);
+
+        const totalSales = sorted.reduce((sum, item) => sum + item[1], 0);
+        let cumulative = 0;
+        const abc = { A: [], B: [], C: [] };
+
+        sorted.forEach(([product, sales]) => {
+            cumulative += sales;
+            const percent = (cumulative / totalSales) * 100;
+
+            if (percent <= 80) {
+                abc.A.push([product, sales]);
+            } else if (percent <= 95) {
+                abc.B.push([product, sales]);
+            } else {
+                abc.C.push([product, sales]);
+            }
+        });
+
+        // Update UI
+        const aPercent = (abc.A.reduce((s, i) => s + i[1], 0) / totalSales) * 100;
+        const bPercent = (abc.B.reduce((s, i) => s + i[1], 0) / totalSales) * 100;
+        const cPercent = (abc.C.reduce((s, i) => s + i[1], 0) / totalSales) * 100;
+
+        document.getElementById('abc-a-percent').textContent = `${aPercent.toFixed(1)}%`;
+        document.getElementById('abc-a-count').textContent = `${abc.A.length} منتج`;
+        document.getElementById('abc-b-percent').textContent = `${bPercent.toFixed(1)}%`;
+        document.getElementById('abc-b-count').textContent = `${abc.B.length} منتج`;
+        document.getElementById('abc-c-percent').textContent = `${cPercent.toFixed(1)}%`;
+        document.getElementById('abc-c-count').textContent = `${abc.C.length} منتج`;
+
+        // ABC Chart
+        if (this.charts.abc) this.charts.abc.destroy();
+
+        this.charts.abc = new Chart(document.getElementById('abcChart'), {
+            type: 'bar',
+            data: {
+                labels: ['A (High)', 'B (Medium)', 'C (Low)'],
+                datasets: [{
+                    label: 'Number of Products',
+                    data: [abc.A.length, abc.B.length, abc.C.length],
+                    backgroundColor: ['#10b981', '#f59e0b', '#6b7280']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    },
+
+    // ========================================
+    // 12. RFM SEGMENTATION
+    // ========================================
+    renderRFMSegmentation() {
+        const customers = {};
+        const today = new Date();
+
+        this.filteredData.forEach(record => {
+            const customer = record.salesRepName || record.customerName || 'Unknown';
+            if (!customers[customer]) {
+                customers[customer] = {
+                    recency: 0,
+                    frequency: 0,
+                    monetary: 0,
+                    lastDate: null
+                };
+            }
+
+            const date = new Date(record.orderDate || today);
+            if (!customers[customer].lastDate || date > customers[customer].lastDate) {
+                customers[customer].lastDate = date;
+            }
+
+            customers[customer].frequency++;
+            customers[customer].monetary += parseFloat(record.netSales) || 0;
+        });
+
+        // Calculate recency
+        Object.values(customers).forEach(c => {
+            if (c.lastDate) {
+                const daysSince = Math.floor((today - c.lastDate) / (1000 * 60 * 60 * 24));
+                c.recency = daysSince;
+            }
+        });
+
+        // Segment customers
+        const segments = { champions: 0, loyal: 0, potential: 0, atRisk: 0, lost: 0 };
+
+        Object.values(customers).forEach(c => {
+            if (c.recency < 30 && c.frequency >= 5 && c.monetary > 1000) {
+                segments.champions++;
+            } else if (c.recency < 60 && c.frequency >= 3) {
+                segments.loyal++;
+            } else if (c.recency < 90 && c.frequency >= 2) {
+                segments.potential++;
+            } else if (c.recency < 180) {
+                segments.atRisk++;
+            } else {
+                segments.lost++;
+            }
+        });
+
+        // Update UI
+        document.getElementById('rfm-champions').textContent = segments.champions;
+        document.getElementById('rfm-loyal').textContent = segments.loyal;
+        document.getElementById('rfm-potential').textContent = segments.potential;
+        document.getElementById('rfm-at-risk').textContent = segments.atRisk;
+        document.getElementById('rfm-lost').textContent = segments.lost;
+
+        // RFM Chart
+        if (this.charts.rfm) this.charts.rfm.destroy();
+
+        this.charts.rfm = new Chart(document.getElementById('rfmChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Champions', 'Loyal', 'Potential', 'At Risk', 'Lost'],
+                datasets: [{
+                    data: [segments.champions, segments.loyal, segments.potential, segments.atRisk, segments.lost],
+                    backgroundColor: ['#fbbf24', '#3b82f6', '#10b981', '#f59e0b', '#6b7280']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    },
+
+    // ========================================
+    // 13. ADVANCED STATISTICS
+    // ========================================
+    renderAdvancedStats() {
+        const sales = this.filteredData.map(r => parseFloat(r.netSales) || 0);
+        if (sales.length === 0) return;
+
+        // Growth Rate
+        const half = Math.floor(sales.length / 2);
+        const firstHalf = sales.slice(0, half);
+        const secondHalf = sales.slice(half);
+        const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+        const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+        const growthRate = avgFirst > 0 ? ((avgSecond - avgFirst) / avgFirst) * 100 : 0;
+
+        // Standard Deviation
+        const mean = sales.reduce((a, b) => a + b, 0) / sales.length;
+        const variance = sales.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / sales.length;
+        const stdDev = Math.sqrt(variance);
+
+        // Median
+        const sorted = [...sales].sort((a, b) => a - b);
+        const median = sorted.length % 2 === 0
+            ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+            : sorted[Math.floor(sorted.length / 2)];
+
+        // Trend
+        const trend = growthRate > 5 ? '📈 صاعد' : growthRate < -5 ? '📉 هابط' : '→️ مستقر';
+
+        // Update UI
+        document.getElementById('growth-rate').textContent = `${growthRate > 0 ? '+' : ''}${growthRate.toFixed(1)}%`;
+        document.getElementById('std-deviation').textContent = `$${stdDev.toFixed(2)}`;
+        document.getElementById('median').textContent = `$${median.toFixed(2)}`;
+        document.getElementById('trend').textContent = trend;
     }
 };
 

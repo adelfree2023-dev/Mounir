@@ -1,110 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام البيانات العالمي - Universal Data Engine</title>
-    <!-- External Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- App Styles -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body>
-    <div class="container">
-        <div class="header">
-            <h1 id="appTitle">📊 نظام البيانات العالمي</h1>
-            <p id="appDesc">منصة إدارة بيانات متعددة الأغراض</p>
-
-            <div
-                style="margin-top: 20px; display: inline-block; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 10px;">
-                <select id="schemaSelector" onchange="engine.init(this.value)"
-                    style="padding: 10px 20px; border-radius: 8px; border: none; font-size: 1.1rem; background: var(--bg-input); color: white; cursor: pointer; min-width: 300px;">
-                    <optgroup label="🏢 Core Business (Phase 1)">
-                        <option value="sales">💰 Sales - المبيعات</option>
-                        <option value="employees">👥 Employees - الموظفين</option>
-                        <option value="attendance">🕒 Attendance - الحضور والانصراف</option>
-                        <option value="customers">🤝 Customers - العملاء</option>
-                        <option value="purchasing">🛒 Purchasing - المشتريات</option>
-                        <option value="suppliers">🚚 Suppliers - الموردين</option>
-                        <option value="inventory">📦 Inventory - المخازن</option>
-                        <option value="finance">💵 Finance - المالية</option>
-                        <option value="support">🎧 Support - خدمة العملاء</option>
-                        <option value="operations">⚙️ Operations - العمليات والصيانة</option>
-                    </optgroup>
-                    <optgroup label="🔮 Future Phases - مراحل قادمة">
-                        <option disabled>Marketing - التسويق (Phase 2)</option>
-                        <option disabled>IT & Tech - التقنية (Phase 3)</option>
-                        <option disabled>Education - التعليم (Phase 4)</option>
-                        <option disabled>Services - خدمات (Phase 5)</option>
-                    </optgroup>
-                </select>
-            </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-container" id="statsContainer"></div>
-
-        <!-- Dynamic Form -->
-        <div class="form-section">
-            <h2>📝 إدخال بيانات جديدة</h2>
-            <form id="dynamicForm">
-                <div class="form-grid" id="formContainer">
-                    <!-- Fields will be injected here -->
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-magic" onclick="engine.autoFill()">🎲 ملء تلقائي
-                        عشوائي</button>
-                    <button type="submit" class="btn btn-primary">➕ إضافة سجل جديد</button>
-                    <button type="button" class="btn btn-warning" onclick="engine.resetForm()">🔄 مسح النموذج</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Bulk Section -->
-        <div class="bulk-section">
-            <h3>⚡ توليد سجلات متعددة</h3>
-            <div class="bulk-buttons">
-                <button class="btn-bulk" onclick="engine.generateBulk(100)">📦 100 سجل</button>
-                <button class="btn-bulk" onclick="engine.generateBulk(500)">📦 500 سجل</button>
-                <button class="btn-bulk" onclick="engine.generateBulk(1000)">📦 1,000 سجل</button>
-                <button class="btn-bulk" onclick="engine.generateBulk(5000)">📦 5,000 سجل</button>
-            </div>
-            <div class="progress-bar" id="progressBar">
-                <div class="progress" id="progress"></div>
-            </div>
-            <p id="progressText" style="margin-top: 10px; display: none;"></p>
-        </div>
-
-        <!-- Table -->
-        <div class="table-section">
-            <div class="table-header">
-                <h2>📋 السجلات</h2>
-                <div class="table-controls">
-                    <input type="text" class="search-box" placeholder="🔍 بحث..."
-                        onkeyup="engine.searchTable(this.value)"
-                        style="padding: 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-input); color: white;">
-                    <button class="btn btn-success" onclick="engine.exportExcel()">📥 تصدير Excel</button>
-                    <button class="btn btn-danger" onclick="engine.clearAll()">🗑️ حذف الكل</button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table id="dataTable">
-                    <thead id="tableHead"></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-            <div id="paginationContainer" class="pagination"></div>
-        </div>
-    </div>
-
-    <div id="toast" class="toast"></div>
-
-    <!-- App Logic -->
-    <script src="js/schemas.js"></script>
-    <script src="js/app.js"></script>
-</body>
-
-</html>

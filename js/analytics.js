@@ -43,7 +43,28 @@ const AnalyticsEngine = {
                 console.error('Error parsing data:', e);
                 this.data = [];
             }
+        } else {
+            // DEBUG: Show available keys to user
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('data_'));
+            if (keys.length > 0) {
+                const useKey = keys[0]; // Auto-fix: try to use the first available data key
+                const autoData = localStorage.getItem(useKey);
+                if (autoData) {
+                    alert(`⚠️ تنبيه: لم يتم العثور على 'data_sales' ولكن وجدنا '${useKey}'. سيتم استخدامها.`);
+                    this.data = JSON.parse(autoData);
+                    return;
+                }
+                alert(`⚠️ لم يتم العثور على بيانات المبيعات. المفاتيح المتوفرة: ${keys.join(', ')}`);
+            }
         }
+    },
+
+    // NEW: Helper to parse currency strings safely
+    parseMoney: function (val) {
+        if (val === undefined || val === null) return 0;
+        if (typeof val === 'number') return val;
+        // Remove currency symbols, commas, etc.
+        return parseFloat(String(val).replace(/[^0-9.-]+/g, "")) || 0;
     },
 
     // NEW: Set default date range smartly based on data
@@ -180,19 +201,19 @@ const AnalyticsEngine = {
 
     // Calculate Key Performance Indicators
     calculateKPIs: function () {
-        const totalSales = this.filteredData.reduce((sum, d) => sum + parseFloat(d.netSales || 0), 0);
-        const totalProfit = this.filteredData.reduce((sum, d) => sum + parseFloat(d.profit || 0), 0);
+        const totalSales = this.filteredData.reduce((sum, d) => sum + this.parseMoney(d.netSales), 0);
+        const totalProfit = this.filteredData.reduce((sum, d) => sum + this.parseMoney(d.profit), 0);
         const totalOrders = this.filteredData.length;
         const avgOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
 
         const profitMargins = this.filteredData
-            .map(d => parseFloat(d.profitMargin || 0))
+            .map(d => this.parseMoney(d.profitMargin))
             .filter(v => v > 0);
         const avgProfitMargin = profitMargins.length > 0
             ? profitMargins.reduce((a, b) => a + b, 0) / profitMargins.length
             : 0;
 
-        const discounts = this.filteredData.map(d => parseFloat(d.discountPercent || 0));
+        const discounts = this.filteredData.map(d => this.parseMoney(d.discountPercent));
         const avgDiscount = discounts.length > 0
             ? discounts.reduce((a, b) => a + b, 0) / discounts.length
             : 0;
@@ -992,7 +1013,7 @@ performParetoAnalysis: function() {
     const customerRevenue = {};
     this.filteredData.forEach(d => {
         const cust = d.customerSegment || 'Unknown';
-        customerRevenue[cust] = (customerRevenue[cust] || 0) + parseFloat(d.netSales || 0);
+        customerRevenue[cust] = (customerRevenue[cust] || 0) + this.parseMoney(d.netSales);
     });
 
     const customers = Object.entries(customerRevenue)
@@ -1014,7 +1035,7 @@ performParetoAnalysis: function() {
     const regionRevenue = {};
     this.filteredData.forEach(d => {
         const region = d.region || 'Unknown';
-        regionRevenue[region] = (regionRevenue[region] || 0) + parseFloat(d.netSales || 0);
+        regionRevenue[region] = (regionRevenue[region] || 0) + this.parseMoney(d.netSales);
     });
 
     const regions = Object.entries(regionRevenue)
@@ -1110,7 +1131,7 @@ performParetoAnalysis: function() {
     const customerRevenue = {};
     this.filteredData.forEach(d => {
         const cust = d.customerSegment || 'Unknown';
-        customerRevenue[cust] = (customerRevenue[cust] || 0) + parseFloat(d.netSales || 0);
+        customerRevenue[cust] = (customerRevenue[cust] || 0) + this.parseMoney(d.netSales);
     });
 
     const customers = Object.entries(customerRevenue)

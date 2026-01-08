@@ -1,769 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 تحليل البيانات - Analytics Dashboard</title>
-
-    <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-    <!-- App Styles -->
-    <link rel="stylesheet" href="css/analytics.css">
-</head>
-
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-content">
-                <div>
-                    <h1>📊 لوحة تحليل المبيعات</h1>
-                    <p>تحليل شامل للبيانات مع رسوم بيانية تفاعلية</p>
-                </div>
-                <a href="index.html" class="btn-back">← العودة للإدخال</a>
-            </div>
-        </div>
-
-        <!-- Filter Panel -->
-        <div class="filter-panel">
-            <h3>📅 فلترة حسب التاريخ</h3>
-
-            <!-- Date Range Inputs -->
-            <div class="date-range-inputs">
-                <div class="date-input-group">
-                    <label>من تاريخ</label>
-                    <input type="date" id="startDate" class="date-input">
-                </div>
-                <div class="date-input-group">
-                    <label>إلى تاريخ</label>
-                    <input type="date" id="endDate" class="date-input">
-                </div>
-                <button class="btn-apply-filter" onclick="UniversalAnalytics.applyFilters()">
-                    ✓ تطبيق
-                </button>
-                <button class="btn-reset-filter" onclick="UniversalAnalytics.resetFilters()">
-                    ↺ إعادة تعيين
-                </button>
-            </div>
-
-            <!-- Quick Filter Buttons -->
-            <div class="quick-filters">
-                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('last30')">
-                    آخر 30 يوم
-                </button>
-                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('last90')">
-                    آخر 90 يوم
-                </button>
-                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('thisYear')">
-                    هذا العام
-                </button>
-                <button class="btn-quick-filter" onclick="UniversalAnalytics.setQuickFilter('lastYear')">
-                    العام الماضي
-                </button>
-            </div>
-
-
-            <!-- Active Filter Display -->
-            <div class="active-filter-display" id="activeFilterDisplay">
-                عرض جميع البيانات
-            </div>
-        </div>
-
-        <!-- KPIs Section -->
-        <div class="kpis-container">
-            <div class="kpi-card">
-                <div class="kpi-icon">💰</div>
-                <div class="kpi-content">
-                    <div class="kpi-label">إجمالي المبيعات</div>
-                    <div class="kpi-value" id="totalSales">$0</div>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-icon">📈</div>
-                <div class="kpi-content">
-                    <div class="kpi-label">إجمالي الأرباح</div>
-                    <div class="kpi-value" id="totalProfit">$0</div>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-icon">📦</div>
-                <div class="kpi-content">
-                    <div class="kpi-label">عدد الطلبات</div>
-                    <div class="kpi-value" id="totalOrders">0</div>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-icon">💵</div>
-                <div class="kpi-content">
-                    <div class="kpi-label">متوسط قيمة الطلب</div>
-                    <div class="kpi-value" id="avgOrderValue">$0</div>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-icon">📊</div>
-                <div class="kpi-content">
-                    <div class="kpi-label">هامش الربح المتوسط</div>
-                    <div class="kpi-value" id="avgProfitMargin">0%</div>
-                </div>
-            </div>
-
-            <div class="kpi-card">
-                <div class="kpi-icon">🎯</div>
-                <div class="kpi-content">
-                    <div class="kpi-label">متوسط الخصم</div>
-                    <div class="kpi-value" id="avgDiscount">0%</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- التحليل الإحصائي المتقدم 📊 -->
-        <div class="stats-card">
-            <div class="card-header">
-                <h3>📊 التحليل الإحصائي المتقدم</h3>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label">معدل النمو</div>
-                    <div class="stat-value" id="growthRate">-</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">الانحراف المعياري</div>
-                    <div class="stat-value" id="stdDeviation">-</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">الوسيط</div>
-                    <div class="stat-value" id="medianSales">-</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label">اتجاه السوق</div>
-                    <div class="stat-value" id="trendDirection">-</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 🎓 Learning Dashboard - NEW -->
-        <div class="learning-dashboard">
-            <div class="card-header">
-                <h2>🎓 رحلتك التعليمية في تحليل البيانات</h2>
-                <p class="subtitle">تتبع تقدمك واكتشف المهارات الجديدة</p>
-            </div>
-
-            <!-- Skill Progress Tracker -->
-            <div class="skill-tracker">
-                <div class="skill-category">
-                    <h3 class="level-badge beginner">📈 المستوى الأساسي (8/8 مكتمل)</h3>
-                    <div class="skills-list">
-                        <div class="skill-item completed">✅ عرض البيانات بصرياً</div>
-                        <div class="skill-item completed">✅ مؤشرات الأداء الأساسية</div>
-                        <div class="skill-item completed">✅ الفلترة والترتيب</div>
-                        <div class="skill-item completed">✅ التجميع والحساب</div>
-                        <div class="skill-item completed">✅ النسب المئوية</div>
-                        <div class="skill-item completed">✅ الجداول التفاعلية</div>
-                        <div class="skill-item completed">✅ الرسوم البيانية الأساسية</div>
-                        <div class="skill-item completed">✅ تنسيق الأرقام</div>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <h3 class="level-badge intermediate">📊 المستوى المتوسط (10/10 مكتمل)</h3>
-                    <div class="skills-list">
-                        <div class="skill-item completed">✅ كشف الموسمية</div>
-                        <div class="skill-item completed">✅ تحليل الاتجاهات</div>
-                        <div class="skill-item completed">✅ تقسيم العملاء</div>
-                        <div class="skill-item completed">✅ حساب النمو</div>
-                        <div class="skill-item completed">✅ مرونة الأسعار</div>
-                        <div class="skill-item completed">✅ تحليل الارتباط</div>
-                        <div class="skill-item completed">✅ المقاييس الإحصائية</div>
-                        <div class="skill-item completed">✅ فلترة النطاق الزمني</div>
-                        <div class="skill-item completed">✅ تنسيق الأرقام الكبيرة</div>
-                        <div class="skill-item completed">✅ تحليل الانحرافات</div>
-                    </div>
-                </div>
-
-                <div class="skill-category">
-                    <h3 class="level-badge advanced">🚀 المستوى المتقدم (0/15 غير مفعّل)</h3>
-                    <div class="skills-list">
-                        <div class="skill-item locked">🔒 تصنيف ABC</div>
-                        <div class="skill-item locked">🔒 تحليل RFM</div>
-                        <div class="skill-item locked">🔒 تحليل المجموعات</div>
-                        <div class="skill-item locked">🔒 القيمة الدائمة للعميل</div>
-                        <div class="skill-item locked">🔒 توقع الفقدان</div>
-                        <div class="skill-item locked">🔒 تحليل السلة</div>
-                        <div class="skill-item locked">🔒 النمذجة التنبؤية</div>
-                        <div class="skill-item locked">🔒 كشف الشذوذ</div>
-                        <div class="skill-item locked">🔒 التجميع الذكي K-Means</div>
-                        <div class="skill-item locked">🔒 اختبار A/B</div>
-                        <div class="skill-item locked">🔒 تحليل المشاعر</div>
-                        <div class="skill-item locked">🔒 محاكاة مونت كارلو</div>
-                        <div class="skill-item locked">🔒 تحليل باريتو</div>
-                        <div class="skill-item locked">🔒 تحليل الانحدار</div>
-                        <div class="skill-item locked">🔒 التعلم الآلي المتقدم</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Performance Scorecard -->
-            <div class="performance-scorecard">
-                <h3>📊 بطاقة أدائك التحليلي</h3>
-                <div class="score-grid">
-                    <div class="score-card excellent">
-                        <div class="score-icon">📈</div>
-                        <div class="score-label">جودة البيانات</div>
-                        <div class="score-value">95%</div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: 95%"></div>
-                        </div>
-                        <div class="score-note">ممتاز! بياناتك واقعية</div>
-                    </div>
-
-                    <div class="score-card good">
-                        <div class="score-icon">🔍</div>
-                        <div class="score-label">عمق التحليل</div>
-                        <div class="score-value">80%</div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: 80%"></div>
-                        </div>
-                        <div class="score-note">جيد جداً! أضف تحليلات متقدمة</div>
-                    </div>
-
-                    <div class="score-card average">
-                        <div class="score-icon">💡</div>
-                        <div class="score-label">الرؤى المكتشفة</div>
-                        <div class="score-value">70%</div>
-                        <div class="score-bar">
-                            <div class="score-fill" style="width: 70%"></div>
-                        </div>
-                        <div class="score-note">جيد! استكشف المزيد من الأنماط</div>
-                    </div>
-
-                    <div class="score-card overall">
-                        <div class="score-icon">⭐</div>
-                        <div class="score-label">المستوى العام</div>
-                        <div class="score-value">متوسط متقدم</div>
-                        <div class="score-badge">⭐⭐⭐⭐</div>
-                        <div class="score-note">أنت في المسار الصحيح!</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Insights Helper -->
-            <div class="insights-helper">
-                <h3>💡 ماذا يجب أن تبحث عنه؟</h3>
-                <p class="helper-subtitle">تحقق من هذه الأسئلة التحليلية الرئيسية</p>
-                <div class="insight-checklist">
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">📅 هل توجد موسمية؟ (ارتفاع مبيعات ديسمبر؟)</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">📈 هل المبيعات في نمو أم تراجع؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">🏆 ما هي أفضل 5 منتجات؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">💰 أي المنتجات لديها أعلى هامش ربح؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">👥 أي شريحة عملاء الأكثر قيمة؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">💸 هل الخصومات العالية تؤدي لربح أقل؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">🌍 أي منطقة تحقق أفضل أداء؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">⚠️ هل هناك قفزات أو انخفاضات غير طبيعية؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">📊 ما علاقة السعر بالكمية المباعة؟</span>
-                    </label>
-                    <label class="insight-item">
-                        <input type="checkbox" class="insight-check">
-                        <span class="insight-text">🎯 هل تتبع القاعدة 80/20؟ (20% منتجات = 80% مبيعات)</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Next Steps Guide -->
-            <div class="next-steps">
-                <h3>🎯 الخطوات الموصى بها</h3>
-                <div class="steps-list">
-                    <div class="step-card active">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>تطبيق تحليل ABC</h4>
-                            <p>اكتشف أي 20% من المنتجات تدر 80% من الإيرادات</p>
-                            <div class="step-meta">
-                                <span class="difficulty easy">🟢 سهل</span>
-                                <span class="time">⏱️ 10 دقائق</span>
-                                <span class="value">💎 قيمة عالية</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step-card locked">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>تطبيق RFM Segmentation</h4>
-                            <p>صنّف العملاء حسب Recency, Frequency, Monetary</p>
-                            <div class="step-meta">
-                                <span class="difficulty medium">🟡 متوسط</span>
-                                <span class="time">⏱️ 20 دقيقة</span>
-                                <span class="value">💎 قيمة عالية جداً</span>
-                            </div>
-                            <div class="step-lock">🔒 أكمل ABC أولاً</div>
-                        </div>
-                    </div>
-
-                    <div class="step-card locked">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>بناء نموذج تنبؤي</h4>
-                            <p>توقع مبيعات الشهر القادم مع نطاق الثقة</p>
-                            <div class="step-meta">
-                                <span class="difficulty hard">🔴 صعب</span>
-                                <span class="time">⏱️ 45 دقيقة</span>
-                                <span class="value">💎💎 قيمة استثنائية</span>
-                            </div>
-                            <div class="step-lock">🔒 أكمل RFM أولاً</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 📊 ABC Analysis Section - NEW -->
-        <div class="abc-analysis-section">
-            <div class="card-header">
-                <h2>📊 تحليل ABC - قاعدة باريتو 80/20</h2>
-                <p class="subtitle">اكتشف المنتجات عالية القيمة (20% منتجات = 80% إيرادات)</p>
-            </div>
-
-            <!-- ABC Summary Cards -->
-            <div class="abc-summary-cards">
-                <div class="abc-card category-a">
-                    <div class="abc-badge">A</div>
-                    <h3>فئة A - عالية القيمة</h3>
-                    <div class="abc-stats">
-                        <div class="stat">
-                            <span class="stat-label">عدد المنتجات</span>
-                            <span class="stat-value" id="abc-a-count">0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">الإيرادات</span>
-                            <span class="stat-value" id="abc-a-revenue">$0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">النسبة</span>
-                            <span class="stat-value" id="abc-a-percent">0%</span>
-                        </div>
-                    </div>
-                    <p class="abc-description">المنتجات الأكثر أهمية - التركيز الأساسي</p>
-                </div>
-
-                <div class="abc-card category-b">
-                    <div class="abc-badge">B</div>
-                    <h3>فئة B - متوسطة القيمة</h3>
-                    <div class="abc-stats">
-                        <div class="stat">
-                            <span class="stat-label">عدد المنتجات</span>
-                            <span class="stat-value" id="abc-b-count">0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">الإيرادات</span>
-                            <span class="stat-value" id="abc-b-revenue">$0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">النسبة</span>
-                            <span class="stat-value" id="abc-b-percent">0%</span>
-                        </div>
-                    </div>
-                    <p class="abc-description">منتجات مهمة - مراقبة مستمرة</p>
-                </div>
-
-                <div class="abc-card category-c">
-                    <div class="abc-badge">C</div>
-                    <h3>فئة C - منخفضة القيمة</h3>
-                    <div class="abc-stats">
-                        <div class="stat">
-                            <span class="stat-label">عدد المنتجات</span>
-                            <span class="stat-value" id="abc-c-count">0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">الإيرادات</span>
-                            <span class="stat-value" id="abc-c-revenue">$0</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">النسبة</span>
-                            <span class="stat-value" id="abc-c-percent">0%</span>
-                        </div>
-                    </div>
-                    <p class="abc-description">تأثير محدود - إدارة بسيطة</p>
-                </div>
-            </div>
-
-            <!-- Pareto Chart -->
-            <div class="chart-card">
-                <h3>📈 مخطط باريتو (Pareto Chart)</h3>
-                <p class="chart-subtitle">الإيرادات التراكمية حسب المنتج</p>
-                <div class="chart-container">
-                    <canvas id="paretoChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- 👥 RFM Segmentation Section - NEW -->
-        <div class="rfm-analysis-section">
-            <div class="card-header">
-                <h2>👥 تحليل RFM - تقسيم العملاء الذكي</h2>
-                <p class="subtitle">صنّف عملاءك حسب: Recency (الحداثة), Frequency (التكرار), Monetary (القيمة المالية)
-                </p>
-            </div>
-
-            <!-- RFM Explanation -->
-            <div class="rfm-explanation">
-                <div class="rfm-metric">
-                    <div class="metric-icon">📅</div>
-                    <h4>Recency</h4>
-                    <p>متى كان آخر طلب؟ (أحدث = أفضل)</p>
-                </div>
-                <div class="rfm-metric">
-                    <div class="metric-icon">🔁</div>
-                    <h4>Frequency</h4>
-                    <p>كم مرة اشترى؟ (أكثر = أفضل)</p>
-                </div>
-                <div class="rfm-metric">
-                    <div class="metric-icon">💰</div>
-                    <h4>Monetary</h4>
-                    <p>كم أنفق؟ (أكبر = أفضل)</p>
-                </div>
-            </div>
-
-            <!-- RFM Segments Cards -->
-            <div class="rfm-segments-grid">
-                <div class="rfm-segment-card champions">
-                    <div class="segment-icon">🏆</div>
-                    <h3>Champions</h3>
-                    <p class="segment-desc">أفضل العملاء - اشتروا مؤخراً، بتكرار عالي، وإنفاق كبير</p>
-                    <div class="segment-stats">
-                        <div class="stat">
-                            <span>العدد:</span>
-                            <strong id="rfm-champions-count">0</strong>
-                        </div>
-                        <div class="stat">
-                            <span>الإيرادات:</span>
-                            <strong id="rfm-champions-revenue">$0</strong>
-                        </div>
-                    </div>
-                    <div class="segment-action">✅ احتفظ بهم - قدم مكافآت VIP</div>
-                </div>
-
-                <div class="rfm-segment-card loyal">
-                    <div class="segment-icon">💙</div>
-                    <h3>Loyal Customers</h3>
-                    <p class="segment-desc">عملاء مخلصون - يشترون بانتظام</p>
-                    <div class="segment-stats">
-                        <div class="stat">
-                            <span>العدد:</span>
-                            <strong id="rfm-loyal-count">0</strong>
-                        </div>
-                        <div class="stat">
-                            <span>الإيرادات:</span>
-                            <strong id="rfm-loyal-revenue">$0</strong>
-                        </div>
-                    </div>
-                    <div class="segment-action">💎 اهتم بهم - عروض خاصة</div>
-                </div>
-
-                <div class="rfm-segment-card potential">
-                    <div class="segment-icon">🌱</div>
-                    <h3>Potential Loyalists</h3>
-                    <p class="segment-desc">عملاء واعدون - يمكن تحويلهم لمخلصين</p>
-                    <div class="segment-stats">
-                        <div class="stat">
-                            <span>العدد:</span>
-                            <strong id="rfm-potential-count">0</strong>
-                        </div>
-                        <div class="stat">
-                            <span>الإيرادات:</span>
-                            <strong id="rfm-potential-revenue">$0</strong>
-                        </div>
-                    </div>
-                    <div class="segment-action">📈 طوّر العلاقة - برامج ولاء</div>
-                </div>
-
-                <div class="rfm-segment-card at-risk">
-                    <div class="segment-icon">⚠️</div>
-                    <h3>At Risk</h3>
-                    <p class="segment-desc">معرضون للخطر - كانوا جيدين لكن توقفوا</p>
-                    <div class="segment-stats">
-                        <div class="stat">
-                            <span>العدد:</span>
-                            <strong id="rfm-at-risk-count">0</strong>
-                        </div>
-                        <div class="stat">
-                            <span>الإيرادات:</span>
-                            <strong id="rfm-at-risk-revenue">$0</strong>
-                        </div>
-                    </div>
-                    <div class="segment-action">🔔 استعدهم - خصومات خاصة</div>
-                </div>
-
-                <div class="rfm-segment-card lost">
-                    <div class="segment-icon">😔</div>
-                    <h3>Lost Customers</h3>
-                    <p class="segment-desc">فقدناهم - لم يشتروا منذ فترة طويلة</p>
-                    <div class="segment-stats">
-                        <div class="stat">
-                            <span>العدد:</span>
-                            <strong id="rfm-lost-count">0</strong>
-                        </div>
-                        <div class="stat">
-                            <span>الإيرادات:</span>
-                            <strong id="rfm-lost-revenue">$0</strong>
-                        </div>
-                    </div>
-                    <div class="segment-action">💔 حاول استعادتهم - عروض قوية</div>
-                </div>
-            </div>
-
-            <!-- RFM Distribution Chart -->
-            <div class="chart-card">
-                <h3>📊 توزيع العملاء حسب RFM</h3>
-                <div class="chart-container">
-                    <canvas id="rfmChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- 🎯 Pareto Analysis Section - NEW -->
-        <div class="pareto-analysis-section">
-            <div class="card-header">
-                <h2>🎯 تحليل باريتو 80/20 - العملاء والمناطق</h2>
-                <p class="subtitle">20% من العملاء/المناطق = 80% من الإيرادات</p>
-            </div>
-
-            <div class="pareto-grid">
-                <!-- Top Customers -->
-                <div class="pareto-card">
-                    <h3>🏆 أفضل العملاء (Top 20%)</h3>
-                    <div class="pareto-stats">
-                        <div class="stat-row">
-                            <span>عدد العملاء المميزين:</span>
-                            <strong id="top-customers-count">0</strong>
-                        </div>
-                        <div class="stat-row">
-                            <span>إيراداتهم:</span>
-                            <strong id="top-customers-revenue">$0</strong>
-                        </div>
-                        <div class="stat-row highlight">
-                            <span>نسبتهم من الإيرادات:</span>
-                            <strong id="top-customers-percent">0%</strong>
-                        </div>
-                    </div>
-                    <div class="pareto-insight">
-                        <span class="insight-icon">💡</span>
-                        <span id="customers-insight">ركز على هؤلاء العملاء!</span>
-                    </div>
-                </div>
-
-                <!-- Top Regions -->
-                <div class="pareto-card">
-                    <h3>🌍 أفضل المناطق (Top 20%)</h3>
-                    <div class="pareto-stats">
-                        <div class="stat-row">
-                            <span>عدد المناطق المميزة:</span>
-                            <strong id="top-regions-count">0</strong>
-                        </div>
-                        <div class="stat-row">
-                            <span>إيراداتها:</span>
-                            <strong id="top-regions-revenue">$0</strong>
-                        </div>
-                        <div class="stat-row highlight">
-                            <span>نسبتها من الإيرادات:</span>
-                            <strong id="top-regions-percent">0%</strong>
-                        </div>
-                    </div>
-                    <div class="pareto-insight">
-                        <span class="insight-icon">💡</span>
-                        <span id="regions-insight">وسّع في هذه المناطق!</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pareto Charts Row -->
-            <div class="charts-row">
-                <div class="chart-card half-width">
-                    <h3>📊 توزيع العملاء</h3>
-                    <div class="chart-container">
-                        <canvas id="customersParetoChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card half-width">
-                    <h3>📊 توزيع المناطق</h3>
-                    <div class="chart-container">
-                        <canvas id="regionsParetoChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- 🤖 ML Analytics Section - NEW -->
-    <div class="ml-analysis-section">
-        <div class="card-header">
-            <h2>🤖 التحليل الذكي (Machine Learning)</h2>
-            <p class="subtitle">اكتشاف الشذوذ (Anomaly Detection) وتوقعات البيانات</p>
-        </div>
-
-        <div class="ml-grid">
-            <div class="ml-card">
-                <div class="ml-icon">⚡</div>
-                <h3>Anomaly Detection</h3>
-                <p>كشف البيانات غير الطبيعية (شديدة الارتفاع/الانخفاض)</p>
-                <div class="ml-stat">
-                    <span>عدد العمليات الشاذة:</span>
-                    <strong id="ml-anomalies-count">0</strong>
-                </div>
-            </div>
-            <div class="ml-card">
-                <div class="ml-icon">🔮</div>
-                <h3>Growth Forecast</h3>
-                <p>توقعات النمو للشهر القادم بناءً على الاتجاه الحالي</p>
-                <div class="ml-stat">
-                    <span>النمو المتوقع:</span>
-                    <strong id="ml-forecast-value">0%</strong>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Charts Grid -->
-    <div class="charts-grid">
-        <!-- Sales Trend Chart -->
-        <div class="chart-card full-width">
-            <div class="chart-header">
-                <h3>📈 اتجاه المبيعات والأرباح الشهرية</h3>
-                <span class="chart-subtitle">Sales & Profit Trend</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="salesTrendChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Product Sales Chart -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>📊 المبيعات حسب المنتج</h3>
-                <span class="chart-subtitle">Sales by Product Category</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="productChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Regional Sales Chart -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>🌍 المبيعات حسب المنطقة</h3>
-                <span class="chart-subtitle">Sales by Region</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="regionChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Customer Segment Chart -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>👥 التوزيع حسب شريحة العملاء</h3>
-                <span class="chart-subtitle">Customer Segment Distribution</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="segmentChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Sales Channel Chart -->
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3>🛒 المبيعات حسب القناة</h3>
-                <span class="chart-subtitle">Sales by Channel</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="channelChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Insights Section -->
-    <div class="insights-section">
-        <div class="insight-card">
-            <div class="insight-header">
-                <h3>🏆 أفضل 10 منتجات</h3>
-                <span class="insight-subtitle">Top 10 Products by Revenue</span>
-            </div>
-            <div class="table-container">
-                <table id="topProductsTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>المنتج</th>
-                            <th>المبيعات</th>
-                            <th>الربح</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="insight-card">
-            <div class="insight-header">
-                <h3>🌍 أفضل 10 دول</h3>
-                <span class="insight-subtitle">Top 10 Countries by Revenue</span>
-            </div>
-            <div class="table-container">
-                <table id="topCountriesTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>الدولة</th>
-                            <th>المبيعات</th>
-                            <th>الأرباح</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Data Status -->
-    <div class="data-status" id="dataStatus">
-        <span id="recordCount">0</span> سجل محمّل من localStorage
-    </div>
-    </div>
-
-    <!-- App Logic -->
-    <script src="js/analytics.js"></script>
-</body>
-
-</html>

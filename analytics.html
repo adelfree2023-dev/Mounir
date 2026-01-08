@@ -551,6 +551,78 @@
             </div>
         </div>
 
+        <!-- 🎯 Pareto Analysis Section - NEW -->
+        <div class="pareto-analysis-section">
+            <div class="card-header">
+                <h2>🎯 تحليل باريتو 80/20 - العملاء والمناطق</h2>
+                <p class="subtitle">20% من العملاء/المناطق = 80% من الإيرادات</p>
+            </div>
+
+            <div class="pareto-grid">
+                <!-- Top Customers -->
+                <div class="pareto-card">
+                    <h3>🏆 أفضل العملاء (Top 20%)</h3>
+                    <div class="pareto-stats">
+                        <div class="stat-row">
+                            <span>عدد العملاء المميزين:</span>
+                            <strong id="top-customers-count">0</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>إيراداتهم:</span>
+                            <strong id="top-customers-revenue">$0</strong>
+                        </div>
+                        <div class="stat-row highlight">
+                            <span>نسبتهم من الإيرادات:</span>
+                            <strong id="top-customers-percent">0%</strong>
+                        </div>
+                    </div>
+                    <div class="pareto-insight">
+                        <span class="insight-icon">💡</span>
+                        <span id="customers-insight">ركز على هؤلاء العملاء!</span>
+                    </div>
+                </div>
+
+                <!-- Top Regions -->
+                <div class="pareto-card">
+                    <h3>🌍 أفضل المناطق (Top 20%)</h3>
+                    <div class="pareto-stats">
+                        <div class="stat-row">
+                            <span>عدد المناطق المميزة:</span>
+                            <strong id="top-regions-count">0</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span>إيراداتها:</span>
+                            <strong id="top-regions-revenue">$0</strong>
+                        </div>
+                        <div class="stat-row highlight">
+                            <span>نسبتها من الإيرادات:</span>
+                            <strong id="top-regions-percent">0%</strong>
+                        </div>
+                    </div>
+                    <div class="pareto-insight">
+                        <span class="insight-icon">💡</span>
+                        <span id="regions-insight">وسّع في هذه المناطق!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pareto Charts Row -->
+            <div class="charts-row">
+                <div class="chart-card half-width">
+                    <h3>📊 توزيع العملاء</h3>
+                    <div class="chart-container">
+                        <canvas id="customersParetoChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card half-width">
+                    <h3>📊 توزيع المناطق</h3>
+                    <div class="chart-container">
+                        <canvas id="regionsParetoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Charts Grid -->
         <div class="charts-grid">
             <!-- Sales Trend Chart -->

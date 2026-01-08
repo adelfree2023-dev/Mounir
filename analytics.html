@@ -198,9 +198,60 @@
         <div class="analytics-header">
             <div>
                 <h1>📊 تحليل البيانات</h1>
-                <p style="color: var(--text-secondary);">تحليل شامل لبيانات المبيعات</p>
+                <p style="color: var(--text-secondary);">تحليل شامل لجميع أنواع البيانات</p>
             </div>
             <a href="index.html" class="btn-back">🏠 العودة للرئيسية</a>
+        </div>
+
+        <!-- Schema Selector -->
+        <div style="background: var(--bg-input); padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 15px;">📂 اختر نوع البيانات</h3>
+            <select id="schemaSelector" onchange="Analytics.switchSchema(this.value)"
+                style="width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem;">
+                <optgroup label="🏢 Core Business">
+                    <option value="sales" selected>💰 Sales - المبيعات</option>
+                    <option value="employees">👥 Employees - الموظفين</option>
+                    <option value="attendance">🕒 Attendance - الحضور</option>
+                    <option value="customers">🤝 Customers - العملاء</option>
+                    <option value="purchasing">🛒 Purchasing - المشتريات</option>
+                    <option value="suppliers">🚚 Suppliers - الموردين</option>
+                    <option value="inventory">📦 Inventory - المخازن</option>
+                    <option value="finance">💵 Finance - المالية</option>
+                    <option value="support">🎧 Support - الدعم</option>
+                    <option value="operations">⚙️ Operations - العمليات</option>
+                </optgroup>
+                <optgroup label="📢 Marketing">
+                    <option value="campaigns">📣 Campaigns</option>
+                    <option value="ads">🎯 Ads</option>
+                    <option value="leads">🕵️ Leads</option>
+                    <option value="social_media">📱 Social Media</option>
+                    <option value="analytics">📈 Analytics</option>
+                </optgroup>
+                <optgroup label="💻 IT & Tech">
+                    <option value="it_inventory">🖥️ IT Inventory</option>
+                    <option value="software_licenses">🔑 Licenses</option>
+                    <option value="it_tickets">🎫 IT Tickets</option>
+                    <option value="server_status">⚡ Servers</option>
+                    <option value="access_logs">🛡️ Access Logs</option>
+                </optgroup>
+                <optgroup label="🎓 Education">
+                    <option value="students">👨‍🎓 Students</option>
+                    <option value="teachers">👨‍🏫 Teachers</option>
+                    <option value="courses">📚 Courses</option>
+                    <option value="exams">📝 Exams</option>
+                    <option value="library">📖 Library</option>
+                </optgroup>
+                <optgroup label="🌍 Services">
+                    <option value="real_estate">🏠 Real Estate</option>
+                    <option value="hotel_booking">🏨 Hotel</option>
+                    <option value="travel_flights">✈️ Flights</option>
+                    <option value="medical_records">🏥 Medical</option>
+                    <option value="events">🎉 Events</option>
+                </optgroup>
+            </select>
+            <div id="schemaInfo" style="margin-top: 10px; color: var(--text-secondary); font-size: 0.9rem;">
+                📊 تحليل بيانات <span id="recordCount">0</span> سجل
+            </div>
         </div>
 
         <!-- Filter Section -->
@@ -433,6 +484,65 @@
                         <div style="font-size: 1.8rem; font-weight: bold; color: white; margin-top: 5px;" id="trend">→️
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Correlation Analysis Section - NEW -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>🔗 Correlation Analysis - تحليل الارتباط</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">اكتشف العلاقات بين المتغيرات الرقمية</p>
+
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="correlationChart"></canvas>
+                </div>
+
+                <div id="correlationInsights"
+                    style="margin-top: 20px; padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 4px solid #3b82f6;">
+                    <strong>💡 ملاحظات:</strong>
+                    <div id="correlationText" style="margin-top: 10px; color: var(--text-secondary);">...يتم التحليل
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anomaly Detection Section - NEW -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>⚡ Anomaly Detection - كشف الشذوذ</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">اكتشف القيم غير الطبيعية (Z-Score > 2)</p>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div
+                        style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">🚨</div>
+                        <div style="font-weight: bold; color: white;">شواذ مكتشفة</div>
+                        <div style="font-size: 1.5rem; color: white; margin-top: 5px;" id="anomaly-count">0</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">📈</div>
+                        <div style="font-weight: bold; color: white;">أعلى قيمة شاذة</div>
+                        <div style="font-size: 1.2rem; color: white; margin-top: 5px;" id="anomaly-max">-</div>
+                    </div>
+                    <div
+                        style="background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">📉</div>
+                        <div style="font-weight: bold; color: white;">أدنى قيمة شاذة</div>
+                        <div style="font-size: 1.2rem; color: white; margin-top: 5px;" id="anomaly-min">-</div>
+                    </div>
+                </div>
+
+                <div style="max-height: 300px; overflow-y: auto;">
+                    <table class="simple-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>التاريخ</th>
+                                <th>القيمة</th>
+                                <th>Z-Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="anomalyTable"></tbody>
+                    </table>
                 </div>
             </div>
         </div>

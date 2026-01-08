@@ -7,6 +7,7 @@ const Analytics = {
     allData: [],
     filteredData: [],
     charts: {},
+    currentSchema: 'sales', // NEW: Track current schema
 
     // ========================================
     // 1. INITIALIZATION
@@ -20,8 +21,22 @@ const Analytics = {
     },
 
     loadData() {
-        this.allData = JSON.parse(localStorage.getItem('data_sales')) || [];
+        const key = `data_${this.currentSchema}`;
+        this.allData = JSON.parse(localStorage.getItem(key)) || [];
         this.filteredData = [...this.allData];
+
+        // Update record count
+        const countEl = document.getElementById('recordCount');
+        if (countEl) countEl.textContent = this.allData.length;
+    },
+
+    // NEW: Switch Schema
+    switchSchema(schemaId) {
+        this.currentSchema = schemaId;
+        console.log(`🔄 Switching to ${schemaId}`);
+        this.loadData();
+        this.setDefaultDates();
+        this.renderAll();
     },
 
     setDefaultDates() {
@@ -307,6 +322,10 @@ const Analytics = {
         this.renderABCAnalysis();
         this.renderRFMSegmentation();
         this.renderAdvancedStats();
+
+        // ML Analytics
+        this.renderCorrelationAnalysis();
+        this.renderAnomalyDetection();
     },
 
     // ========================================
@@ -485,6 +504,140 @@ const Analytics = {
         document.getElementById('std-deviation').textContent = `$${stdDev.toFixed(2)}`;
         document.getElementById('median').textContent = `$${median.toFixed(2)}`;
         document.getElementById('trend').textContent = trend;
+    },
+
+    // ========================================
+    // 14. CORRELATION ANALYSIS - NEW
+    // ========================================
+    renderCorrelationAnalysis() {
+        const data = this.filteredData;
+        if (data.length < 2) return;
+
+        // Extract numeric fields
+        const fields = ['netSales', 'profit', 'quantity', 'unitPrice', 'discountPercent'];
+        const values = {};
+
+        fields.forEach(field => {
+            values[field] = data.map(r => parseFloat(r[field]) || 0);
+        });
+
+        // Calculate correlations
+        const correlations = [];
+        for (let i = 0; i < fields.length; i++) {
+            for (let j = i + 1; j < fields.length; j++) {
+                const corr = this.pearsonCorrelation(values[fields[i]], values[fields[j]]);
+                correlations.push({
+                    x: fields[i],
+                    y: fields[j],
+                    value: corr
+                });
+            }
+        }
+
+        // Sort by absolute correlation
+        correlations.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+
+        // Render chart (Bar)
+        if (this.charts.correlation) this.charts.correlation.destroy();
+
+        this.charts.correlation = new Chart(document.getElementById('correlationChart'), {
+            type: 'bar',
+            data: {
+                labels: correlations.map(c => `${c.x} × ${c.y}`),
+                datasets: [{
+                    label: 'Correlation',
+                    data: correlations.map(c => c.value),
+                    backgroundColor: correlations.map(c =>
+                        c.value > 0.5 ? '#10b981' :
+                            c.value < -0.5 ? '#ef4444' : '#6b7280'
+                    )
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: { min: -1, max: 1 }
+                }
+            }
+        });
+
+        // Update insights
+        const strongest = correlations[0];
+        const text = `
+            • أقوى علاقة: <strong>${strongest.x}</strong> و <strong>${strongest.y}</strong> (${(strongest.value * 100).toFixed(0)}%)<br>
+            • ${strongest.value > 0.7 ? 'علاقة طردية قوية 📈' : strongest.value < -0.7 ? 'علاقة عكسية قوية 📉' : 'علاقة متوسطة'}
+        `;
+        document.getElementById('correlationText').innerHTML = text;
+    },
+
+    pearsonCorrelation(x, y) {
+        const n = x.length;
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+        const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
+
+        const numerator = n * sumXY - sumX * sumY;
+        const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+
+        return denominator === 0 ? 0 : numerator / denominator;
+    },
+
+    // ========================================
+    // 15. ANOMALY DETECTION - NEW
+    // ========================================
+    renderAnomalyDetection() {
+        const data = this.filteredData;
+        if (data.length < 3) return;
+
+        const sales = data.map(r => parseFloat(r.netSales) || 0);
+        const mean = sales.reduce((a, b) => a + b, 0) / sales.length;
+        const variance = sales.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / sales.length;
+        const stdDev = Math.sqrt(variance);
+
+        // Find anomalies (Z-Score > 2)
+        const anomalies = [];
+        data.forEach((record, i) => {
+            const value = parseFloat(record.netSales) || 0;
+            const zScore = stdDev === 0 ? 0 : (value - mean) / stdDev;
+
+            if (Math.abs(zScore) > 2) {
+                anomalies.push({
+                    date: record.orderDate || record.date || '-',
+                    value: value,
+                    zScore: zScore
+                });
+            }
+        });
+
+        // Update UI
+        document.getElementById('anomaly-count').textContent = anomalies.length;
+
+        if (anomalies.length > 0) {
+            const maxAnomaly = anomalies.reduce((max, a) => a.value > max.value ? a : max);
+            const minAnomaly = anomalies.reduce((min, a) => a.value < min.value ? a : min);
+
+            document.getElementById('anomaly-max').textContent = `$${maxAnomaly.value.toFixed(2)}`;
+            document.getElementById('anomaly-min').textContent = `$${minAnomaly.value.toFixed(2)}`;
+
+            // Render table
+            const html = anomalies.slice(0, 10).map((a, i) => `
+                <tr style="background: ${a.zScore > 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(59, 130, 246, 0.1)'}">
+                    <td>${i + 1}</td>
+                    <td>${a.date}</td>
+                    <td>$${a.value.toFixed(2)}</td>
+                    <td>${a.zScore.toFixed(2)}</td>
+                </tr>
+            `).join('');
+            document.getElementById('anomalyTable').innerHTML = html;
+        } else {
+            document.getElementById('anomaly-max').textContent = '-';
+            document.getElementById('anomaly-min').textContent = '-';
+            document.getElementById('anomalyTable').innerHTML = '<tr><td colspan="4">لا توجد شواذ</td></tr>';
+        }
     }
 };
 

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 تحليل البيانات - Analytics Dashboard</title>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="css/analytics.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1>📊 لوحة تحليل المبيعات</h1>
+                    <p>تحليل شامل للبيانات مع رسوم بيانية تفاعلية</p>
+                </div>
+                <a href="index.html" class="btn-back">← العودة للإدخال</a>
+            </div>
+        </div>
+
+        <!-- KPIs Section -->
+        <div class="kpis-container">
+            <div class="kpi-card">
+                <div class="kpi-icon">💰</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">إجمالي المبيعات</div>
+                    <div class="kpi-value" id="totalSales">$0</div>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">📈</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">إجمالي الأرباح</div>
+                    <div class="kpi-value" id="totalProfit">$0</div>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">📦</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">عدد الطلبات</div>
+                    <div class="kpi-value" id="totalOrders">0</div>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">💵</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">متوسط قيمة الطلب</div>
+                    <div class="kpi-value" id="avgOrderValue">$0</div>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">📊</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">هامش الربح المتوسط</div>
+                    <div class="kpi-value" id="avgProfitMargin">0%</div>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">🎯</div>
+                <div class="kpi-content">
+                    <div class="kpi-label">متوسط الخصم</div>
+                    <div class="kpi-value" id="avgDiscount">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Charts Grid -->
+        <div class="charts-grid">
+            <!-- Sales Trend Chart -->
+            <div class="chart-card full-width">
+                <div class="chart-header">
+                    <h3>📈 اتجاه المبيعات والأرباح الشهرية</h3>
+                    <span class="chart-subtitle">Sales & Profit Trend</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Product Sales Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>📊 المبيعات حسب المنتج</h3>
+                    <span class="chart-subtitle">Sales by Product Category</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="productChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Regional Sales Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>🌍 المبيعات حسب المنطقة</h3>
+                    <span class="chart-subtitle">Sales by Region</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="regionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Customer Segment Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>👥 التوزيع حسب شريحة العملاء</h3>
+                    <span class="chart-subtitle">Customer Segment Distribution</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="segmentChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sales Channel Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>🛒 المبيعات حسب القناة</h3>
+                    <span class="chart-subtitle">Sales by Channel</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="channelChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="insights-section">
+            <div class="insight-card">
+                <div class="insight-header">
+                    <h3>🏆 أفضل 10 منتجات</h3>
+                    <span class="insight-subtitle">Top 10 Products by Revenue</span>
+                </div>
+                <div class="table-container">
+                    <table id="topProductsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المنتج</th>
+                                <th>المبيعات</th>
+                                <th>الربح</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-header">
+                    <h3>🌍 أفضل 10 دول</h3>
+                    <span class="insight-subtitle">Top 10 Countries by Revenue</span>
+                </div>
+                <div class="table-container">
+                    <table id="topCountriesTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الدولة</th>
+                                <th>المبيعات</th>
+                                <th>الأرباح</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Status -->
+        <div class="data-status" id="dataStatus">
+            <span id="recordCount">0</span> سجل محمّل من localStorage
+        </div>
+    </div>
+
+    <!-- App Logic -->
+    <script src="js/analytics.js"></script>
+</body>
+
+</html>

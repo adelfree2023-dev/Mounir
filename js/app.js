@@ -56,6 +56,7 @@ const engine = {
         this.renderTableHeaders();
         this.renderTableBody();
         this.updateStats();
+        this.updateAnalyticsBadge(); // Update analytics button badge
         this.resetForm(); // Sets defaults
     },
 
@@ -277,6 +278,13 @@ const engine = {
                 <div class="label">إجمالي السجلات</div>
             </div>
          `;
+    },
+
+    updateAnalyticsBadge: function () {
+        const badge = document.getElementById('analyticsBadge');
+        if (badge) {
+            badge.textContent = this.data.length.toLocaleString();
+        }
     },
 
     showToast: function (msg) {

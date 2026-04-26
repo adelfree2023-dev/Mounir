@@ -1,0 +1,8 @@
+Churn_Reason_ID,Category,Reason
+PRICE-01,Price,Too Expensive
+PRICE-02,Price,Better Deal Elsewhere
+SERVICE-01,Service Quality,Poor Customer Service
+SERVICE-02,Service Quality,Slow Delivery
+COMP-01,Competitor,Switched to Competitor
+PROD-01,Product Availability,Product Not Available
+TECH-01,Technical Issues,Technical Problems

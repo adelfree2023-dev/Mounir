@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام البيانات العالمي - Universal Data Engine</title>
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- App Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="appTitle">📊 نظام البيانات العالمي</h1>
+            <p id="appDesc">منصة إدارة بيانات متعددة الأغراض</p>
+
+            <!-- Analytics Button -->
+            <div style="margin: 15px 0;">
+                <a href="analytics.html" class="btn btn-success" style="text-decoration: none; display: inline-block;">
+                    📊 تحليل البيانات
+                </a>
+            </div>
+
+
+            <div class="custom-select-wrapper">
+                <div class="custom-select">
+                    <div class="custom-select__trigger" onclick="toggleSelect()">
+                        <span>💰 Sales - المبيعات</span>
+                        <div class="arrow"></div>
+                    </div>
+                    <div class="custom-options">
+                        <span class="custom-optgroup-label">🏢 Core Business (Phase 1)</span>
+                        <span class="custom-option selected" onclick="selectOption('sales')" data-value="sales">💰 Sales
+                            - المبيعات</span>
+                        <span class="custom-option" onclick="selectOption('employees')" data-value="employees">👥
+                            Employees - الموظفين</span>
+                        <span class="custom-option" onclick="selectOption('attendance')" data-value="attendance">🕒
+                            Attendance - الحضور والانصراف</span>
+                        <span class="custom-option" onclick="selectOption('customers')" data-value="customers">🤝
+                            Customers - العملاء</span>
+                        <span class="custom-option" onclick="selectOption('purchasing')" data-value="purchasing">🛒
+                            Purchasing - المشتريات</span>
+                        <span class="custom-option" onclick="selectOption('suppliers')" data-value="suppliers">🚚
+                            Suppliers - الموردين</span>
+                        <span class="custom-option" onclick="selectOption('inventory')" data-value="inventory">📦
+                            Inventory - المخازن</span>
+                        <span class="custom-option" onclick="selectOption('finance')" data-value="finance">💵 Finance -
+                            المالية</span>
+                        <span class="custom-option" onclick="selectOption('support')" data-value="support">🎧 Support -
+                            خدمة العملاء</span>
+                        <span class="custom-option" onclick="selectOption('operations')" data-value="operations">⚙️
+                            Operations - العمليات والصيانة</span>
+
+                        <span class="custom-optgroup-label">📢 Phase 2: Marketing & Growth</span>
+                        <span class="custom-option" onclick="selectOption('campaigns')" data-value="campaigns">📣
+                            Campaigns - الحملات التسويقية</span>
+                        <span class="custom-option" onclick="selectOption('ads')" data-value="ads">🎯 Ads - الإعلانات
+                            الممولة</span>
+                        <span class="custom-option" onclick="selectOption('leads')" data-value="leads">🕵️ Leads -
+                            العملاء المحتملين</span>
+                        <span class="custom-option" onclick="selectOption('social_media')" data-value="social_media">📱
+                            Social Media - التواصل الاجتماعي</span>
+                        <span class="custom-option" onclick="selectOption('analytics')" data-value="analytics">📈
+                            Analytics - تحليل الزيارات</span>
+
+                        <span class="custom-optgroup-label">💻 Phase 3: IT & Technology</span>
+                        <span class="custom-option" onclick="selectOption('it_inventory')" data-value="it_inventory">🖥️
+                            IT Inventory - الأصول التقنية</span>
+                        <span class="custom-option" onclick="selectOption('software_licenses')"
+                            data-value="software_licenses">🔑 Licenses - تراخيص البرامج</span>
+                        <span class="custom-option" onclick="selectOption('it_tickets')" data-value="it_tickets">🎫 IT
+                            Tickets - الدعم الفني الداخلي</span>
+                        <span class="custom-option" onclick="selectOption('server_status')" data-value="server_status">⚡
+                            Servers - حالة السيرفرات</span>
+                        <span class="custom-option" onclick="selectOption('access_logs')" data-value="access_logs">🛡️
+                            Access Logs - سجلات الدخول</span>
+
+                        <span class="custom-optgroup-label">🎓 Phase 4: Education</span>
+                        <span class="custom-option" onclick="selectOption('students')" data-value="students">👨‍🎓
+                            Students - الطلاب</span>
+                        <span class="custom-option" onclick="selectOption('teachers')" data-value="teachers">👨‍🏫
+                            Teachers - المعلمين</span>
+                        <span class="custom-option" onclick="selectOption('courses')" data-value="courses">📚 Courses -
+                            المقررات</span>
+                        <span class="custom-option" onclick="selectOption('exams')" data-value="exams">📝 Exams -
+                            الامتحانات</span>
+                        <span class="custom-option" onclick="selectOption('library')" data-value="library">📖 Library -
+                            المكتبة</span>
+
+                        <span class="custom-optgroup-label">🌍 Phase 5: Services & Global</span>
+                        <span class="custom-option" onclick="selectOption('enterprise_ecommerce')" data-value="enterprise_ecommerce">🛒
+                            Enterprise E-Commerce - التجارة الإلكترونية</span>
+                        <span class="custom-option" onclick="selectOption('real_estate')" data-value="real_estate">🏠
+                            Real Estate - العقارات</span>
+                        <span class="custom-option" onclick="selectOption('hotel_booking')"
+                            data-value="hotel_booking">🏨 Hotel - الفنادق</span>
+                        <span class="custom-option" onclick="selectOption('travel_flights')"
+                            data-value="travel_flights">✈️ Flights - الطيران</span>
+                        <span class="custom-option" onclick="selectOption('medical_records')"
+                            data-value="medical_records">🏥 Medical - الطبي</span>
+                        <span class="custom-option" onclick="selectOption('events')" data-value="events">🎉 Events -
+                            الفعاليات</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container" id="statsContainer"></div>
+
+        <!-- Dynamic Form -->
+        <div class="form-section">
+            <h2>📝 إدخال بيانات جديدة</h2>
+            <form id="dynamicForm">
+                <div class="form-grid" id="formContainer">
+                    <!-- Fields will be injected here -->
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-magic" onclick="engine.autoFill()">🎲 ملء تلقائي
+                        عشوائي</button>
+                    <button type="submit" class="btn btn-primary">➕ إضافة سجل جديد</button>
+                    <button type="button" class="btn btn-warning" onclick="engine.resetForm()">🔄 مسح النموذج</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Bulk Section -->
+        <div class="bulk-section">
+            <h3>⚡ توليد سجلات متعددة</h3>
+            <div class="bulk-input-container">
+                <input type="number" id="customBulkCount" class="bulk-input" placeholder="عدد السجلات" min="1"
+                    value="50">
+                <button class="btn-generate-custom" onclick="engine.generateCustomBulk()">⚙️ توليد العدد المحدد</button>
+            </div>
+            <div class="bulk-buttons">
+                <button class="btn-bulk" onclick="engine.generateBulk(100)">📦 100 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(500)">📦 500 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(1000)">📦 1,000 سجل</button>
+                <button class="btn-bulk" onclick="engine.generateBulk(5000)">📦 5,000 سجل</button>
+            </div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <p id="progressText" style="margin-top: 10px; display: none;"></p>
+        </div>
+
+        <!-- Table -->
+        <div class="table-section">
+            <div class="table-header">
+                <h2>📋 السجلات</h2>
+                <div class="table-controls">
+                    <input type="text" class="search-box" placeholder="🔍 بحث..."
+                        onkeyup="engine.searchTable(this.value)"
+                        style="padding: 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-input); color: white;">
+                    <button class="btn btn-success" onclick="engine.exportExcel()">📥 تصدير Excel</button>
+                    <button class="btn btn-danger" onclick="engine.clearAll()">🗑️ حذف الكل</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div id="paginationContainer" class="pagination"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <!-- App Logic -->
+    <script src="js/schemas.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

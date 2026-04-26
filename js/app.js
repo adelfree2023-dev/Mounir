@@ -69,7 +69,7 @@ const engine = {
         const container = document.getElementById('formContainer');
         container.innerHTML = this.currentSchema.fields.map(field => `
             <div class="form-group" style="grid-column: span ${field.width ? '2' : '1'}">
-                <label>${field.label} ${field.required ? '*' : ''}</label>
+                <label>${field.formLabel || field.label} ${field.required ? '*' : ''}</label>
                 ${this.renderInput(field)}
             </div>
         `).join('');
@@ -127,9 +127,7 @@ const engine = {
         }
 
         this.currentSchema.fields.forEach(f => {
-            if (!f.uiOnly) {
-                record[f.id] = document.getElementById(f.id).value;
-            }
+            record[f.id] = document.getElementById(f.id).value;
         });
 
         if (this.editingIndex >= 0) {
@@ -156,7 +154,7 @@ const engine = {
     // --- TABLE & DISPLAY ---
     renderTableHeaders: function () {
         const thead = document.getElementById('tableHead');
-        const headers = ['الإجراءات', ...this.currentSchema.fields.filter(f => !f.uiOnly).map(f => f.label)];
+        const headers = ['الإجراءات', ...this.currentSchema.fields.map(f => f.label)];
         thead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
     },
 
@@ -179,7 +177,7 @@ const engine = {
 
         tbody.innerHTML = pageData.map((row, index) => {
             const actualIndex = this.data.length - 1 - (start + index);
-            const cells = this.currentSchema.fields.filter(f => !f.uiOnly).map(f => `<td>${this.formatVal(row[f.id], f.type)}</td>`).join('');
+            const cells = this.currentSchema.fields.map(f => `<td>${this.formatVal(row[f.id], f.type)}</td>`).join('');
             return `<tr>
                 <td class="actions">
                     <button class="btn btn-danger btn-sm" onclick="engine.deleteRecord(${actualIndex})">🗑️</button>
@@ -375,20 +373,6 @@ const engine = {
                 const daysAgo = Math.floor(Math.random() * 365);
                 const date = new Date();
                 date.setDate(date.getDate() - daysAgo);
-
-                // Special handling for end dates
-                if (f.id.toLowerCase().includes('end')) {
-                    const startField = this.currentSchema.fields.find(field => 
-                        field.id === 'orderDate' || field.id === 'date' || field.id === 'startDate' || field.id === 'joinDate'
-                    );
-                    if (startField) {
-                        const startEl = document.getElementById(startField.id);
-                        if (startEl && startEl.value) {
-                            const startDate = new Date(startEl.value);
-                            date.setTime(startDate.getTime() + (Math.floor(Math.random() * 30) + 1) * 24 * 60 * 60 * 1000);
-                        }
-                    }
-                }
                 val = date.toISOString().split('T')[0];
             } else if (f.type === 'text') {
                 // Realistic data based on field purpose
@@ -475,30 +459,16 @@ const engine = {
                 else if ((f.type === 'number' || f.type === 'money' || f.type === 'percent') && !f.readonly) {
                     val = Math.floor(Math.random() * 500) + 10;
                 }
-                // Handle date fields - IMPROVED: Better time distribution and range support
+                // Handle date fields - IMPROVED: Better time distribution
                 else if (f.type === 'date') {
-                    const startVal = document.getElementById('orderDate')?.value || document.getElementById('date')?.value;
-                    const endVal = document.getElementById('orderEndDate')?.value;
-                    
-                    let date;
-                    if (startVal && endVal && (f.id === 'orderDate' || f.id === 'date')) {
-                        const start = new Date(startVal);
-                        const end = new Date(endVal);
-                        const range = end - start;
-                        // Distribute records across the range
-                        date = new Date(start.getTime() + (i / count) * range + (Math.random() * (range / count)));
-                        if (date > end) date = end;
-                    } else {
-                        // Distribute data across last 12 months with realistic patterns
-                        const daysAgo = Math.floor((i / count) * 365); // Spread across year
-                        date = new Date();
-                        date.setDate(date.getDate() - (365 - daysAgo));
-                    }
-                    
-                    val = date.toISOString().split('T')[0];
+                    // Distribute data across last 12 months with realistic patterns
+                    const daysAgo = Math.floor((i / count) * 365); // Spread across year
+                    const orderDate = new Date();
+                    orderDate.setDate(orderDate.getDate() - (365 - daysAgo));
+                    val = orderDate.toISOString().split('T')[0];
 
                     // Store for later seasonality calculations
-                    record['_' + f.id] = date;
+                    record['_orderDate'] = orderDate;
                 }
                 // Handle time fields
                 else if (f.type === 'time') {
@@ -525,9 +495,7 @@ const engine = {
                     val = `${prefix}-${2025}-${String(this.orderCounter + i).padStart(5, '0')}`;
                 }
 
-                if (!f.uiOnly) {
-                    record[f.id] = val;
-                }
+                record[f.id] = val;
             });
 
             // SECOND PASS: Handle dependent fields (country, productName)
@@ -551,22 +519,6 @@ const engine = {
                 const orderDate = record['_orderDate'] || new Date();
                 const month = orderDate.getMonth(); // 0-11
 
-                // Update orderEndDate if it exists in schema
-                if (record['orderEndDate'] !== undefined) {
-                    const end = new Date(orderDate);
-                    end.setDate(end.getDate() + Math.floor(Math.random() * 30) + 1);
-                    record['orderEndDate'] = end.toISOString().split('T')[0];
-                }
-
-                // Fix shipDate and deliveryDate to be logical
-                const shipDate = new Date(orderDate);
-                shipDate.setDate(shipDate.getDate() + Math.floor(Math.random() * 5) + 1);
-                record['shipDate'] = shipDate.toISOString().split('T')[0];
-
-                const deliveryDate = new Date(shipDate);
-                deliveryDate.setDate(deliveryDate.getDate() + Math.floor(Math.random() * 5) + 2);
-                record['deliveryDate'] = deliveryDate.toISOString().split('T')[0];
-
                 // SEASONALITY FACTOR (Realistic market patterns)
                 const seasonalBoost = {
                     7: 1.15,  // August - Back to School (+15%)
@@ -577,15 +529,7 @@ const engine = {
                 const seasonalityFactor = seasonalBoost[month] || 1.0;
 
                 // GROWTH TREND (3% monthly growth)
-                const startVal = document.getElementById('orderDate')?.value || document.getElementById('date')?.value;
-                let monthsFromStart;
-                if (startVal) {
-                    const startRange = new Date(startVal);
-                    monthsFromStart = Math.floor((orderDate - startRange) / (24 * 60 * 60 * 1000 * 30));
-                    if (monthsFromStart < 0) monthsFromStart = 0;
-                } else {
-                    monthsFromStart = Math.floor((365 - (new Date() - orderDate) / (24 * 60 * 60 * 1000)) / 30);
-                }
+                const monthsFromStart = Math.floor((365 - (new Date() - orderDate) / (24 * 60 * 60 * 1000)) / 30);
                 const growthFactor = 1 + (monthsFromStart * 0.03);
 
                 // Realistic quantities based on product category + seasonality
@@ -730,19 +674,8 @@ const engine = {
                     record['netSalary'] = (basic + incentives - deductions).toFixed(2);
                 }
             }
-            else if (this.currentSchema.id === 'purchasing') {
-                const orderDate = record['_orderDate'] || new Date();
-                const delDate = new Date(orderDate);
-                delDate.setDate(delDate.getDate() + Math.floor(Math.random() * 10) + 3);
-                record['delDate'] = delDate.toISOString().split('T')[0];
-            }
             // Enterprise E-Commerce Calculations
             else if (this.currentSchema.id === 'enterprise_ecommerce') {
-                const orderDate = record['_orderDate'] || new Date();
-                
-                // subscriptionStartDate relative to orderDate
-                record['subscriptionStartDate'] = orderDate.toISOString().split('T')[0];
-
                 // Add realistic city based on country
                 const citiesByCountry = {
                     'Germany': ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne'],

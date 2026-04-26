@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Large files
+*.rar
+*.zip
+*.7z
+
+# Local data
+data_*.json
+localStorage_*.json
+
+# Excel files (if they are just exports)
+*_data.xlsx

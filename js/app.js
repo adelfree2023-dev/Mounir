@@ -127,7 +127,9 @@ const engine = {
         }
 
         this.currentSchema.fields.forEach(f => {
-            record[f.id] = document.getElementById(f.id).value;
+            if (!f.uiOnly) {
+                record[f.id] = document.getElementById(f.id).value;
+            }
         });
 
         if (this.editingIndex >= 0) {
@@ -154,7 +156,7 @@ const engine = {
     // --- TABLE & DISPLAY ---
     renderTableHeaders: function () {
         const thead = document.getElementById('tableHead');
-        const headers = ['الإجراءات', ...this.currentSchema.fields.map(f => f.label)];
+        const headers = ['الإجراءات', ...this.currentSchema.fields.filter(f => !f.uiOnly).map(f => f.label)];
         thead.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
     },
 
@@ -177,7 +179,7 @@ const engine = {
 
         tbody.innerHTML = pageData.map((row, index) => {
             const actualIndex = this.data.length - 1 - (start + index);
-            const cells = this.currentSchema.fields.map(f => `<td>${this.formatVal(row[f.id], f.type)}</td>`).join('');
+            const cells = this.currentSchema.fields.filter(f => !f.uiOnly).map(f => `<td>${this.formatVal(row[f.id], f.type)}</td>`).join('');
             return `<tr>
                 <td class="actions">
                     <button class="btn btn-danger btn-sm" onclick="engine.deleteRecord(${actualIndex})">🗑️</button>
@@ -523,7 +525,9 @@ const engine = {
                     val = `${prefix}-${2025}-${String(this.orderCounter + i).padStart(5, '0')}`;
                 }
 
-                record[f.id] = val;
+                if (!f.uiOnly) {
+                    record[f.id] = val;
+                }
             });
 
             // SECOND PASS: Handle dependent fields (country, productName)

@@ -5,8 +5,8 @@ const AppSchemas = {
         desc: 'إدارة الطلبات، العملاء، والعمليات المالية',
         fields: [
             { id: 'orderId', label: 'رقم الطلب', type: 'text', readonly: true, width: '150px' },
-            { id: 'orderDate', label: 'تاريخ البداية (من)', type: 'date', required: true },
-            { id: 'orderEndDate', label: 'تاريخ النهاية (إلى)', type: 'date', required: true },
+            { id: 'orderDate', label: 'تاريخ الطلب', type: 'date', required: true },
+            { id: 'orderEndDate', label: 'تاريخ النهاية', type: 'date', uiOnly: true },
             { id: 'shipDate', label: 'تاريخ الشحن', type: 'date' },
             { id: 'deliveryDate', label: 'تاريخ التسليم', type: 'date' },
             { id: 'orderStatus', label: 'حالة الطلب', type: 'select', options: ['Completed', 'Pending', 'Shipped', 'Cancelled', 'Returned'] },
@@ -178,8 +178,8 @@ const AppSchemas = {
         fields: [
             { id: 'poId', label: 'رقم أمر الشراء', type: 'text', readonly: true },
             { id: 'suppId', label: 'رقم المورد', type: 'text' },
-            { id: 'orderDate', label: 'تاريخ البداية (من)', type: 'date', required: true },
-            { id: 'orderEndDate', label: 'تاريخ النهاية (إلى)', type: 'date', required: true },
+            { id: 'orderDate', label: 'تاريخ الطلب', type: 'date', required: true },
+            { id: 'orderEndDate', label: 'تاريخ النهاية', type: 'date', uiOnly: true },
             { id: 'prodId', label: 'رقم المنتج', type: 'text' },
             { id: 'qty', label: 'الكمية', type: 'number', onChange: 'calcTotal' },
             { id: 'unitCost', label: 'تكلفة الوحدة', type: 'number', onChange: 'calcTotal' },
@@ -685,8 +685,8 @@ const AppSchemas = {
             
             // Sales Data
             { id: 'salesId', label: 'Sales ID', type: 'text', readonly: true },
-            { id: 'orderDate', label: 'Start Order Date', type: 'date', required: true },
-            { id: 'orderEndDate', label: 'End Order Date', type: 'date', required: true },
+            { id: 'orderDate', label: 'Order Date', type: 'date', required: true },
+            { id: 'orderEndDate', label: 'Order End Date', type: 'date', uiOnly: true },
             { id: 'productCategory', label: 'Product Category', type: 'select', options: ['Electronics', 'Fashion', 'Home & Garden', 'Sports', 'Beauty', 'Books', 'Toys'], onChange: 'updateBrands' },
             { id: 'brand', label: 'Brand', type: 'select', options: [] },
             { id: 'priceTier', label: 'Price Tier', type: 'select', options: ['Economy', 'Mid-Range', 'Premium'] },
